@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/model/user_model.dart';
+import 'package:provider/provider.dart';
+
 import 'main_pages.dart';
 
 void main() => runApp(MyApp());
@@ -11,7 +14,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainPages(),
+      home: ChangeNotifierProvider(
+        create: (context) => UserModel(),
+        child: MainPages()
+      ),
     );
   }
 }
