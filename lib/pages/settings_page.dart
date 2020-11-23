@@ -9,9 +9,8 @@ class SettingsPage extends StatelessWidget { // TODO
         child: ListView(children: [
           TextField(
             onSubmitted: (String value) {
-              Provider
-                  .of<UserModel>(context, listen: false)
-                  .postcodePrefix(value);
+              final model = Provider.of<UserModel>(context, listen: false);
+              model.postcodePrefix = value;
             },
           ),
         ],)
