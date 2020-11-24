@@ -131,7 +131,7 @@ initializePlatformSpecifics() {
       initializationSettingsAndroid, initializationSettingsIOS);
 }
 
-_requestIOSPermission() {
+/*_requestIOSPermission() {
   flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
@@ -140,7 +140,7 @@ _requestIOSPermission() {
         badge: true,
         sound: true,
       );
-}
+}*/
 
 Future<void> scheduleNotification() async {
   var thisSundayAtTwelve = new DateTime(2020, 11, 22, 12);
