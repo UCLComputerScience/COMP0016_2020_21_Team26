@@ -15,10 +15,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: ChangeNotifierProvider(
-        create: (context) => UserModel(),
-        child: MainPages()
-      ),
+          create: (context) => UserModel(), child: MainPages()),
     );
   }
 }
-

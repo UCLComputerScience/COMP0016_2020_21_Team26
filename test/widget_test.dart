@@ -8,10 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nudge_me/main.dart';
 
-Finder findSubstring(String target, CommonFinders finder){
+Finder findSubstring(String target, CommonFinders finder) {
   return finder.byWidgetPredicate((widget) =>
-  widget is Text && widget.data != null && widget.data.contains(target)
-  );
+      widget is Text && widget.data != null && widget.data.contains(target));
 }
 
 void main() {
