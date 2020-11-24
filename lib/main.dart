@@ -161,8 +161,8 @@ Future<void> scheduleNotification() async {
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.schedule(
       0,
-      'scheduled title',
-      'scheduled body',
+      'Hi there',
+      'We noticed you’re not feeling so good - what do you think about a short walk down the road?',
       scheduledNotificationDateTime,
       platformChannelSpecifics);
 }
