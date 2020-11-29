@@ -15,14 +15,15 @@ class WellbeingGraph extends StatelessWidget {
     final items = Provider.of<UserModel>(context, listen: true).getLastNWeeks(5);
 
     final scoreSeries = new charts.Series<WellbeingItem, int>(
-      id: 'WellbeingScore',
+      id: 'Wellbeing Score',
       colorFn: (_, __) => charts.MaterialPalette.purple.shadeDefault,
       domainFn: (WellbeingItem item, _) => item.week,
       measureFn: (WellbeingItem item, _) => item.score,
       data: items,
     )..setAttribute(charts.rendererIdKey, 'customBar');
     final stepSeries = new charts.Series<WellbeingItem, int>(
-      id: 'Steps',
+      // TODO: use a 'flex factor'? This text may go out of bounds:
+      id: 'Normalized Steps',
       colorFn: (_, __) => charts.MaterialPalette.cyan.shadeDefault,
       domainFn: (WellbeingItem a, _) => a.week,
       measureFn: // normalize the num of steps
@@ -37,8 +38,23 @@ class WellbeingGraph extends StatelessWidget {
       defaultRenderer: new charts.LineRendererConfig(),
       customSeriesRenderers: [
         new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(25),
           customRendererId: 'customBar'
         )
+      ],
+      behaviors: [
+        new charts.SeriesLegend(), // adds labels to colors
+        new charts.RangeAnnotation([
+          new charts.RangeAnnotationSegment(
+            8, 10, charts.RangeAnnotationAxisType.measure, endLabel: 'Healthy',
+            color: charts.MaterialPalette.gray.shade200,
+          ),
+        ]),
+        // using title as axes label:
+        new charts.ChartTitle('Week Number',
+          behaviorPosition: charts.BehaviorPosition.bottom,
+          titleOutsideJustification: charts.OutsideJustification.middleDrawArea
+        ),
       ],
     );
   }
