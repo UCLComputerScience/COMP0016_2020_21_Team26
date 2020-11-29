@@ -4,19 +4,25 @@ import 'package:flutter/material.dart';
 
 class UserModel extends ChangeNotifier {
   String _postcodePrefix;
-  final List<WellbeingWeekItem> _wellbeingWeeks = [];
+  final List<WellbeingItem> _wellbeingWeeks = [
+    // TODO: remove this sample data
+    new WellbeingItem(week: 1, numSteps: 20000, score: 6),
+    new WellbeingItem(week: 2, numSteps: 51230, score: 7),
+    new WellbeingItem(week: 3, numSteps: 69531, score: 8.9),
+  ];
 
-  /// Get the average wellbeingItem for the last n weeks.
-  /// n should be positive.
-  List<WellbeingItem> getNWeekAverages(int n) {
-    // TODO
-    assert(n > 0);
-    return null;
+  /// gets the week which the data currently being recorded will be associated
+  /// with. Not 0-indexed.
+  int get currentWeek => _wellbeingWeeks.length+1;
+
+  /// n must be non-negative
+  List<WellbeingItem> getLastNWeeks(int n) =>
+      List.of(_wellbeingWeeks.reversed.take(n), growable: false);
+
+  void addWellbeingItem(WellbeingItem item) {
+    _wellbeingWeeks.add(item);
+    notifyListeners();
   }
-
-  /// Not recommended to use since it seems to copy the entire list.
-  UnmodifiableListView<WellbeingWeekItem> get wellbeingWeeks =>
-      UnmodifiableListView(_wellbeingWeeks);
 
   String get postcodePrefix => _postcodePrefix;
 
@@ -24,40 +30,22 @@ class UserModel extends ChangeNotifier {
     _postcodePrefix = s;
     notifyListeners();
   }
+
+  /// Not recommended to use since it seems to copy the entire list.
+  UnmodifiableListView<WellbeingItem> get wellbeingWeeks =>
+      UnmodifiableListView(_wellbeingWeeks);
 }
 
-class WellbeingWeekItem {
-  // this loses null-safety, but it's in beta so we may not want to use it
-  final List<WellbeingItem> _items = List(7);
-
-  /// returns the maximum day where the wellbeing was set, so if all days are
-  /// filled, this should return 7. The 'day' returned is not zero indexed.
-  int get maxDaySet => _items.takeWhile((value) => value != null).length;
-
-  WellbeingItem get average {
-    var averageSteps = 0.0, averageScore = 0.0, n;
-    for (n = 0; n < _items.length && _items[n] != null; ++n) {
-      averageScore += _items[n].score;
-      averageSteps += _items[n].numSteps;
-    }
-    return WellbeingItem(averageSteps/n, averageScore/n);
-  }
-
-  UnmodifiableListView<WellbeingItem> get wellbeingItems =>
-      UnmodifiableListView(_items);
-
-  void setWellbeingItem(WellbeingItem item, int day) {
-    _items[day] = item;
-  }
-}
-
-/// Immutable data item of a wellbeing record
+/// Immutable data item of a week's wellbeing record
+@immutable
 class WellbeingItem {
-  final double _numSteps;
-  final double _score;
+  final int week;
+  final int numSteps;
+  final double score;
 
-  WellbeingItem(this._numSteps, this._score);
-
-  double get numSteps => _numSteps;
-  double get score => _score;
+  WellbeingItem({
+    @required this.week,
+    @required this.numSteps,
+    @required this.score
+  });
 }
