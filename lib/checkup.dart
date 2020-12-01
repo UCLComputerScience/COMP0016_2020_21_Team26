@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 //import 'package:fit_kit/fit_kit.dart';
 
+void main() {
+  runApp(Checkup());
+}
+
 class Checkup extends StatelessWidget {
   // This widget is the root of your application.
 
@@ -40,7 +44,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       value: _currentSliderValue,
       min: 0,
       max: 10,
-      divisions: 1,
+      divisions: 10,
       label: _currentSliderValue.toString(),
       onChanged: (double value) {
         setState(() {
