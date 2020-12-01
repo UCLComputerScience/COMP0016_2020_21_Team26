@@ -132,7 +132,7 @@ initializePlatformSpecifics() {
 }*/
 
 Future<void> scheduleNotification() async {
-  var thisSundayAtTwelve = new DateTime(2020, 11, 22, 12);
+  var thisSundayAtTwelve = new DateTime(2020, 12, 1, 5, 2);
   var sundayDiff = thisSundayAtTwelve.difference(new DateTime.now());
   var scheduledNotificationDateTime;
   if (sundayDiff.inDays == 7) {

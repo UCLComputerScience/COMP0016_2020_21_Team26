@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-//import 'package:fit_kit/fit_kit.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() {
-  runApp(Checkup());
-}
+//import 'package:fit_kit/fit_kit.dart';
 
 class Checkup extends StatelessWidget {
   // This widget is the root of your application.
@@ -18,7 +15,6 @@ class Checkup extends StatelessWidget {
           body: Column(children: <Widget>[
             Text("How do you feel right now?"),
             MyStatefulWidget(),
-            Spacer(),
             Text("Your steps this week:"),
             //Text(readStepCount().toString())
           ])),
@@ -55,6 +51,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
+
 /*
 Future<num> readStepCount() async {
   if (await FitKit.requestPermissions(DataType.values)) {
@@ -71,7 +68,7 @@ Future<num> readStepCount() async {
   }
 }
 
-
+*/
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -89,7 +86,6 @@ initializePlatformSpecifics() {
   var initialisationSettings = InitializationSettings(
       initializationSettingsAndroid, initializationSettingsIOS);
 }
-
 
 _requestIOSPermission() {
   flutterLocalNotificationsPlugin
@@ -126,5 +122,3 @@ Future<void> scheduleNotification() async {
       scheduledNotificationDateTime,
       platformChannelSpecifics);
 }
-
-*/
