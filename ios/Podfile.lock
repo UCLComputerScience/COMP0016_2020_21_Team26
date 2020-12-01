@@ -1,19 +1,25 @@
 PODS:
+  - fit_kit (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - fit_kit (from `.symlinks/plugins/fit_kit/ios`)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
 
 EXTERNAL SOURCES:
+  fit_kit:
+    :path: ".symlinks/plugins/fit_kit/ios"
   Flutter:
     :path: Flutter
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
 
 SPEC CHECKSUMS:
+  fit_kit: 7643191161673bcd32863ae3f10baed6ce55c7c0
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
 
