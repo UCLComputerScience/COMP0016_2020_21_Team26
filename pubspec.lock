@@ -57,13 +57,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  fit_kit:
-    dependency: "direct main"
-    description:
-      name: fit_kit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -109,7 +102,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-
+  pedometer:
+    dependency: "direct main"
+    description:
+      name: pedometer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   platform:
     dependency: transitive
     description:

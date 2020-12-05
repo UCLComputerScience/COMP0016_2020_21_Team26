@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ucl.nudge_me">
-   <application
+   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <application
         android:label="nudge_me"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -37,5 +38,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            
     </application>
 </manifest>

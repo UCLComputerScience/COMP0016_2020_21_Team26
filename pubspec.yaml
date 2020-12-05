@@ -22,7 +22,7 @@ environment:
 
 dependencies:
   flutter_local_notifications: ^1.4.4+1
-  fit_kit: any
+  pedometer: ^2.0.2
   flutter:
     sdk: flutter
 
