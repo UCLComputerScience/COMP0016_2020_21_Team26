@@ -18,12 +18,9 @@ class MyApp extends StatelessWidget {
       ),
       home: ChangeNotifierProvider(
           create: (context) => UserModel(),
-          child: SafeArea( // so the app isn't obscured by notification bar
-              child: MainPages()
-          )
-      ),
+          child: SafeArea(
+              // so the app isn't obscured by notification bar
+              child: MainPages())),
     );
   }
 }
-
-
