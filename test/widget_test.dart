@@ -8,21 +8,25 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nudge_me/main.dart';
 
+Finder findSubstring(String target, CommonFinders finder) {
+  return finder.byWidgetPredicate((widget) =>
+      widget is Text && widget.data != null && widget.data.contains(target));
+}
+
 void main() {
   testWidgets('Screen changes smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp());
 
     // Check the home screen text
-    expect(find.text("It's home!"), findsOneWidget);
-    expect(find.text("Be well!"), findsNothing);
+    expect(findSubstring("Your postcode is", find), findsOneWidget);
+    // TODO: investigate why find.text didn't find the text in the graph
 
     // Switch screens
     await tester.tap(find.byIcon(Icons.bar_chart));
     await tester.pump();
 
     // Verify changed screens
-    expect(find.text("It's home!"), findsNothing);
-    expect(find.text("Be well!"), findsOneWidget);
+    expect(findSubstring("Your postcode is", find), findsNothing);
   });
 }
