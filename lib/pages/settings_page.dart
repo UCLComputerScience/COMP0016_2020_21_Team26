@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,9 +17,10 @@ class SettingsPage extends StatelessWidget {
         onSubmitted: _updatePostcode,
       ),
       ElevatedButton(
-        onPressed: () => UserWellbeingDB()
-            .insert(WellbeingItem(wellbeingScore: 8.0, numSteps: 60000)),
-        child: Text("new"),
+        onPressed: () => UserWellbeingDB().insert(WellbeingItem(
+            wellbeingScore: Random().nextDouble() * 10.0,
+            numSteps: Random().nextInt(70001))),
+        child: Text("Generate WellbeingItem"),
       ),
       ElevatedButton(
         onPressed: () => UserWellbeingDB().delete(),
