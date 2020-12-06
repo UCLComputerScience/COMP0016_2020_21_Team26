@@ -5,6 +5,9 @@ class WellbeingPage extends StatelessWidget {
   // TODO
   @override
   Widget build(BuildContext context) {
-    return Center(child: WellbeingGraph(animate: true,));
+    return Center(
+        child: WellbeingGraph(
+      animate: true,
+    ));
   }
 }
