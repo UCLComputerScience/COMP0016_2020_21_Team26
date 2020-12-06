@@ -24,6 +24,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # util
+  http: ^0.12.2
+
   # data-related
   provider: ^3.0.0
   shared_preferences: ^0.5.12+4
