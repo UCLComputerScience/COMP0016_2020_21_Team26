@@ -18,10 +18,13 @@ class SettingsPage extends StatelessWidget {
         onSubmitted: _updatePostcode,
       ),
       ElevatedButton(
-          onPressed: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => SafeArea(
-                  child: Scaffold(body: PublishScreen(),))
-              )),
+          onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SafeArea(
+                          child: Scaffold(
+                        body: PublishScreen(),
+                      )))),
           child: Text("Publish Data")),
       ElevatedButton(
         onPressed: () => UserWellbeingDB().insert(WellbeingItem(

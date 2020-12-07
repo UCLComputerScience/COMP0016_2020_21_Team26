@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,15 @@ class _PublishScreenState extends State<PublishScreen> {
     );
   }
 
+  double anonymizeScore(double score) {
+    final random = Random();
+    /**
+     * lies 30% of the time, okay technically it lies 0.3 * (1 - 1/11) of the
+     * time since there's a chance it could just pick the true score anyway
+     */
+    return (random.nextInt(100) > 69) ? random.nextInt(11) : score;
+  }
+
   void _publishData(BuildContext context) async {
     final snackBar = SnackBar(
       content: Text("Sending data"),
@@ -82,10 +92,11 @@ class _PublishScreenState extends State<PublishScreen> {
 
     final items = await _singleton;
     final item = items[0];
+    final anonScore = anonymizeScore(item.wellbeingScore);
     final normalizedSteps = (item.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0;
-    final errorRate = (normalizedSteps > item.wellbeingScore)
-        ? normalizedSteps - item.wellbeingScore
-        : item.wellbeingScore - normalizedSteps;
+    final errorRate = (normalizedSteps > anonScore)
+        ? normalizedSteps - anonScore
+        : anonScore - normalizedSteps;
 
     final body = jsonEncode({
       /*
@@ -93,7 +104,7 @@ class _PublishScreenState extends State<PublishScreen> {
             and it prob doesn't need everything as a string.
        */
       "postCode": item.postcode,
-      "wellbeingScore": item.wellbeingScore.toString(),
+      "wellbeingScore": anonScore.truncate().toString(),
       "weeklySteps": item.numSteps.toString(),
       "weeklyCalls": "0",
       "errorRate": errorRate.toString(),
