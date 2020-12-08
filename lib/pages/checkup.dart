@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
-import 'notification.dart';
+//import 'package:nudge_me/notification.dart';
 
 class Checkup extends StatelessWidget {
   @override
@@ -13,8 +13,6 @@ class Checkup extends StatelessWidget {
               Column(children: <Widget>[WBSliderWidget(), PedometerWidget()])),
     );
   }
-
-  //scheduleNotification();
 }
 
 //wb scale

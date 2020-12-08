@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
+import 'package:nudge_me/pages/checkup.dart';
 
 class MainPages extends StatefulWidget {
   final pages = [
     WellbeingPage(),
     HomePage(),
     SettingsPage(),
+    Checkup(),
   ];
+
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
