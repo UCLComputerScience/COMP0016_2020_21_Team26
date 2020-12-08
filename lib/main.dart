@@ -14,13 +14,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SafeArea(
-          // so the app isn't obscured by notification bar
-          child: FirstTimeScreen(
+      home: FirstTimeScreen(
         loadingScreen: Text("Loading..."),
         introScreen: MaterialPageRoute(builder: (context) => IntroScreen()),
         landingScreen: MaterialPageRoute(builder: (context) => MainPages()),
-      )),
+      ),
     );
   }
 }

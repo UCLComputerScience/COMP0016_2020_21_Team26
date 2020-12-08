@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main_pages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IntroScreen extends StatefulWidget {
   @override
@@ -34,28 +35,22 @@ class _IntroScreenState extends State<IntroScreen> {
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    // TODO: save postcode
-                  }
+                  onSaved: _savePostcode,
                 ),
-
                 TextFormField(
                   decoration: const InputDecoration(
                       hintText: "Enter your support code"),
                   validator: (value) => null, // NOTE: I assume this is optional
-                  onSaved: (value) {
-                    // TODO: save support code
-                  },
+                  onSaved: _saveSupportCode,
                 ),
-
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
-                      Navigator.pushReplacement( // switch to main app
-                        context,
-                        MaterialPageRoute(builder: (context) => MainPages())
-                      );
+                      Navigator.pushReplacement(
+                          // switch to main app
+                          context,
+                          MaterialPageRoute(builder: (context) => MainPages()));
                     }
                   },
                   child: Text("Submit"),
@@ -66,5 +61,15 @@ class _IntroScreenState extends State<IntroScreen> {
         ],
       )),
     );
+  }
+
+  void _savePostcode(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('postcode', value);
+  }
+
+  void _saveSupportCode(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('support_code', value);
   }
 }
