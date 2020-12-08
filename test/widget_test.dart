@@ -1,5 +1,3 @@
-// This is a basic Flutter widget test.
-//
 // To perform an interaction with a widget in your test, use the WidgetTester
 // utility that Flutter provides. For example, you can send tap and scroll
 // gestures. You can also use WidgetTester to find child widgets in the widget
@@ -10,21 +8,25 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nudge_me/main.dart';
 
+Finder findSubstring(String target, CommonFinders finder) {
+  return finder.byWidgetPredicate((widget) =>
+      widget is Text && widget.data != null && widget.data.contains(target));
+}
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Screen changes smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Check the home screen text
+    expect(findSubstring("Your postcode is", find), findsOneWidget);
+    // TODO: investigate why find.text didn't find the text in the graph
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Switch screens
+    await tester.tap(find.byIcon(Icons.bar_chart));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify changed screens
+    expect(findSubstring("Your postcode is", find), findsNothing);
   });
 }

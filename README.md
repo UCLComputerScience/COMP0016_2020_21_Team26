@@ -1,18 +1,17 @@
 # COMP0016 2020/21 - Team 26
 
-## NudgeMe
+# NudgeMe
 
 V2 of the CarerCare app.
 
-### Getting Started
+## Initial Requirements
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- The system should be designed for a user between 13 and 99
+- The target user is a person who wishes to share their wellbeing with others
+- It should passively gather movement data from the pedometer and cross reference this against a self reported wellbeing score
+- The wellbeing score will be gathered at 12 pm on a Sunday
+- People will be nudged to share their wellbeing score as a pdf/jpeg is their score falls twice over any two week period. 
+This will be facilitated.
+- They will also be encouraged to do the same of there is no pedometer reading over two days. 
+On a Monday each week they will be asked if they to share their average wellbeing score (in a locally differentially private manner) with a central wellbeing hub. 
+This hub will request put requests in the same manner as the previous App
