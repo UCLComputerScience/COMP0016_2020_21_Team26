@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 //import 'package:nudge_me/notification.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:async';
+import 'package:jiffy/jiffy.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox<int>('steps');
+  runApp(Checkup());
+}
 
 class Checkup extends StatelessWidget {
   @override
@@ -60,38 +71,83 @@ class PedometerWidget extends StatefulWidget {
 }
 
 class _PedometerWidgetState extends State<PedometerWidget> {
-  Stream<StepCount> _stepCountStream;
-  String _steps = '?';
+  StreamSubscription<StepCount> _subscription;
+
+  Box<int> stepsBox = Hive.box('steps');
+  int thisWeekSteps;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    startListening();
   }
 
-  void onStepCount(StepCount event) {
-    print(event);
+  void startListening() {
+    //Stream<StepCount> stream = Pedometer.stepCountStream;
+    //_pedometer = Pedometer();
+    Stream<StepCount> stream = Pedometer.stepCountStream;
+    _subscription = stream.listen(
+      getWeeklySteps,
+      onError: _onError,
+      onDone: _onDone,
+      cancelOnError: true,
+    );
+  }
+
+  Future<int> getWeeklySteps(StepCount value) async {
+    print(value);
+    int savedStepsCountKey = 999999;
+    int savedStepsCount = stepsBox.get(savedStepsCountKey, defaultValue: 0);
+
+    int todayDayNo = Jiffy(DateTime.now()).dayOfYear;
+    if (value.steps < savedStepsCount) {
+      // Upon device reboot, pedometer resets. When this happens, the saved counter must be reset as well.
+      savedStepsCount = 0;
+      // persist this value using a package of your choice here
+      stepsBox.put(savedStepsCountKey, savedStepsCount);
+    }
+
+    // load the last day saved using a package of your choice here
+    int lastWeekSavedKey = 888888;
+    int lastWeekSaved = stepsBox.get(lastWeekSavedKey, defaultValue: 0);
+
+    // When the day changes, reset the daily steps count
+    // and Update the last day saved as the day changes.
+    if (todayDayNo - lastWeekSaved == 1) {
+      lastWeekSaved = todayDayNo;
+      savedStepsCount = value.steps;
+
+      stepsBox
+        ..put(lastWeekSavedKey, lastWeekSaved)
+        ..put(savedStepsCountKey, savedStepsCount);
+    }
+
     setState(() {
-      _steps = event.steps.toString();
+      thisWeekSteps = value.steps - savedStepsCount;
     });
+    stepsBox.put(todayDayNo, thisWeekSteps);
+    return thisWeekSteps;
   }
 
-  void onStepCountError(error) {
-    print('onStepCountError: $error');
-    setState(() {
-      _steps = 'Step Count not available';
-    });
+  void _onError(error) => print("Flutter Pedometer Error: $error");
+
+  void _onDone() => print("Finished pedometer tracking");
+
+  @override
+  void dispose() {
+    stopListening();
+    super.dispose();
   }
 
-  void initPlatformState() {
-    _stepCountStream = Pedometer.stepCountStream;
-    _stepCountStream.listen(onStepCount).onError(onStepCountError);
-
-    if (!mounted) return;
+  void stopListening() {
+    _subscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [Text("Your steps this week:"), Text(_steps)]);
+    return Column(children: [
+      Text("Your steps this week:"),
+      Text(thisWeekSteps.toString())
+    ]);
   }
 }
