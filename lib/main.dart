@@ -18,6 +18,9 @@ class MyApp extends StatelessWidget {
           child: SafeArea(
               // so the app isn't obscured by notification bar
               child: MainPages())),
+      home: SafeArea(
+          // so the app isn't obscured by notification bar
+          child: MainPages()),
     );
   }
 }
