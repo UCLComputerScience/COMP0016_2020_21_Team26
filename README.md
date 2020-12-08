@@ -4,6 +4,8 @@
 
 V2 of the CarerCare app.
 
+This is built on Flutter's stable branch.
+
 ## Initial Requirements
 
 - The system should be designed for a user between 13 and 99

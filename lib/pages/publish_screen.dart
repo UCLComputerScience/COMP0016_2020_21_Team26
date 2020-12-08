@@ -86,7 +86,7 @@ class _PublishScreenState extends State<PublishScreen> {
     final snackBar = SnackBar(
       content: Text("Sending data"),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Scaffold.of(context).showSnackBar(snackBar);
 
     final items = await _singleton;
     final item = items[0];
@@ -121,7 +121,7 @@ class _PublishScreenState extends State<PublishScreen> {
       print("Reponse body: ${response.body}");
       final asJson = jsonDecode(response.body);
       if (!asJson['success']) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        Scaffold.of(context).showSnackBar(
             // HACK: this sometimes throws an exception because it is used async
             //       and the scaffold might not exist anymore or something?
             //       (This is unrelated to the actual POST failure)
