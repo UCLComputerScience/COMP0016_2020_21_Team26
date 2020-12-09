@@ -113,7 +113,7 @@ class _PedometerWidgetState extends State<PedometerWidget> {
 
     // When the day changes, reset the daily steps count
     // and Update the last day saved as the day changes.
-    if (todayDayNo - lastWeekSaved == 1) {
+    if (todayDayNo - lastWeekSaved == 7) {
       lastWeekSaved = todayDayNo;
       savedStepsCount = value.steps;
 
