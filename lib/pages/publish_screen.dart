@@ -112,21 +112,22 @@ class _PublishScreenState extends State<PublishScreen> {
       "date": item.date,
     });
 
-    http
-        .post(BASE_URL,
-            headers: {"Content-Type": "application/json;charset=UTF-8"},
-            body: body)
-        .then((response) {
-      print("Reponse status: ${response.statusCode}");
-      print("Reponse body: ${response.body}");
-      final asJson = jsonDecode(response.body);
-      if (!asJson['success']) {
-        Scaffold.of(context).showSnackBar(
-            // HACK: this sometimes throws an exception because it is used async
-            //       and the scaffold might not exist anymore or something?
-            //       (This is unrelated to the actual POST failure)
-            SnackBar(content: Text("Oops. Something went wrong.")));
-      }
-    });
+    // TODO: actually POST to a server
+    // http
+    //     .post(BASE_URL,
+    //         headers: {"Content-Type": "application/json;charset=UTF-8"},
+    //         body: body)
+    //     .then((response) {
+    //   print("Reponse status: ${response.statusCode}");
+    //   print("Reponse body: ${response.body}");
+    //   final asJson = jsonDecode(response.body);
+    //   if (!asJson['success']) {
+    //     Scaffold.of(context).showSnackBar(
+    //         // HACK: this sometimes throws an exception because it is used async
+    //         //       and the scaffold might not exist anymore or something?
+    //         //       (This is unrelated to the actual POST failure)
+    //         SnackBar(content: Text("Oops. Something went wrong.")));
+    //   }
+    // });
   }
 }
