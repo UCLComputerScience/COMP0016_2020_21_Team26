@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nudge_me/notification.dart';
 
 import 'main_pages.dart';
@@ -9,8 +10,11 @@ final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   initializePlatformSpecifics();
+
   runApp(MyApp());
-  scheduleNotification(DateTime.now().add(new Duration(seconds: 10)));
+
+  scheduleCheckup(Day.Sunday, new Time(12));
+  schedulePublish(Day.Monday, new Time(12));
 }
 
 class MyApp extends StatelessWidget {
