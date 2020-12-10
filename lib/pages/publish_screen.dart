@@ -8,7 +8,7 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nudge_me/shared_widgets/wellbeing_graph.dart';
 
-const BASE_URL = "http://178.79.172.202:8080/androidData";
+const BASE_URL = "http://178.79.172.202:3001/map/androidData";
 
 class PublishScreen extends StatefulWidget {
   @override
