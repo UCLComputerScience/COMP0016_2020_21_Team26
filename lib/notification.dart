@@ -1,25 +1,33 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nudge_me/main.dart';
+import 'package:nudge_me/main_pages.dart';
 
-//notification
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-initializePlatformSpecifics() {
-  var initializationSettingsAndroid =
-      AndroidInitializationSettings('app_notf_icon');
-  var initializationSettingsIOS = IOSInitializationSettings(
+initializePlatformSpecifics() async {
+  final initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  final initializationSettingsIOS = IOSInitializationSettings(
     requestAlertPermission: true,
     requestBadgePermission: true,
     requestSoundPermission: true,
     onDidReceiveLocalNotification: (id, title, body, payload) async {
-      // your call back to the UI
+      // TODO: your call back to the UI for iOS
     },
   );
-  var initialisationSettings = InitializationSettings(
+  final initialisationSettings = InitializationSettings(
       initializationSettingsAndroid, initializationSettingsIOS);
+  await flutterLocalNotificationsPlugin.initialize(initialisationSettings,
+  onSelectNotification: _selectNotification);
 }
 
-_requestIOSPermission() {
+Future _selectNotification(String payload) async {
+  await navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => MainPages()));
+}
+
+_requestIOSPermission() { // TODO: use this
   flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
@@ -30,27 +38,21 @@ _requestIOSPermission() {
       );
 }
 
-Future<void> scheduleNotification() async {
-  var thisSundayAtTwelve = new DateTime(2020, 12, 8, 14, 40);
-  var sundayDiff = thisSundayAtTwelve.difference(new DateTime.now());
-  var scheduledNotificationDateTime;
-  if (sundayDiff.inDays == 7) {
-    scheduledNotificationDateTime = DateTime.now();
-  }
-  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+Future scheduleNotification([DateTime scheduledDate]) async {
+  final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'channel id',
     'channel name',
     'channel description',
-    icon: 'flutter_devs',
     //largeIcon: DrawableResourceAndroidBitmap('flutter_devs'),
   );
-  var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-  var platformChannelSpecifics = NotificationDetails(
+  final iOSPlatformChannelSpecifics = IOSNotificationDetails();
+  final platformChannelSpecifics = NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.schedule(
       0,
       'Hi there',
       'We noticed you’re not feeling so good - what do you think about a short walk down the road?',
-      scheduledNotificationDateTime,
+      scheduledDate,
       platformChannelSpecifics);
 }
+

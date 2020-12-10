@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/notification.dart';
 
 import 'main_pages.dart';
 
-void main() => runApp(MyApp());
+/// used to push without context
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  initializePlatformSpecifics();
+  runApp(MyApp());
+  scheduleNotification(DateTime.now().add(new Duration(seconds: 10)));
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -15,6 +24,7 @@ class MyApp extends StatelessWidget {
       home: SafeArea(
           // so the app isn't obscured by notification bar
           child: MainPages()),
+      navigatorKey: navigatorKey,
     );
   }
 }
