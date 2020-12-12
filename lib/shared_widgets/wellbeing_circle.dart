@@ -5,12 +5,12 @@ class WellbeingCircle extends StatelessWidget {
   /// 0 <= score <= 10 that determines how much green to show
   final int _score;
 
-  // TODO: should support an absence of a score
+  /// takes an [int] score which could be null
   const WellbeingCircle(this._score);
 
   @override
   Widget build(BuildContext context) {
-    final greenFraction = _score / 10.0;
+    final greenFraction = (_score == null ? 10.0 : _score) / 10.0;
     final redStartPoint = greenFraction + 0.15 <= 1 ? greenFraction + 0.15 : 1;
 
     final bgCircle = Container(
@@ -40,7 +40,7 @@ class WellbeingCircle extends StatelessWidget {
       children: [
         bgCircle,
         Text(
-          _score.toString(),
+          _score == null ? "N/A" : _score.toString(),
           style: TextStyle(color: Colors.white, fontSize: 75),
         ),
       ],
