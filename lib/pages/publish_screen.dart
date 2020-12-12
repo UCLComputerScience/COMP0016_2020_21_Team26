@@ -8,7 +8,7 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nudge_me/shared_widgets/wellbeing_graph.dart';
 
-const BASE_URL = "http://178.79.172.202:8080/androidData";
+const BASE_URL = "http://178.79.172.202:3001/map/androidData";
 
 class PublishScreen extends StatefulWidget {
   @override
@@ -75,13 +75,11 @@ class _PublishScreenState extends State<PublishScreen> {
     );
   }
 
-  double anonymizeScore(double score) {
+  /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
+  /// time since there's a chance it could just pick the true score anyway
+  int anonymizeScore(double score) {
     final random = Random();
-    /**
-     * lies 30% of the time, okay technically it lies 0.3 * (1 - 1/11) of the
-     * time since there's a chance it could just pick the true score anyway
-     */
-    return (random.nextInt(100) > 69) ? random.nextInt(11) : score;
+    return (random.nextInt(100) > 69) ? random.nextInt(11) : score.truncate();
   }
 
   void _publishData(BuildContext context) async {
@@ -92,9 +90,11 @@ class _PublishScreenState extends State<PublishScreen> {
 
     final items = await _singleton;
     final item = items[0];
-    final anonScore = anonymizeScore(item.wellbeingScore);
-    final normalizedSteps = (item.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0;
-    final errorRate = (normalizedSteps > anonScore)
+    final int anonScore = anonymizeScore(item.wellbeingScore);
+    // int1/int2 is a double in dart
+    final double normalizedSteps =
+        (item.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0;
+    final double errorRate = (normalizedSteps > anonScore)
         ? normalizedSteps - anonScore
         : anonScore - normalizedSteps;
 
@@ -104,10 +104,10 @@ class _PublishScreenState extends State<PublishScreen> {
             and it prob doesn't need everything as a string.
        */
       "postCode": item.postcode,
-      "wellbeingScore": anonScore.truncate().toString(),
+      "wellbeingScore": anonScore.toString(),
       "weeklySteps": item.numSteps.toString(),
       "weeklyCalls": "0",
-      "errorRate": errorRate.toString(),
+      "errorRate": errorRate.truncate().toString(),
       "supportCode": item.supportCode,
       "date": item.date,
     });
@@ -119,6 +119,14 @@ class _PublishScreenState extends State<PublishScreen> {
         .then((response) {
       print("Reponse status: ${response.statusCode}");
       print("Reponse body: ${response.body}");
+      final asJson = jsonDecode(response.body);
+      if (!asJson['success']) {
+        Scaffold.of(context).showSnackBar(
+            // HACK: this sometimes throws an exception because it is used async
+            //       and the scaffold might not exist anymore or something?
+            //       (This is unrelated to the actual POST failure)
+            SnackBar(content: Text("Oops. Something went wrong.")));
+      }
     });
   }
 }
