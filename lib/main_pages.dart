@@ -25,7 +25,7 @@ class MainPagesState extends State<MainPages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.pages[_selectedIndex],
+      body: SafeArea(child: widget.pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         items: widget.navBarItems,
         currentIndex: _selectedIndex,

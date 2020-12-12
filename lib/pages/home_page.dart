@@ -23,7 +23,12 @@ class _HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           SharedPreferences data = snapshot.data;
-          return Text("Postcode: ${data.getString('postcode')}");
+          return Column(
+            children: [
+              Text("Postcode: ${data.getString('postcode')}"),
+              Text("Support Code: ${data.getString('support_code')}"),
+            ],
+          );
         } else if (snapshot.hasError) {
           return Text("Error: ${snapshot.error}");
         }
