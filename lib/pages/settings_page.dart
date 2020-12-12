@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:nudge_me/model/user_model.dart';
+import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 _updatePostcode(String value) async {
@@ -16,6 +17,15 @@ class SettingsPage extends StatelessWidget {
       TextField(
         onSubmitted: _updatePostcode,
       ),
+      ElevatedButton(
+          onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SafeArea(
+                          child: Scaffold(
+                        body: PublishScreen(),
+                      )))),
+          child: Text("Publish Data")),
       ElevatedButton(
         onPressed: () => UserWellbeingDB().insert(WellbeingItem(
             wellbeingScore: Random().nextDouble() * 10.0,
