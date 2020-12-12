@@ -21,9 +21,11 @@ class _HomePageState extends State<HomePage> {
         child: FutureBuilder(
       future: _prefs,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.hasData) {
           SharedPreferences data = snapshot.data;
           return Text("Postcode: ${data.getString('postcode')}");
+        } else if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
         }
         return Text("Loading");
       },
