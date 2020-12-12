@@ -15,3 +15,15 @@ This will be facilitated.
 - They will also be encouraged to do the same of there is no pedometer reading over two days. 
 On a Monday each week they will be asked if they to share their average wellbeing score (in a locally differentially private manner) with a central wellbeing hub. 
 This hub will request put requests in the same manner as the previous App
+
+## Tentative API Docs
+
+http://178.79.172.202:8080/androidData
+
+- postCode: postcodeprefix e.g. TW6
+- wellBeingScore: String that represents an integer
+- weeklySteps: String that represents an integer
+- weeklyCalls: String *Obsolete*
+- errorRate: String that represents an integer, this is abs(score-userScore), where score is our estimate of their score
+- supportCode: String
+- date: LocalDate.now() as a string, deleting '-'. i.e. "ddmmyyyy"
