@@ -191,13 +191,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.4+3"
-  pedometer:
-    dependency: "direct main"
-    description:
-      name: pedometer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.2"
   pedantic:
     dependency: transitive
     description:
@@ -205,6 +198,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.2"
+  pedometer:
+    dependency: "direct main"
+    description:
+      name: pedometer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   platform:
     dependency: transitive
     description:

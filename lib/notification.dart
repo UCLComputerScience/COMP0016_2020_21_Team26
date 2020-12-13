@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
+import 'package:nudge_me/pages/publish_screen.dart';
 
 const CHECKUP_PAYLOAD = "checkup";
 const PUBLISH_PAYLOAD = "publish";
@@ -32,12 +33,12 @@ initializePlatformSpecifics() async {
 Future _selectNotification(String payload) async {
   switch (payload) {
     case CHECKUP_PAYLOAD:
-      await navigatorKey.currentState // TODO: change these routes
+      await navigatorKey.currentState // TODO: change this to checkup
           .push(MaterialPageRoute(builder: (context) => MainPages()));
       break;
     case PUBLISH_PAYLOAD:
       await navigatorKey.currentState
-          .push(MaterialPageRoute(builder: (context) => MainPages()));
+          .push(MaterialPageRoute(builder: (context) => PublishScreen()));
       break;
     default:
   }
