@@ -4,6 +4,8 @@
 
 V2 of the CarerCare app.
 
+This is built on Flutter's stable branch.
+
 ## Initial Requirements
 
 - The system should be designed for a user between 13 and 99
@@ -27,3 +29,12 @@ http://178.79.172.202:8080/androidData
 - errorRate: String that represents an integer, this is abs(score-userScore), where score is our estimate of their score
 - supportCode: String
 - date: LocalDate.now() as a string, deleting '-'. i.e. "ddmmyyyy"
+
+### Example successful POST
+
+Using curl:
+
+``` sh
+DATA='{"postCode":"TW5", "wellbeingScore":"9", "weeklySteps":"650", "weeklyCalls":"0", "errorRate":"200", "supportCode":"GP", "date":"08122020"}'
+curl -d $DATA -H 'Content-Type: application/json;charset=UTF-8' http://178.79.172.202:8080/androidData
+```
