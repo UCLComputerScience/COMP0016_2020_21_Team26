@@ -21,13 +21,14 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  flutter_local_notifications: ^1.4.4+1
-  pedometer: ^2.0.2
   flutter:
     sdk: flutter
 
   # util
   http: ^0.12.2
+  flutter_local_notifications: ^3.0.2
+  pedometer: ^2.0.2
+  timezone: ^0.5.9 # needed for scheduling notifications
 
   # data-related
   provider: ^3.0.0

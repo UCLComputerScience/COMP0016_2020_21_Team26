@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import 'main_pages.dart';
 
@@ -10,13 +12,16 @@ import 'main_pages.dart';
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
 
 void main() {
+  tz.initializeTimeZones();
+  // app is for UK population, so london timezone should be fine
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
   WidgetsFlutterBinding.ensureInitialized();
   initializePlatformSpecifics();
 
   runApp(MyApp());
 
-  scheduleCheckup(Day.Sunday, new Time(12));
-  schedulePublish(Day.Monday, new Time(12));
+  scheduleCheckup(Day.sunday, new Time(12));
+  schedulePublish(Day.monday, new Time(12));
 }
 
 class MyApp extends StatelessWidget {

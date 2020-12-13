@@ -4,6 +4,9 @@ import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
 
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
 const CHECKUP_PAYLOAD = "checkup";
 const PUBLISH_PAYLOAD = "publish";
 
@@ -24,7 +27,9 @@ initializePlatformSpecifics() async {
     },
   );
   final initialisationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
 
   await flutterLocalNotificationsPlugin.initialize(initialisationSettings,
       onSelectNotification: _selectNotification);
@@ -41,28 +46,34 @@ Future _selectNotification(String payload) async {
           .push(MaterialPageRoute(builder: (context) => PublishScreen()));
       break;
     default:
+      print("If this isn't a test, something went wrong.");
   }
 }
 
 NotificationDetails _getSpecifics() {
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'channel id', // TODO: check what these should actually be
-    'channel name',
-    'channel description',
+    'NudgeMe_0', // channel id
+    'NudgeMe', // channel name
+    'NudgeMe notification channel', // channel description
     //largeIcon: DrawableResourceAndroidBitmap('flutter_devs'),
   );
   final iOSPlatformChannelSpecifics = IOSNotificationDetails();
   return NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    android: androidPlatformChannelSpecifics,
+    iOS: iOSPlatformChannelSpecifics,
+  );
 }
 
-Future scheduleNotification([DateTime scheduledDate]) async {
-  await flutterLocalNotificationsPlugin.schedule(
-    0,
+Future scheduleNotification([tz.TZDateTime scheduledDate]) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    2,
     "NudgeMe",
     'Test notification for debugging.',
     scheduledDate,
     _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime
   );
 }
 
