@@ -20,8 +20,8 @@ void main() {
 
   runApp(MyApp());
 
-  scheduleCheckup(Day.sunday, new Time(12));
-  schedulePublish(Day.monday, new Time(12));
+  scheduleCheckup(DateTime.sunday, const Time(12));
+  schedulePublish(DateTime.monday, const Time(12));
 }
 
 class MyApp extends StatelessWidget {

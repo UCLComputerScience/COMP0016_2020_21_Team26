@@ -42,7 +42,8 @@ Future _selectNotification(String payload) async {
           .push(MaterialPageRoute(builder: (context) => MainPages()));
       break;
     case PUBLISH_PAYLOAD:
-      await navigatorKey.currentState
+      print("Publishing....");
+      await navigatorKey.currentState // FIXME: doesnt work if app closed
           .push(MaterialPageRoute(builder: (context) => PublishScreen()));
       break;
     default:
@@ -65,38 +66,58 @@ NotificationDetails _getSpecifics() {
 }
 
 Future scheduleNotification([tz.TZDateTime scheduledDate]) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(0, "NudgeMe",
+      'Test notification for debugging.', scheduledDate, _getSpecifics(),
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime);
+}
+
+/// schedule checkup notification that repeats weekly.
+/// [int] day should be retrieved using DateTime's day enumeration
+Future scheduleCheckup(int day, Time time) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
-    2,
-    "NudgeMe",
-    'Test notification for debugging.',
-    scheduledDate,
+    1,
+    "Weekly Checkup",
+    "Tap to get your weekly checkup.",
+    _nextInstanceOfDayTime(day, time),
     _getSpecifics(),
     androidAllowWhileIdle: true,
     uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: CHECKUP_PAYLOAD,
+    // schedule recurring notification on matching day & time
+    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
   );
 }
 
-/// schedule checkup notification that repeats weekly
-Future scheduleCheckup(Day day, Time time) async {
-  await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-      0,
-      "Weekly Checkup",
-      "Tap to get your weekly checkup.",
-      day,
-      time,
-      _getSpecifics(),
-      payload: CHECKUP_PAYLOAD);
+/// schedule publish notification that repeats weekly
+/// [int] day should be retrieved using DateTime's day enumeration
+Future schedulePublish(int day, Time time) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    2,
+    "Publish Score",
+    "Tap to review and publish your weekly score anonymously.",
+    _nextInstanceOfDayTime(day, time),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: PUBLISH_PAYLOAD,
+    // schedule recurring notification on matching day & time
+    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+  );
 }
 
-/// schedule publish notification that repeats weekly
-Future schedulePublish(Day day, Time time) async {
-  await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-      1,
-      "Publish Score",
-      "Tap to review and publish your weekly score anonymously.",
-      day,
-      time,
-      _getSpecifics(),
-      payload: PUBLISH_PAYLOAD);
+tz.TZDateTime _nextInstanceOfDayTime(int weekday, Time time) {
+  final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+  tz.TZDateTime targetDate = tz.TZDateTime(tz.local, now.year, now.month,
+      now.day, time.hour, time.minute, time.second);
+  if (targetDate.isBefore(now)) {
+    targetDate = targetDate.add(const Duration(days: 1));
+  }
+  while (targetDate.weekday != weekday) {
+    targetDate = targetDate.add(const Duration(days: 1));
+  }
+  return targetDate;
 }

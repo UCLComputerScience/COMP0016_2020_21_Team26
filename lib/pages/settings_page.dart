@@ -16,39 +16,33 @@ _updatePostcode(String value) async {
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        TextField(
-          onSubmitted: _updatePostcode,
-        ),
-
-        ElevatedButton(
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      TextField(
+        onSubmitted: _updatePostcode,
+      ),
+      ElevatedButton(
           onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SafeArea(
-                child: Scaffold(
-                  body: PublishScreen(),
-          )))),
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SafeArea(
+                          child: Scaffold(
+                        body: PublishScreen(),
+                      )))),
           child: Text("Publish Data")),
-
-        ElevatedButton(
-          onPressed: () => scheduleNotification(tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
-          child: Text("Test Notification")
-        ),
-
-        ElevatedButton(
-          onPressed: () => UserWellbeingDB().insert(WellbeingItem(
-              wellbeingScore: Random().nextDouble() * 10.0,
-              numSteps: Random().nextInt(70001))),
-          child: Text("Generate WellbeingItem"),
-        ),
-
-        ElevatedButton(
-          onPressed: () => UserWellbeingDB().delete(),
-          child: Text("Reset Wellbeing Data"),
-        )
+      ElevatedButton(
+          onPressed: () => scheduleNotification(
+              tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
+          child: Text("Test Notification")),
+      ElevatedButton(
+        onPressed: () => UserWellbeingDB().insert(WellbeingItem(
+            wellbeingScore: Random().nextDouble() * 10.0,
+            numSteps: Random().nextInt(70001))),
+        child: Text("Generate WellbeingItem"),
+      ),
+      ElevatedButton(
+        onPressed: () => UserWellbeingDB().delete(),
+        child: Text("Reset Wellbeing Data"),
+      )
     ]);
   }
 }

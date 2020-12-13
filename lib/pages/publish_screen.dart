@@ -26,7 +26,7 @@ class _PublishScreenState extends State<PublishScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final content = Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 25.0),
@@ -72,6 +72,9 @@ class _PublishScreenState extends State<PublishScreen> {
         Text("Your data will be sent anonymously.",
             style: TextStyle(fontSize: 10.0)),
       ],
+    );
+    return Scaffold(
+      body: SafeArea(child: content),
     );
   }
 
