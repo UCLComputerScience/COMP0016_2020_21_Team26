@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
-//import 'package:nudge_me/notification.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:async';
 import 'package:jiffy/jiffy.dart';
+import 'package:nudge_me/notification.dart';
 
 /*void main() async {
   WidgetsFlutterBinding.ensureInitialized();

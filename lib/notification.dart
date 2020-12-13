@@ -1,10 +1,12 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//import 'package:flutter/material.dart';
+//import 'package:nudge_me/pages/checkup.dart';
 
 //notification
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-initializePlatformSpecifics() {
+initializePlatformSpecifics() async {
   var initializationSettingsAndroid =
       AndroidInitializationSettings('app_notf_icon');
   var initializationSettingsIOS = IOSInitializationSettings(
@@ -15,11 +17,24 @@ initializePlatformSpecifics() {
       // your call back to the UI
     },
   );
-  var initialisationSettings = InitializationSettings(
+  var initializationSettings = InitializationSettings(
       initializationSettingsAndroid, initializationSettingsIOS);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: selectNotification);
 }
 
+Future selectNotification(String payload) async {}
+/*if (payload != null) {
+      print('notification payload: $payload');
+    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (context) => Checkup()),
+    );*/
+
 _requestIOSPermission() {
+  //at some point we need to ask ios  notifications permission using this
   flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
