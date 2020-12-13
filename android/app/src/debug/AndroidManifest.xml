@@ -18,6 +18,9 @@
     </application>
 
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application android:usesCleartextTraffic="true" />
+
 </manifest>
 
 <!-- this gets vibration permission-->
