@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/utils/utils.dart';
 
 const dbName = "wellbeing_items_db.db";
 const dbVersion = 1;
@@ -52,6 +53,12 @@ class UserWellbeingDB {
       _database = await _init();
     }
     return _database;
+  }
+
+  Future<bool> get empty async {
+    final db = await database;
+    return firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableName')) >
+        0;
   }
 
   Future<Database> _init() async {

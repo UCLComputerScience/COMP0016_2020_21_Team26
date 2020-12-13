@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
@@ -58,8 +59,11 @@ class _MainPagesState extends State<MainPages> {
             .push(MaterialPageRoute(builder: (context) => MainPages()));
         break;
       case PUBLISH_PAYLOAD:
-        await navigatorKey.currentState
-            .push(MaterialPageRoute(builder: (context) => PublishScreen()));
+        if (!await UserWellbeingDB().empty) {
+          // asks to publish if there is at least one wellbeing item saved
+          await navigatorKey.currentState
+              .push(MaterialPageRoute(builder: (context) => PublishScreen()));
+        }
         break;
       default:
         print("If this isn't a test, something went wrong.");

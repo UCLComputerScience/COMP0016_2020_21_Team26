@@ -12,7 +12,8 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 /// Stream of [String] payloads that represents notifications sent to the user.
-final StreamController<String> notificationStreamController = StreamController();
+final StreamController<String> notificationStreamController =
+    StreamController();
 
 initializePlatformSpecifics() async {
   // TODO: change icon
