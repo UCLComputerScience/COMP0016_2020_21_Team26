@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:nudge_me/main.dart';
-import 'package:nudge_me/main_pages.dart';
-import 'package:nudge_me/pages/publish_screen.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -12,6 +10,9 @@ const PUBLISH_PAYLOAD = "publish";
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
+/// Stream of [String] payloads that represents notifications sent to the user.
+final StreamController<String> notificationStreamController = StreamController();
 
 initializePlatformSpecifics() async {
   // TODO: change icon
@@ -36,19 +37,7 @@ initializePlatformSpecifics() async {
 }
 
 Future _selectNotification(String payload) async {
-  switch (payload) {
-    case CHECKUP_PAYLOAD:
-      await navigatorKey.currentState // TODO: change this to checkup
-          .push(MaterialPageRoute(builder: (context) => MainPages()));
-      break;
-    case PUBLISH_PAYLOAD:
-      print("Publishing....");
-      await navigatorKey.currentState // FIXME: doesnt work if app closed
-          .push(MaterialPageRoute(builder: (context) => PublishScreen()));
-      break;
-    default:
-      print("If this isn't a test, something went wrong.");
-  }
+  notificationStreamController.add(payload);
 }
 
 NotificationDetails _getSpecifics() {

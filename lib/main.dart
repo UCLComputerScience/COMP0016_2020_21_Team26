@@ -21,7 +21,8 @@ void main() {
   runApp(MyApp());
 
   scheduleCheckup(DateTime.sunday, const Time(12));
-  schedulePublish(DateTime.monday, const Time(12));
+  //schedulePublish(DateTime.monday, const Time(12));
+  schedulePublish(DateTime.sunday, const Time(18, 23));
 }
 
 class MyApp extends StatelessWidget {
@@ -33,7 +34,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FirstTimeScreen(
-        loadingScreen: Text("Loading..."),
         introScreen: MaterialPageRoute(builder: (context) => IntroScreen()),
         landingScreen: MaterialPageRoute(builder: (context) => MainPages()),
       ),
