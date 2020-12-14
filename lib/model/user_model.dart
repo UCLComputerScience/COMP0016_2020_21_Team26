@@ -55,9 +55,11 @@ class UserWellbeingDB {
     return _database;
   }
 
+  /// returns `true` if there are 0 rows in the DB
   Future<bool> get empty async {
     final db = await database;
-    return firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableName')) >
+    return firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM $tableName')) ==
         0;
   }
 
