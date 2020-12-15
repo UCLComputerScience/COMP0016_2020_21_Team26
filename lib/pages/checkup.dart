@@ -5,13 +5,6 @@ import 'package:jiffy/jiffy.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // await Hive.initFlutter();
-  // await Hive.openBox<int>('steps');
-  runApp(Checkup());
-}
-
 class Checkup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
