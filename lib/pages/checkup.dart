@@ -16,7 +16,6 @@ class Checkup extends StatelessWidget {
   }
 }
 
-//wb scale
 class CheckupWidgets extends StatefulWidget {
   CheckupWidgets({Key key}) : super(key: key);
 
@@ -24,7 +23,6 @@ class CheckupWidgets extends StatefulWidget {
   _CheckupWidgetsState createState() => _CheckupWidgetsState();
 }
 
-/// This is the private State class that goes with MyStatefulWidget.
 class _CheckupWidgetsState extends State<CheckupWidgets> {
   double _currentSliderValue = 0;
   double _weeklyWBScore = 0;
@@ -39,8 +37,6 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   }
 
   void startListening() {
-    //Stream<StepCount> stream = Pedometer.stepCountStream;
-    //_pedometer = Pedometer();
     Stream<StepCount> stream = Pedometer.stepCountStream;
     _subscription = stream.listen(
       getWeeklySteps,
@@ -75,13 +71,13 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
       setSteps(savedStepsCountKey, savedStepsCount);
     }
 
-    // load the last day saved using a package of your choice here
+    // load the last week saved using a package of your choice here
     int lastWeekSavedKey = 888888;
 
     int lastWeekSaved = getSteps(lastWeekSavedKey);
 
-    // When the day changes, reset the daily steps count
-    // and Update the last day saved as the day changes.
+    // When the week changes, reset the weekly steps count
+    // and Update the last week saved as the week changes.
     if (todayDayNo - lastWeekSaved == 7) {
       lastWeekSaved = todayDayNo;
       savedStepsCount = value.steps;
@@ -140,7 +136,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
         },
       ),
       Text("Your steps this week:"),
-      Text(thisWeekSteps.toString()),
+      Text(thisWeekSteps.toString()), //steps
       RaisedButton(
           onPressed: () {
             _weeklyWBScore = _currentSliderValue;
