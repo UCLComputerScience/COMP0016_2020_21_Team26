@@ -41,7 +41,7 @@ class _WBSliderWidgetState extends State<WBSliderWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Text("How do you feel right now?"),
+      Text("How did you feel this week?"),
       Slider(
         value: _currentSliderValue,
         min: 0,
