@@ -28,69 +28,69 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   double _weeklyWBScore = 0;
 
   StreamSubscription<StepCount> _subscription;
-  int thisWeekSteps;
+  int _thisWeekSteps;
 
   @override
   void initState() {
     super.initState();
-    startListening();
+    _startListening();
   }
 
-  void startListening() {
+  void _startListening() {
     Stream<StepCount> stream = Pedometer.stepCountStream;
     _subscription = stream.listen(
-      getWeeklySteps,
+      _getWeeklySteps,
       onError: _onError,
       onDone: _onDone,
       cancelOnError: true,
     );
   }
 
-  getSteps(savedStepsCountKey) async {
+  _getSteps(savedStepsCountKey) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int userSupportCode = prefs.getInt(savedStepsCountKey);
     return userSupportCode;
   }
 
-  setSteps(savedStepsCountKey, steps) async {
+  _setSteps(savedStepsCountKey, steps) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt(savedStepsCountKey, steps);
   }
 
-  Future<int> getWeeklySteps(StepCount value) async {
+  Future<int> _getWeeklySteps(StepCount value) async {
     print(value);
-    int savedStepsCountKey = 999999;
-    int savedStepsCount = getSteps(savedStepsCountKey);
+    String _savedStepsCountKey = 'saved_step_count';
+    int _savedStepsCount = _getSteps(_savedStepsCountKey);
 
     int todayDayNo = Jiffy(DateTime.now()).dayOfYear;
-    if (value.steps < savedStepsCount) {
+    if (value.steps < _savedStepsCount) {
       // Upon device reboot, pedometer resets. When this happens, the saved counter must be reset as well.
-      savedStepsCount = 0;
+      _savedStepsCount = 0;
       // persist this value using a package of your choice here
 
-      setSteps(savedStepsCountKey, savedStepsCount);
+      _setSteps(_savedStepsCountKey, _savedStepsCount);
     }
 
     // load the last week saved using a package of your choice here
-    int lastWeekSavedKey = 888888;
+    String lastWeekSavedKey = "last_week_step_count";
 
-    int lastWeekSaved = getSteps(lastWeekSavedKey);
+    int lastWeekSaved = _getSteps(lastWeekSavedKey);
 
     // When the week changes, reset the weekly steps count
     // and Update the last week saved as the week changes.
     if (todayDayNo - lastWeekSaved == 7) {
       lastWeekSaved = todayDayNo;
-      savedStepsCount = value.steps;
+      _savedStepsCount = value.steps;
 
-      setSteps(lastWeekSavedKey, lastWeekSaved);
-      setSteps(savedStepsCountKey, savedStepsCount);
+      _setSteps(lastWeekSavedKey, lastWeekSaved);
+      _setSteps(_savedStepsCountKey, _savedStepsCount);
     }
 
     setState(() {
-      thisWeekSteps = value.steps - savedStepsCount;
+      _thisWeekSteps = value.steps - _savedStepsCount;
     });
-    setSteps(todayDayNo, thisWeekSteps);
-    return thisWeekSteps;
+    _setSteps(todayDayNo, _thisWeekSteps);
+    return _thisWeekSteps;
   }
 
   void _onError(error) => print("Flutter Pedometer Error: $error");
@@ -99,21 +99,21 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
   @override
   void dispose() {
-    stopListening();
+    _stopListening();
     super.dispose();
   }
 
-  void stopListening() {
+  void _stopListening() {
     _subscription.cancel();
   }
 
-  getPostcode() async {
+  _getPostcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userPostcode = prefs.getString('postcode');
     return userPostcode;
   }
 
-  getSupportCode() async {
+  _getSupportCode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userSupportCode = prefs.getString('support_code');
     return userSupportCode;
@@ -136,17 +136,17 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
         },
       ),
       Text("Your steps this week:"),
-      Text(thisWeekSteps.toString()), //steps
+      Text(_thisWeekSteps.toString()), //steps
       RaisedButton(
           onPressed: () {
             _weeklyWBScore = _currentSliderValue;
-            WellbeingItem weeklyWellbeingItem = new WellbeingItem();
-            weeklyWellbeingItem.id = 0;
-            weeklyWellbeingItem.date = DateTime.now().toString();
-            weeklyWellbeingItem.postcode = getPostcode();
-            weeklyWellbeingItem.wellbeingScore = _weeklyWBScore;
-            weeklyWellbeingItem.numSteps = thisWeekSteps;
-            weeklyWellbeingItem.supportCode = getSupportCode();
+            WellbeingItem weeklyWellbeingItem = new WellbeingItem(
+                id: null,
+                date: DateTime.now().toString(),
+                postcode: _getPostcode(),
+                wellbeingScore: _weeklyWBScore,
+                numSteps: _thisWeekSteps,
+                supportCode: _getSupportCode());
             UserWellbeingDB().insert(weeklyWellbeingItem);
           },
           child: const Text('Done'))
