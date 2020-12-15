@@ -14,6 +14,7 @@ class MainPages extends StatefulWidget {
     HomePage(),
     SettingsPage(),
   ];
+
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
