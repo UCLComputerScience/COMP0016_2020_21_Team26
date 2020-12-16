@@ -9,6 +9,7 @@ class MainPages extends StatefulWidget {
     HomePage(),
     SettingsPage(),
   ];
+
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
@@ -25,7 +26,7 @@ class MainPagesState extends State<MainPages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.pages[_selectedIndex],
+      body: SafeArea(child: widget.pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         items: widget.navBarItems,
         currentIndex: _selectedIndex,

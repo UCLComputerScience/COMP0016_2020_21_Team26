@@ -21,9 +21,13 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  flutter_local_notifications: ^1.4.4+1
+  pedometer: ^2.0.2
+  hive: ^1.4.4+1
+  hive_flutter: ^0.3.1
   flutter:
     sdk: flutter
-
+  jiffy:  
   # util
   http: ^0.12.2
 
@@ -34,6 +38,7 @@ dependencies:
 
   # UI
   charts_flutter: ^0.9.0
+  first_time_screen:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -42,6 +47,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_generator: ^0.8.2
+  build_runner: ^1.10.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
