@@ -6,18 +6,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main_pages.dart';
 
+/// key to retrieve the previous step count total from [SharedPreferences]
+const PREV_STEP_COUNT_KEY = "step_count_total";
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   _setupStepCountTotal();
+
   runApp(MyApp());
 }
 
-const STEP_COUNT_TOTAL_KEY = "step_count_total";
-
+/// Initialize the 'previous' step count total to the current value.
 void _setupStepCountTotal() async {
   final prefs = await SharedPreferences.getInstance();
 
-  prefs.setInt(STEP_COUNT_TOTAL_KEY,
+  prefs.setInt(PREV_STEP_COUNT_KEY,
       await Pedometer.stepCountStream.first.then((value) => value.steps));
 }
 

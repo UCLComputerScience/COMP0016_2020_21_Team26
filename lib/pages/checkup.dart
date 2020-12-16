@@ -25,11 +25,13 @@ class CheckupWidgets extends StatefulWidget {
 
 class _CheckupWidgetsState extends State<CheckupWidgets> {
   double _currentSliderValue = 0;
-  double _weeklyWBScore = 0;
 
   StreamSubscription<StepCount> _subscription;
 
-  final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance().then((value) => value.getInt(STEP_COUNT_TOTAL_KEY));
+  // widget records the last weeks & current step total. The difference is
+  // the actual step count for the week.
+  final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
+      .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
   int _currentTotalSteps;
 
   @override
@@ -48,11 +50,8 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
     );
   }
 
-  void _onStepCount(StepCount value) async {
-    setState(() {
-      _currentTotalSteps = value.steps;
-    });
-  }
+  void _onStepCount(StepCount value) async =>
+      setState(() => _currentTotalSteps = value.steps);
 
   void _onError(error) => print("Flutter Pedometer Error: $error");
 
@@ -97,25 +96,35 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
         },
       ),
       Text("Your steps this week:"),
-      FutureBuilder(future: _lastTotalStepsFuture, builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          int x = snapshot.data;
-          return Text((_currentTotalSteps-x).toString());
-        }
-        return Text("Loading");
-      },), //steps
+      FutureBuilder(
+        future: _lastTotalStepsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final int lastTotalSteps = snapshot.data;
+            final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
+                ? _currentTotalSteps
+                : _currentTotalSteps - lastTotalSteps;
+            return Text(thisWeeksSteps.toString());
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text("Something went wrong...");
+          }
+          return Text("Loading");
+        },
+      ), //steps
       RaisedButton(
           onPressed: () async {
-            _weeklyWBScore = _currentSliderValue;
+            final lastTotalSteps = await _lastTotalStepsFuture;
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
                 id: null,
-                date: DateTime.now().toString(),
+                date: DateTime.now().toString(), // TODO: check if in correct format
                 postcode: _getPostcode(),
-                wellbeingScore: _weeklyWBScore,
-                numSteps: _currentTotalSteps- await SharedPreferences.getInstance().then((value) => value.getInt(STEP_COUNT_TOTAL_KEY)),
+                wellbeingScore: _currentSliderValue,
+                numSteps: _currentTotalSteps - lastTotalSteps,
                 supportCode: _getSupportCode());
             UserWellbeingDB().insert(weeklyWellbeingItem);
-            SharedPreferences.getInstance().then((value) => value.setInt(STEP_COUNT_TOTAL_KEY, _currentTotalSteps));
+            SharedPreferences.getInstance().then((value) =>
+                value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
           },
           child: const Text('Done'))
     ]);
