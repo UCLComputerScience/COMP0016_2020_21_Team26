@@ -18,17 +18,19 @@ class _HomePageState extends State<HomePage> {
         .then((value) => value.length > 0 ? value[0] : null);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final heading = Padding(
+  Widget _heading(BuildContext ctx) {
+    return Padding(
       padding: EdgeInsets.all(10),
       child: Text(
         "Welcome",
         style: TextStyle(fontSize: 30),
       ),
     );
-    final previousScoreHolder = Container(
-      width: double.infinity,
+  }
+
+  Widget _previouScoreHolder(BuildContext ctx) {
+    return Container(
+      width: double.infinity, // stretches the width
       child: Card(
         child: Column(
           children: [
@@ -61,11 +63,44 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Widget _thisWeekHolder(BuildContext ctx) {
+    return Container(
+        width: double.infinity,
+        child: Card(
+            child: Column(children: [
+          const SizedBox(
+            height: 5.0,
+          ),
+          Text("This Week's Activity"),
+          const SizedBox(
+            height: 5.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(children: [
+                Icon(Icons.directions_walk_outlined),
+                Text("Steps")
+              ]),
+              Text("?") // TODO: pedometer widget
+            ],
+          ),
+        ])));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final heading = _heading(context);
+    final previousScoreHolder = _previouScoreHolder(context);
+    final thisWeekHolder = _thisWeekHolder(context);
 
     return Column(
       children: [
         heading,
         previousScoreHolder,
+        thisWeekHolder,
       ],
     );
   }
