@@ -77,7 +77,9 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 5.0,
           ),
-          Row(
+          Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(children: [
@@ -86,7 +88,7 @@ class _HomePageState extends State<HomePage> {
               ]),
               Text("?") // TODO: pedometer widget
             ],
-          ),
+          ),),
         ])));
   }
 
