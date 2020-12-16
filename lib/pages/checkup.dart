@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/main.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
-import 'package:jiffy/jiffy.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,7 +28,9 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   double _weeklyWBScore = 0;
 
   StreamSubscription<StepCount> _subscription;
-  int _thisWeekSteps;
+
+  final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance().then((value) => value.getInt(STEP_COUNT_TOTAL_KEY));
+  int _currentTotalSteps;
 
   @override
   void initState() {
@@ -39,58 +41,17 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   void _startListening() {
     Stream<StepCount> stream = Pedometer.stepCountStream;
     _subscription = stream.listen(
-      _getWeeklySteps,
+      _onStepCount,
       onError: _onError,
       onDone: _onDone,
       cancelOnError: true,
     );
   }
 
-  _getSteps(savedStepsCountKey) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int userSupportCode = prefs.getInt(savedStepsCountKey);
-    return userSupportCode;
-  }
-
-  _setSteps(savedStepsCountKey, steps) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt(savedStepsCountKey, steps);
-  }
-
-  Future<int> _getWeeklySteps(StepCount value) async {
-    print(value);
-    String _savedStepsCountKey = 'saved_step_count';
-    int _savedStepsCount = _getSteps(_savedStepsCountKey);
-
-    int todayDayNo = Jiffy(DateTime.now()).dayOfYear;
-    if (value.steps < _savedStepsCount) {
-      // Upon device reboot, pedometer resets. When this happens, the saved counter must be reset as well.
-      _savedStepsCount = 0;
-      // persist this value using a package of your choice here
-
-      _setSteps(_savedStepsCountKey, _savedStepsCount);
-    }
-
-    // load the last week saved using a package of your choice here
-    String lastWeekSavedKey = "last_week_step_count";
-
-    int lastWeekSaved = _getSteps(lastWeekSavedKey);
-
-    // When the week changes, reset the weekly steps count
-    // and Update the last week saved as the week changes.
-    if (todayDayNo - lastWeekSaved == 7) {
-      lastWeekSaved = todayDayNo;
-      _savedStepsCount = value.steps;
-
-      _setSteps(lastWeekSavedKey, lastWeekSaved);
-      _setSteps(_savedStepsCountKey, _savedStepsCount);
-    }
-
+  void _onStepCount(StepCount value) async {
     setState(() {
-      _thisWeekSteps = value.steps - _savedStepsCount;
+      _currentTotalSteps = value.steps;
     });
-    _setSteps(todayDayNo, _thisWeekSteps);
-    return _thisWeekSteps;
   }
 
   void _onError(error) => print("Flutter Pedometer Error: $error");
@@ -136,18 +97,25 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
         },
       ),
       Text("Your steps this week:"),
-      Text(_thisWeekSteps.toString()), //steps
+      FutureBuilder(future: _lastTotalStepsFuture, builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          int x = snapshot.data;
+          return Text((_currentTotalSteps-x).toString());
+        }
+        return Text("Loading");
+      },), //steps
       RaisedButton(
-          onPressed: () {
+          onPressed: () async {
             _weeklyWBScore = _currentSliderValue;
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
                 id: null,
                 date: DateTime.now().toString(),
                 postcode: _getPostcode(),
                 wellbeingScore: _weeklyWBScore,
-                numSteps: _thisWeekSteps,
+                numSteps: _currentTotalSteps- await SharedPreferences.getInstance().then((value) => value.getInt(STEP_COUNT_TOTAL_KEY)),
                 supportCode: _getSupportCode());
             UserWellbeingDB().insert(weeklyWellbeingItem);
+            SharedPreferences.getInstance().then((value) => value.setInt(STEP_COUNT_TOTAL_KEY, _currentTotalSteps));
           },
           child: const Text('Done'))
     ]);
