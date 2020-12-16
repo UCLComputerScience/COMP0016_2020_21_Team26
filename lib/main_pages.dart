@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/pages/settings_page.dart';
@@ -56,8 +57,8 @@ class _MainPagesState extends State<MainPages> {
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
-        await navigatorKey.currentState // TODO: change this to checkup
-            .push(MaterialPageRoute(builder: (context) => MainPages()));
+        await navigatorKey.currentState
+            .push(MaterialPageRoute(builder: (context) => Checkup()));
         break;
       case PUBLISH_PAYLOAD:
         if (!await UserWellbeingDB().empty) {
