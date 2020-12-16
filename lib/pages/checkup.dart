@@ -117,7 +117,8 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
             final lastTotalSteps = await _lastTotalStepsFuture;
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
                 id: null,
-                date: DateTime.now().toString(), // TODO: check if in correct format
+                date: DateTime.now()
+                    .toString(), // TODO: check if in correct format
                 postcode: _getPostcode(),
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
