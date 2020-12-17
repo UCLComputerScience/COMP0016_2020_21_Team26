@@ -12,9 +12,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // last wellbeing record
-  Future<WellbeingItem> _wellbeingItem = UserWellbeingDB()
-      .getLastNWeeks(1)
-      .then((value) => value.length > 0 ? value[0] : null);
+  Future<List<WellbeingItem>> _lastItemListFuture =
+      UserWellbeingDB().getLastNWeeks(1);
 
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
@@ -49,18 +48,19 @@ class _HomePageState extends State<HomePage> {
               height: 10.0,
             ),
             FutureBuilder(
-                future: _wellbeingItem,
+                future: _lastItemListFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final WellbeingItem lastWeekItem = snapshot.data;
-                    return WellbeingCircle(lastWeekItem == null
-                        ? null
-                        : lastWeekItem.wellbeingScore.truncate());
+                    final List<WellbeingItem> lastItemList = snapshot.data;
+                    return lastItemList.isNotEmpty
+                        ? WellbeingCircle(
+                            lastItemList[0].wellbeingScore.truncate())
+                        : WellbeingCircle();
                   } else if (snapshot.hasError) {
                     print(snapshot.error);
                     Text("Something went wrong.");
                   }
-                  return Text("Loading...");
+                  return CircularProgressIndicator();
                 }),
             const SizedBox(
               height: 5.0,
@@ -81,8 +81,9 @@ class _HomePageState extends State<HomePage> {
               stream: Pedometer.stepCountStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final currTotalSteps = snapshot.data;
-                  final actualSteps = (lastTotalSteps > currTotalSteps)
+                  final StepCount stepCount = snapshot.data;
+                  final int currTotalSteps = stepCount.steps;
+                  final actualSteps = lastTotalSteps > currTotalSteps
                       ? currTotalSteps
                       : currTotalSteps - lastTotalSteps;
                   return Text(actualSteps.toString());

@@ -6,12 +6,13 @@ class WellbeingCircle extends StatelessWidget {
   final int _score;
 
   /// takes an [int] score which could be null
-  const WellbeingCircle(this._score);
+  const WellbeingCircle([this._score]);
 
   @override
   Widget build(BuildContext context) {
-    final greenFraction = (_score == null ? 10.0 : _score) / 10.0;
-    final redStartPoint = greenFraction + 0.15 <= 1 ? greenFraction + 0.15 : 1;
+    final double greenFraction = (_score == null ? 10.0 : _score) / 10.0;
+    final double redStartPoint =
+        greenFraction + 0.15 <= 1 ? greenFraction + 0.15 : 1;
 
     final bgCircle = Container(
       width: 160.0,
