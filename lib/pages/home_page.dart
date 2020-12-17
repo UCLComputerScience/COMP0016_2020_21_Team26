@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
-import 'package:nudge_me/shared_widgets/wellbeing_circle.dart';
+import 'package:nudge_me/shared/wellbeing_circle.dart';
+import 'package:pedometer/pedometer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,14 +11,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<WellbeingItem> _wellbeingItem; // last wellbeing record
+  // last wellbeing record
+  Future<WellbeingItem> _wellbeingItem = UserWellbeingDB()
+      .getLastNWeeks(1)
+      .then((value) => value.length > 0 ? value[0] : null);
+
+  final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
+      .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
   @override
   void initState() {
     super.initState();
-    _wellbeingItem = UserWellbeingDB()
-        .getLastNWeeks(1)
-        .then((value) => value.length > 0 ? value[0] : null);
   }
 
   Widget _heading(BuildContext ctx) {
@@ -66,6 +72,32 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _thisWeekHolder(BuildContext ctx) {
+    final pedometer = FutureBuilder(
+        future: _lastTotalStepsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final lastTotalSteps = snapshot.data;
+            return StreamBuilder(
+              stream: Pedometer.stepCountStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final currTotalSteps = snapshot.data;
+                  final actualSteps = (lastTotalSteps > currTotalSteps)
+                      ? currTotalSteps
+                      : currTotalSteps - lastTotalSteps;
+                  return Text(actualSteps.toString());
+                } else if (snapshot.hasError) {
+                  print(snapshot.error);
+                }
+                return CircularProgressIndicator();
+              },
+            );
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+          }
+          return CircularProgressIndicator();
+        });
+
     return Container(
         width: double.infinity,
         child: Card(
@@ -80,15 +112,16 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: EdgeInsets.all(12.0),
             child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(children: [
-                Icon(Icons.directions_walk_outlined),
-                Text("Steps")
-              ]),
-              Text("?") // TODO: pedometer widget
-            ],
-          ),),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  Icon(Icons.directions_walk_outlined),
+                  Text("Steps")
+                ]),
+                pedometer,
+              ],
+            ),
+          ),
         ])));
   }
 
