@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
+import 'package:nudge_me/notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Screen that displays to faciliate the user setup.
+/// Also schedules the checkup/publish notifications here to ensure that
+/// its only done once.
 class IntroScreen extends StatefulWidget {
   @override
   _IntroScreenState createState() => _IntroScreenState();
@@ -47,6 +53,8 @@ class _IntroScreenState extends State<IntroScreen> {
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
+                      _finishSetup();
+
                       Navigator.pushReplacement(
                           // switch to main app
                           context,
@@ -61,6 +69,14 @@ class _IntroScreenState extends State<IntroScreen> {
         ],
       )),
     );
+  }
+
+  void _finishSetup() async {
+    scheduleCheckup(DateTime.sunday, const Time(12));
+    schedulePublish(DateTime.monday, const Time(12));
+
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
   }
 
   void _savePostcode(String value) async {
