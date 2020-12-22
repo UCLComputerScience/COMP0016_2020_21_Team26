@@ -26,9 +26,9 @@ dependencies:
 
   # util
   http: ^0.12.2
-  flutter_local_notifications: ^1.4.4+1
+  flutter_local_notifications: ^3.0.2
   pedometer: ^2.0.2
-  jiffy: ^3.0.1
+  timezone: ^0.5.9 # needed for scheduling notifications
 
   # data-related
   provider: ^3.0.0
