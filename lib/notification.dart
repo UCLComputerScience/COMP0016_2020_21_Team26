@@ -105,7 +105,7 @@ void scheduleNudge() async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     3,
     "Nudge",
-    "Hey, you're score or steps are low, want to share with a friend?",
+    "Hey, your score or steps are low, want to share with a friend?",
     tz.TZDateTime.now(tz.local).add(Duration(seconds: 2)),
     _getSpecifics(),
     androidAllowWhileIdle: true,

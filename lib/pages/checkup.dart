@@ -95,7 +95,8 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
     assert(n >= 1);
     final List<WellbeingItem> items =
         await UserWellbeingDB().getLastNWeeks(n + 1);
-    if (items.length == n + 1 && _isDecreasing(items)) {
+    if (items.length == n + 1 &&
+        _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
       scheduleNudge();
     }
@@ -145,7 +146,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
                 supportCode: await _getSupportCode());
-            UserWellbeingDB().insert(weeklyWellbeingItem);
+            await UserWellbeingDB().insert(weeklyWellbeingItem);
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
             Navigator.pop(context);
