@@ -6,7 +6,6 @@ import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class Checkup extends StatelessWidget {
   @override
@@ -98,9 +97,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
         await UserWellbeingDB().getLastNWeeks(n + 1);
     if (items.length == n + 1 && _isDecreasing(items)) {
       // if there were enough scores, and they were decreasing
-      // TODO: perform proper nudge here
-      scheduleNotification(
-          tz.TZDateTime.now(tz.local).add(const Duration(seconds: 2)));
+      scheduleNudge();
     }
   }
 

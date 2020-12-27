@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,9 @@ const FIRST_TIME_DONE_KEY = "first_time_done";
 
 /// key to retrieve the previous step count total from [SharedPreferences]
 const PREV_STEP_COUNT_KEY = "step_count_total";
+
+/// key to retrieve the last time a step was taken (along with timestamp)
+const PREV_PEDOMETER_PAIR_KEY = "prev_pedometer_pair";
 
 /// used to push without context
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
@@ -40,16 +44,24 @@ void _appInit() async {
 
     initializePlatformSpecifics(); // init notification settings
     _setupStepCountTotal();
+
+    initBackground();
   }
 }
 
 /// Initialize the 'previous' step count total to the current value.
 void _setupStepCountTotal() async {
   final prefs = await SharedPreferences.getInstance();
+  final int totalSteps =
+      await Pedometer.stepCountStream.first.then((value) => value.steps);
 
   if (!prefs.containsKey(PREV_STEP_COUNT_KEY)) {
-    prefs.setInt(PREV_STEP_COUNT_KEY,
-        await Pedometer.stepCountStream.first.then((value) => value.steps));
+    prefs.setInt(PREV_STEP_COUNT_KEY, totalSteps);
+  }
+  if (!prefs.containsKey(PREV_PEDOMETER_PAIR_KEY)) {
+    prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
+        // ISO date format allows easier parsing
+        [totalSteps.toString(), DateTime.now().toIso8601String()]);
   }
 }
 
