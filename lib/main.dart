@@ -33,12 +33,13 @@ Future<bool> _isFirstTime() async {
 }
 
 void _appInit() async {
-  if (await _isFirstTime()) {
-    tz.initializeTimeZones();
-    // app is for UK population, so london timezone should be fine
-    tz.setLocalLocation(tz.getLocation("Europe/London"));
+  tz.initializeTimeZones();
+  // app is for UK population, so london timezone should be fine
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
 
-    initializePlatformSpecifics(); // init notification settings
+  initializePlatformSpecifics(); // init notification settings
+
+  if (await _isFirstTime()) {
     _setupStepCountTotal();
   }
 }
