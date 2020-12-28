@@ -29,12 +29,13 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
       Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [Text("Postcode: ")]),
-      Row(children: [
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         FutureBuilder<String>(
             future: _getPostcode(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               return new Flexible(
                   child: TextField(
+                textAlign: TextAlign.center,
                 decoration: InputDecoration(
                     border: InputBorder.none, hintText: snapshot.data),
                 maxLength: 4,
@@ -64,12 +65,13 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
       Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [Text("Support Code: ")]),
-      Row(children: [
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         FutureBuilder<String>(
             future: _getSupportCode(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               return new Flexible(
                   child: TextField(
+                textAlign: TextAlign.center,
                 decoration: InputDecoration(
                     border: InputBorder.none, hintText: snapshot.data),
                 inputFormatters: [
