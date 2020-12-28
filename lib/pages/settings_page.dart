@@ -1,57 +1,56 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:nudge_me/model/user_model.dart';
-import 'package:nudge_me/notification.dart';
-import 'package:nudge_me/pages/checkup.dart';
-import 'package:nudge_me/pages/publish_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+
+_getPostcode() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String userPostcode = prefs.getString('postcode');
+  return userPostcode;
+}
+
+_getSupportCode() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String userSupportCode = prefs.getString('support_code');
+  return userSupportCode;
+}
 
 _updatePostcode(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('postcode', value);
 }
 
+_updateSupportCode(String value) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('support_code', value);
+}
+
+class SettingsWidget extends StatefulWidget {
+  @override
+  _SettingsWidgetState createState() => _SettingsWidgetState();
+}
+
+class SettingsWidgetState extends SettingsWidget {}
+
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      TextField(
-        onSubmitted: _updatePostcode,
-      ),
-      ElevatedButton(
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SafeArea(
-                          child: Scaffold(
-                        body: PublishScreen(),
-                      )))),
-          child: Text("Publish Data")),
-      ElevatedButton(
-          onPressed: () => scheduleNotification(
-              tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
-          child: Text("Test Notification")),
-      ElevatedButton(
-          onPressed: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Checkup())),
-          child: Text("Checkup Screen")),
-      ElevatedButton(
-          onPressed: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PublishScreen())),
-          child: Text("Publish Screen")),
-      ElevatedButton(
-        onPressed: () => UserWellbeingDB().insert(WellbeingItem(
-            wellbeingScore: Random().nextDouble() * 10.0,
-            numSteps: Random().nextInt(70001))),
-        child: Text("Generate WellbeingItem"),
-      ),
-      ElevatedButton(
-        onPressed: () => UserWellbeingDB().delete(),
-        child: Text("Reset Wellbeing Data"),
-      )
+      Row(children: [
+        Text("Postcode: "),
+        TextField(
+          decoration: InputDecoration(
+              border: InputBorder.none, labelText: _getPostcode()),
+          maxLength: 4,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9]+"))
+          ],
+          onChanged: (text) {
+            setState(() {
+              _currentPostcode = text;
+            });
+          },
+        ),
+      ]),
     ]);
   }
 }
