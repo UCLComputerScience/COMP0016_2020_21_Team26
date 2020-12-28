@@ -47,7 +47,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     final seriesList = [scoreSeries, stepSeries];
 
     return Flexible(
-      child: RepaintBoundary( // uses [RepaintBoundary] so we have .toImage()
+      child: RepaintBoundary(
+        // uses [RepaintBoundary] so we have .toImage()
         key: _printKey, // this container will be 'printed'/shared
         child: charts.NumericComboChart(
           seriesList,

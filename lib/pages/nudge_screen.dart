@@ -5,18 +5,28 @@ class NudgeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Nudge"),
+      ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text("""We noticed some low step counts or scores lately,
-              click the share icon to share your scores."""),
-            WellbeingGraph(),
-            RaisedButton(
-              child: Text("Close"),
-              onPressed: () => Navigator.pop(context),
-            )
-          ],
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                "Hey! We noticed some low step counts/scores lately, "
+                "so we'd recommend sharing your score with a friend.",
+                textAlign: TextAlign.center,
+              ),
+              Divider(),
+              Flexible(child: WellbeingGraph()),
+              SizedBox(
+                height: 10,
+              )
+            ],
+          ),
         ),
       ),
     );
