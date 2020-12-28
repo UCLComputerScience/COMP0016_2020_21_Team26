@@ -4,6 +4,10 @@ import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
+void main() {
+  runApp(IntroScreen());
+}
+
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -17,19 +21,20 @@ class IntroScreenWidgets extends StatefulWidget {
   _IntroScreenWidgetsState createState() => _IntroScreenWidgetsState();
 }
 
-enum SingingCharacter { one, two, three }
+//enum SingingCharacter { one, two, three }
 
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final introKey = GlobalKey<IntroductionScreenState>();
-  String _currentPostcode = "Enter your postcode here";
-  SingingCharacter _currentSupportCode = SingingCharacter.one;
+  String _currentPostcode;
+  String _currentSupportCode;
+  //SingingCharacter _currentSupportCode = SingingCharacter.one;
 
   void _onIntroEnd(context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
     _savePostcode(_currentPostcode);
-    _saveSupportCode(_currentSupportCode.toString());
+    _saveSupportCode(_currentSupportCode);
   }
 
   @override
@@ -87,7 +92,21 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   Text("Where do you primarily go to find support?",
                       style: TextStyle(fontSize: 20.0),
                       textAlign: TextAlign.center),
-                  RadioListTile<SingingCharacter>(
+                  TextField(
+                      maxLength: 4,
+                      textAlign: TextAlign.center,
+                      onChanged: (text) {
+                        setState(() {
+                          _currentSupportCode = text;
+                        });
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r"[0-9]+"))
+                      ],
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter support code here")),
+                  /*RadioListTile<SingingCharacter>(
                     title: const Text('one'),
                     value: SingingCharacter.one,
                     groupValue: _currentSupportCode,
@@ -116,7 +135,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         _currentSupportCode = value;
                       });
                     },
-                  ),
+                  ),*/
                 ],
               )),
               decoration: pageDecoration),
