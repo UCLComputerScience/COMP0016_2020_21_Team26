@@ -41,8 +41,9 @@ void _appInit() async {
   // app is for UK population, so london timezone should be fine
   tz.setLocalLocation(tz.getLocation("Europe/London"));
 
+  initializePlatformSpecifics(); // init notification settings
+
   if (await _isFirstTime()) {
-    initializePlatformSpecifics(); // init notification settings
     _setupStepCountTotal();
 
     initBackground();
