@@ -24,13 +24,10 @@ class IntroScreenWidgets extends StatefulWidget {
   _IntroScreenWidgetsState createState() => _IntroScreenWidgetsState();
 }
 
-//enum SingingCharacter { one, two, three }
-
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final introKey = GlobalKey<IntroductionScreenState>();
   String _currentPostcode;
   String _currentSupportCode;
-  //SingingCharacter _currentSupportCode = SingingCharacter.one;
 
   void _onIntroEnd(context) {
     Navigator.of(context).pushReplacement(
@@ -109,36 +106,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "Enter support code here")),
-                  /*RadioListTile<SingingCharacter>(
-                    title: const Text('one'),
-                    value: SingingCharacter.one,
-                    groupValue: _currentSupportCode,
-                    onChanged: (SingingCharacter value) {
-                      setState(() {
-                        _currentSupportCode = value;
-                      });
-                    },
-                  ),
-                  RadioListTile<SingingCharacter>(
-                    title: const Text('two'),
-                    value: SingingCharacter.two,
-                    groupValue: _currentSupportCode,
-                    onChanged: (SingingCharacter value) {
-                      setState(() {
-                        _currentSupportCode = value;
-                      });
-                    },
-                  ),
-                  RadioListTile<SingingCharacter>(
-                    title: const Text('three'),
-                    value: SingingCharacter.three,
-                    groupValue: _currentSupportCode,
-                    onChanged: (SingingCharacter value) {
-                      setState(() {
-                        _currentSupportCode = value;
-                      });
-                    },
-                  ),*/
                 ],
               )),
               decoration: pageDecoration),
