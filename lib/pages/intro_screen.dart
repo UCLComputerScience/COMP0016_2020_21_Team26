@@ -7,6 +7,10 @@ import 'package:introduction_screen/introduction_screen.dart';
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
 /// its only done once.
+void main() {
+  runApp(IntroScreen());
+}
+
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -29,7 +33,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   //SingingCharacter _currentSupportCode = SingingCharacter.one;
 
   void _onIntroEnd(context) {
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
     _savePostcode(_currentPostcode);
