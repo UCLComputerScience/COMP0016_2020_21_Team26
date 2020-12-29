@@ -8,11 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Checkup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "Checkup",
-        home: Scaffold(
-            appBar: AppBar(title: const Text("Checkup")),
-            body: CheckupWidgets()));
+    return Scaffold(
+        appBar: AppBar(title: const Text("Checkup")), body: CheckupWidgets());
   }
 }
 
@@ -67,13 +64,13 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
     _subscription.cancel();
   }
 
-  _getPostcode() async {
+  Future<String> _getPostcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userPostcode = prefs.getString('postcode');
     return userPostcode;
   }
 
-  _getSupportCode() async {
+  Future<String> _getSupportCode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userSupportCode = prefs.getString('support_code');
     return userSupportCode;
@@ -119,13 +116,14 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
                 id: null,
                 date: DateTime.now()
                     .toString(), // TODO: check if in correct format
-                postcode: _getPostcode(),
+                postcode: await _getPostcode(),
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
-                supportCode: _getSupportCode());
+                supportCode: await _getSupportCode());
             UserWellbeingDB().insert(weeklyWellbeingItem);
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
+            Navigator.pop(context);
           },
           child: const Text('Done'))
     ]);

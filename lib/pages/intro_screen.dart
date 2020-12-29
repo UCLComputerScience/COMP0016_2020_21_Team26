@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nudge_me/main_pages.dart';
+import 'package:nudge_me/notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-class IntroScreen extends StatelessWidget {
+/// Screen that displays to faciliate the user setup.
+/// Also schedules the checkup/publish notifications here to ensure that
+/// its only done once.
+class IntroScreen extends StatefulWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -151,6 +154,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             activeSize: Size(22.0, 10.0),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
+  }
+
+  void _finishSetup() async {
+    scheduleCheckup(DateTime.sunday, const Time(12));
+    schedulePublish(DateTime.monday, const Time(12));
+
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
   }
 
   void _savePostcode(String value) async {

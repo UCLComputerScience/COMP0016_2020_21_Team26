@@ -218,13 +218,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.1"
-  first_time_screen:
-    dependency: "direct main"
-    description:
-      name: first_time_screen
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   fixnum:
     dependency: transitive
     description:

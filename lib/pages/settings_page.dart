@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -33,6 +34,14 @@ class SettingsPage extends StatelessWidget {
           onPressed: () => scheduleNotification(
               tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
           child: Text("Test Notification")),
+      ElevatedButton(
+          onPressed: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Checkup())),
+          child: Text("Checkup Screen")),
+      ElevatedButton(
+          onPressed: () => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PublishScreen())),
+          child: Text("Publish Screen")),
       ElevatedButton(
         onPressed: () => UserWellbeingDB().insert(WellbeingItem(
             wellbeingScore: Random().nextDouble() * 10.0,
