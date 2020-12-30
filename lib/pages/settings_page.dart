@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -10,11 +9,17 @@ class SettingsPage extends StatelessWidget {
         home: Scaffold(
             body: SafeArea(
                 child: Column(children: [
-          Text("Settings",
-              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700)),
-          ChangePostcodeWidget(),
-          ChangeSupportWidget()
-        ]))));
+              Text("Settings",
+                  style: TextStyle(
+                      fontSize: 36.0,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Rosario')),
+              SizedBox(height: 30),
+              ChangePostcodeWidget(),
+              SizedBox(height: 75),
+              ChangeSupportWidget()
+            ])),
+            backgroundColor: Color.fromARGB(255, 251, 249, 255)));
   }
 }
 
@@ -24,30 +29,54 @@ class ChangePostcodeWidget extends StatefulWidget {
 }
 
 class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
+  String _currentPostcode;
+  //final Future<String> _nowPostcode = SharedPreferences.getInstance()
+  //    .then((prefs) => prefs.getString('postcode'));
   Widget build(BuildContext context) {
-    return Column(children: [
-      Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Postcode: ")]),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        FutureBuilder<String>(
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        FutureBuilder(
             future: _getPostcode(),
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              return new Flexible(
-                  child: TextField(
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text("Current Postcode: " + snapshot.data);
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text("Something went wrong...");
+              }
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [Text("Current Postcode: "), Text("Loading...")]);
+            }),
+      ]),
+      SizedBox(height: 10),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Text("Postcode: "),
+        SizedBox(width: 5),
+        Container(
+            child: TextField(
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: snapshot.data),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
+                  ),
+                ),
                 maxLength: 4,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9]+"))
-                ],
                 onChanged: (text) {
                   setState(() {
-                    _updatePostcode(text);
+                    _currentPostcode = text;
                   });
-                },
-              ));
+                }),
+            width: 120.0),
+        SizedBox(width: 5),
+        ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 0, 74, 173))),
+            child: const Text('Change'),
+            onPressed: () {
+              _updatePostcode(_currentPostcode);
             })
       ])
     ]);
@@ -61,28 +90,54 @@ class ChangeSupportWidget extends StatefulWidget {
 
 class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
   Widget build(BuildContext context) {
-    return Column(children: [
-      Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Support Code: ")]),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        FutureBuilder<String>(
+    String _currentSupportCode;
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        FutureBuilder(
             future: _getSupportCode(),
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              return new Flexible(
-                  child: TextField(
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text("Current Support Code: " + snapshot.data);
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text("Something went wrong...");
+              }
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text("Current Support Code: "),
+                    Text("Loading...")
+                  ]);
+            }),
+      ]),
+      SizedBox(height: 10),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Text("Support Code: "),
+        SizedBox(width: 5),
+        Container(
+            child: TextField(
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: snapshot.data),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r"[0-9]+"))
-                ],
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
+                  ),
+                ),
+                maxLength: 4,
                 onChanged: (text) {
                   setState(() {
-                    _updateSupportCode(text);
+                    _currentSupportCode = text;
                   });
-                },
-              ));
+                }),
+            width: 120.0),
+        SizedBox(width: 5),
+        ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 0, 74, 173))),
+            child: const Text('Change'),
+            onPressed: () {
+              _updateSupportCode(_currentSupportCode);
             })
       ])
     ]);
