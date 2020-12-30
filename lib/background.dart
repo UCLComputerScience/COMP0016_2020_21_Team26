@@ -7,10 +7,11 @@ import 'package:workmanager/workmanager.dart';
 
 const PEDOMETER_CHECK_KEY = "pedometer_check";
 
+/// inits the [Workmanager] and registers a background task to track steps
 void initBackground() {
   Workmanager.initialize(callbackDispatcher, isInDebugMode: kDebugMode);
   Workmanager.registerPeriodicTask("pedometer_check_task", PEDOMETER_CHECK_KEY,
-      frequency: Duration(minutes: 20));
+      frequency: Duration(minutes: 15));
 }
 
 void callbackDispatcher() {
@@ -30,8 +31,9 @@ void callbackDispatcher() {
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
               [currTotal.toString(), DateTime.now().toIso8601String()]);
         } else if (currTotal == prevTotal &&
-            DateTime.now().difference(prevDateTime) > Duration(days: 2)) {
+            DateTime.now().difference(prevDateTime) >= Duration(days: 2)) {
           // if step count hasn't changed in 2 days
+          await initNotification(); // needs to be done since outside app
           scheduleNudge();
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
               [currTotal.toString(), DateTime.now().toIso8601String()]);

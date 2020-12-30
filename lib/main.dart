@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nudge_me/background.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,17 +36,19 @@ Future<bool> _isFirstTime() async {
 }
 
 void _appInit() async {
+  await initNotification();
+  if (await _isFirstTime()) {
+    _setupStepCountTotal();
+  }
+}
+
+/// initializes timezone and notification settings
+Future initNotification() async {
   tz.initializeTimeZones();
   // app is for UK population, so london timezone should be fine
   tz.setLocalLocation(tz.getLocation("Europe/London"));
 
   initializePlatformSpecifics(); // init notification settings
-
-  if (await _isFirstTime()) {
-    _setupStepCountTotal();
-
-    initBackground();
-  }
 }
 
 /// Initialize the 'previous' step count total to the current value.

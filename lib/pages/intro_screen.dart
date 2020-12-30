@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/notification.dart';
@@ -77,6 +78,9 @@ class _IntroScreenState extends State<IntroScreen> {
 
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+
+    // only start tracking steps after user has done setup
+    initBackground();
   }
 
   void _savePostcode(String value) async {
