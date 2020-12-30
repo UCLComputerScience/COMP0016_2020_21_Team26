@@ -73,10 +73,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                             _currentPostcode = text;
                           });
                         },
-                        inputFormatters: [
+                        /*inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r"[a-zA-Z0-9]+"))
-                        ],
+                        ],*/
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: "Enter postcode here")),
@@ -100,9 +100,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           _currentSupportCode = text;
                         });
                       },
-                      inputFormatters: [
+                      /*inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r"[0-9]+"))
-                      ],
+                      ],*/
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "Enter support code here")),
