@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:introduction_screen/introduction_screen.dart';
+import 'package:nudge_me/notification.dart';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
 /// its only done once.
-void main() {
-  runApp(IntroScreen());
-}
 
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "Welcome", home: Scaffold(body: IntroScreenWidgets()));
+    return Scaffold(body: IntroScreenWidgets());
   }
 }
 
@@ -27,6 +26,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final introKey = GlobalKey<IntroductionScreenState>();
   String _currentPostcode;
   String _currentSupportCode;
+  void _savePostcode(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('postcode', value);
+  }
+
+  void _saveSupportCode(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('support_code', value);
+  }
 
   void _onIntroEnd(context) {
     Navigator.of(context).pushReplacement(
@@ -34,6 +42,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     );
     _savePostcode(_currentPostcode);
     _saveSupportCode(_currentSupportCode);
+
+    _finishSetup();
+  }
+
+  void _finishSetup() async {
+    scheduleCheckup(DateTime.sunday, Time(12));
+    schedulePublish(DateTime.monday, Time(12));
   }
 
   @override
@@ -72,10 +87,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                             _currentPostcode = text;
                           });
                         },
-                        /*inputFormatters: [
+                        inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r"[a-zA-Z0-9]+"))
-                        ],*/
+                        ],
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: "Enter postcode here")),
@@ -99,6 +114,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           _currentSupportCode = text;
                         });
                       },
+                      //TODO: check what format service code should be in
                       /*inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r"[0-9]+"))
                       ],*/
@@ -124,15 +140,5 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             activeSize: Size(22.0, 10.0),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
-  }
-
-  void _savePostcode(String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('postcode', value);
-  }
-
-  void _saveSupportCode(String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('support_code', value);
   }
 }
