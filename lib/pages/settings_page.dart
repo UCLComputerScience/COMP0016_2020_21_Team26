@@ -32,68 +32,63 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
   //    .then((prefs) => prefs.getString('postcode'));
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        FutureBuilder(
-            future: _getPostcode(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Row(children: [
-                  Text("Current Postcode: ",
-                      style: TextStyle(
-                          fontFamily: 'Rosario',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15)),
-                  SizedBox(width: 10),
-                  Text(snapshot.data,
-                      style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
-                ]);
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Text("Something went wrong...",
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 25));
-              }
+      Text("Postcode: ", style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
+      SizedBox(width: 15),
+      FutureBuilder(
+          future: _getPostcode(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
               return Row(children: [
                 Text("Current Postcode: ",
                     style: TextStyle(
                         fontFamily: 'Rosario',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500)),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15)),
                 SizedBox(width: 10),
-                Text("Loading...")
+                Text(snapshot.data,
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
               ]);
-            }),
-      ]),
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Something went wrong...",
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 25));
+            }
+            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text("Current Postcode: ",
+                  style: TextStyle(
+                      fontFamily: 'Rosario',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500)),
+              SizedBox(width: 10),
+              Text("Loading...")
+            ]);
+          }),
       SizedBox(height: 20),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text("Postcode: ",
-            style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
-        SizedBox(width: 5),
-        Container(
-            child: TextField(
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: const BorderSide(
-                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
-                  ),
+      Container(
+          child: TextField(
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                 ),
-                maxLength: 4,
-                onChanged: (text) {
-                  setState(() {
-                    _currentPostcode = text;
-                  });
-                }),
-            width: 120.0),
-        SizedBox(width: 5),
-        ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 0, 74, 173))),
-            child: const Text('Change'),
-            onPressed: () {
-              _updatePostcode(_currentPostcode);
-            })
-      ])
+              ),
+              maxLength: 4,
+              onChanged: (text) {
+                setState(() {
+                  _currentPostcode = text;
+                });
+              }),
+          width: 120.0),
+      SizedBox(width: 5),
+      ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Color.fromARGB(255, 0, 74, 173))),
+          child: const Text('Change'),
+          onPressed: () {
+            _updatePostcode(_currentPostcode);
+          })
     ]);
   }
 }
@@ -107,66 +102,60 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
   Widget build(BuildContext context) {
     String _currentSupportCode;
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        FutureBuilder(
-            future: _getSupportCode(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Row(children: [
-                  Text("Current Support Code: ",
-                      style: TextStyle(
-                          fontFamily: 'Rosario',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15)),
-                  Text(snapshot.data,
-                      style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
-                ]);
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Text("Something went wrong...",
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
-              }
-              return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Current Support Code: ",
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
-                    Text("Loading...",
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
-                  ]);
-            }),
-      ]),
+      Text("Support Code: ",
+          style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
+      SizedBox(height: 10),
+      FutureBuilder(
+          future: _getSupportCode(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Row(children: [
+                Text("Current Support Code: ",
+                    style: TextStyle(
+                        fontFamily: 'Rosario',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15)),
+                Text(snapshot.data,
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
+              ]);
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Something went wrong...",
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+            }
+            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text("Current Support Code: ",
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
+              Text("Loading...",
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+            ]);
+          }),
       SizedBox(height: 15),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text("Support Code: ",
-            style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
-        SizedBox(width: 0),
-        Container(
-            child: TextField(
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: const BorderSide(
-                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
-                  ),
+      Container(
+          child: TextField(
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                 ),
-                maxLength: 4,
-                onChanged: (text) {
-                  setState(() {
-                    _currentSupportCode = text;
-                  });
-                }),
-            width: 120.0),
-        SizedBox(width: 5),
-        ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 0, 74, 173))),
-            child: const Text('Change'),
-            onPressed: () {
-              _updateSupportCode(_currentSupportCode);
-            })
-      ])
+              ),
+              maxLength: 4,
+              onChanged: (text) {
+                setState(() {
+                  _currentSupportCode = text;
+                });
+              }),
+          width: 120.0),
+      SizedBox(width: 5),
+      ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Color.fromARGB(255, 0, 74, 173))),
+          child: const Text('Change'),
+          onPressed: () {
+            _updateSupportCode(_currentSupportCode);
+          })
     ]);
   }
 }
