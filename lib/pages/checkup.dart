@@ -8,8 +8,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Checkup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text("Checkup")), body: CheckupWidgets());
+    return MaterialApp(
+        title: "Checkup",
+        home: Scaffold(
+            body: SafeArea(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                  Text("Checkup",
+                      style: TextStyle(
+                          fontSize: 36.0,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Rosario')),
+                  SizedBox(height: 30),
+                  CheckupWidgets(),
+                ])),
+            backgroundColor: Color.fromARGB(255, 251, 249, 255)));
   }
 }
 
@@ -78,21 +92,9 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
   @override
   Widget build(BuildContext context) {
+    const mainTextStyle = TextStyle(fontSize: 20, fontFamily: 'Rosario');
     return Column(children: [
-      Text("How did you feel this week?"),
-      Slider(
-        value: _currentSliderValue,
-        min: 0,
-        max: 10,
-        divisions: 10,
-        label: _currentSliderValue.toString(),
-        onChanged: (double value) {
-          setState(() {
-            _currentSliderValue = value;
-          });
-        },
-      ),
-      Text("Your steps this week:"),
+      Text("Your steps this week:", style: mainTextStyle),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
@@ -101,15 +103,46 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
             final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
                 ? _currentTotalSteps
                 : _currentTotalSteps - lastTotalSteps;
-            return Text(thisWeeksSteps.toString());
+            return Text(thisWeeksSteps.toString(),
+                style: TextStyle(
+                    fontFamily: 'Rosario',
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 182, 125, 226)));
           } else if (snapshot.hasError) {
             print(snapshot.error);
-            return Text("Something went wrong...");
+            return Text("Something went wrong...",
+                style: TextStyle(
+                    fontFamily: 'Rosario',
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 182, 125, 226)));
           }
-          return Text("Loading");
+          return Text("Loading...",
+              style: TextStyle(
+                  fontFamily: 'Rosario',
+                  fontSize: 25,
+                  color: Color.fromARGB(255, 182, 125, 226)));
         },
-      ), //steps
-      RaisedButton(
+      ),
+      SizedBox(height: 40),
+      Text("How did you feel this week?", style: mainTextStyle),
+      Container(
+          child: Slider(
+            value: _currentSliderValue,
+            min: 0,
+            max: 10,
+            divisions: 10,
+            label: _currentSliderValue.round().toString(),
+            activeColor: Color.fromARGB(255, 0, 74, 173),
+            inactiveColor: Color.fromARGB(189, 189, 189, 255),
+            onChanged: (double value) {
+              setState(() {
+                _currentSliderValue = value;
+              });
+            },
+          ),
+          width: 300.0),
+      SizedBox(height: 10),
+      ElevatedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
@@ -125,7 +158,10 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
             Navigator.pop(context);
           },
-          child: const Text('Done'))
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Color.fromARGB(255, 0, 74, 173))),
+          child: const Text('Done', style: TextStyle(fontFamily: 'Rosario')))
     ]);
   }
 }

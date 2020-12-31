@@ -25,7 +25,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
     final scoreSeries = new charts.Series<WellbeingItem, int>(
       id: 'Wellbeing Score',
-      colorFn: (_, __) => charts.MaterialPalette.purple.shadeDefault,
+      colorFn: (_, __) =>
+          charts.ColorUtil.fromDartColor(Color.fromARGB(255, 182, 125, 226)),
       domainFn: (WellbeingItem item, _) => item.id,
       measureFn: (WellbeingItem item, _) => item.wellbeingScore,
       data: items,
@@ -33,7 +34,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     final stepSeries = new charts.Series<WellbeingItem, int>(
       // TODO: use a 'flex factor'? This text may go out of bounds:
       id: 'Normalized Steps',
-      colorFn: (_, __) => charts.MaterialPalette.cyan.shadeDefault,
+      colorFn: (_, __) =>
+          charts.ColorUtil.fromDartColor(Color.fromARGB(255, 0, 74, 173)),
       domainFn: (WellbeingItem a, _) => a.id,
       measureFn: // normalize the num of steps
           (WellbeingItem a, _) =>

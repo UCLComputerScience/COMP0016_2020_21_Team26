@@ -39,19 +39,36 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
             future: _getPostcode(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text("Current Postcode: " + snapshot.data);
+                return Row(children: [
+                  Text("Current Postcode: ",
+                      style: TextStyle(
+                          fontFamily: 'Rosario',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15)),
+                  SizedBox(width: 10),
+                  Text(snapshot.data,
+                      style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
+                ]);
               } else if (snapshot.hasError) {
                 print(snapshot.error);
-                return Text("Something went wrong...");
+                return Text("Something went wrong...",
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 25));
               }
-              return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Text("Current Postcode: "), Text("Loading...")]);
+              return Row(children: [
+                Text("Current Postcode: ",
+                    style: TextStyle(
+                        fontFamily: 'Rosario',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500)),
+                SizedBox(width: 10),
+                Text("Loading...")
+              ]);
             }),
       ]),
-      SizedBox(height: 10),
+      SizedBox(height: 20),
       Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text("Postcode: "),
+        Text("Postcode: ",
+            style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
         SizedBox(width: 5),
         Container(
             child: TextField(
@@ -92,28 +109,40 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
   Widget build(BuildContext context) {
     String _currentSupportCode;
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         FutureBuilder(
             future: _getSupportCode(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text("Current Support Code: " + snapshot.data);
+                return Row(children: [
+                  Text("Current Support Code: ",
+                      style: TextStyle(
+                          fontFamily: 'Rosario',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15)),
+                  Text(snapshot.data,
+                      style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
+                ]);
               } else if (snapshot.hasError) {
                 print(snapshot.error);
-                return Text("Something went wrong...");
+                return Text("Something went wrong...",
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
               }
               return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Current Support Code: "),
-                    Text("Loading...")
+                    Text("Current Support Code: ",
+                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
+                    Text("Loading...",
+                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
                   ]);
             }),
       ]),
-      SizedBox(height: 10),
+      SizedBox(height: 15),
       Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text("Support Code: "),
-        SizedBox(width: 5),
+        Text("Support Code: ",
+            style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
+        SizedBox(width: 0),
         Container(
             child: TextField(
                 textAlign: TextAlign.center,
