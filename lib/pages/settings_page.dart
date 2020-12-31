@@ -28,30 +28,34 @@ class ChangePostcodeWidget extends StatefulWidget {
 
 class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
   String _currentPostcode;
-  //final Future<String> _nowPostcode = SharedPreferences.getInstance()
-  //    .then((prefs) => prefs.getString('postcode'));
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text("Postcode: ", style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
-      SizedBox(width: 15),
+      Text("Postcode ",
+          style: TextStyle(
+              fontFamily: 'Rosario',
+              fontSize: 20,
+              decoration: TextDecoration.underline)),
+      SizedBox(height: 10),
       FutureBuilder(
           future: _getPostcode(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Row(children: [
-                Text("Current Postcode: ",
-                    style: TextStyle(
-                        fontFamily: 'Rosario',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15)),
-                SizedBox(width: 10),
-                Text(snapshot.data,
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
-              ]);
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Current Postcode: ",
+                        style: TextStyle(
+                            fontFamily: 'Rosario',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15)),
+                    SizedBox(width: 10),
+                    Text(snapshot.data,
+                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+                  ]);
             } else if (snapshot.hasError) {
               print(snapshot.error);
               return Text("Something went wrong...",
-                  style: TextStyle(fontFamily: 'Rosario', fontSize: 25));
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
             }
             return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text("Current Postcode: ",
@@ -60,7 +64,7 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
                       fontSize: 15,
                       fontWeight: FontWeight.w500)),
               SizedBox(width: 10),
-              Text("Loading...")
+              CircularProgressIndicator()
             ]);
           }),
       SizedBox(height: 20),
@@ -88,6 +92,7 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
           child: const Text('Change'),
           onPressed: () {
             _updatePostcode(_currentPostcode);
+            setState(() {});
           })
     ]);
   }
@@ -99,25 +104,31 @@ class ChangeSupportWidget extends StatefulWidget {
 }
 
 class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
+  String _currentSupportCode;
   Widget build(BuildContext context) {
-    String _currentSupportCode;
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text("Support Code: ",
-          style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
+      Text("Support Code",
+          style: TextStyle(
+              fontFamily: 'Rosario',
+              fontSize: 20,
+              decoration: TextDecoration.underline)),
       SizedBox(height: 10),
       FutureBuilder(
           future: _getSupportCode(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Row(children: [
-                Text("Current Support Code: ",
-                    style: TextStyle(
-                        fontFamily: 'Rosario',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15)),
-                Text(snapshot.data,
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 25))
-              ]);
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Current Support Code: ",
+                        style: TextStyle(
+                            fontFamily: 'Rosario',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15)),
+                    SizedBox(width: 10),
+                    Text(snapshot.data,
+                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+                  ]);
             } else if (snapshot.hasError) {
               print(snapshot.error);
               return Text("Something went wrong...",
@@ -125,12 +136,15 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
             }
             return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text("Current Support Code: ",
-                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
-              Text("Loading...",
-                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+                  style: TextStyle(
+                      fontFamily: 'Rosario',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500)),
+              SizedBox(width: 10),
+              CircularProgressIndicator()
             ]);
           }),
-      SizedBox(height: 15),
+      SizedBox(height: 20),
       Container(
           child: TextField(
               textAlign: TextAlign.center,
@@ -155,6 +169,7 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
           child: const Text('Change'),
           onPressed: () {
             _updateSupportCode(_currentSupportCode);
+            setState(() {});
           })
     ]);
   }
@@ -172,12 +187,12 @@ Future<String> _getSupportCode() async {
   return userSupportCode;
 }
 
-_updatePostcode(String value) async {
+void _updatePostcode(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('postcode', value);
 }
 
-_updateSupportCode(String value) async {
+void _updateSupportCode(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('support_code', value);
 }
