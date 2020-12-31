@@ -8,22 +8,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Checkup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "Checkup",
-        home: Scaffold(
-            body: SafeArea(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                  Text("Checkup",
-                      style: TextStyle(
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Rosario')),
-                  SizedBox(height: 30),
-                  CheckupWidgets(),
-                ])),
-            backgroundColor: Color.fromARGB(255, 251, 249, 255)));
+    return Scaffold(
+        body: SafeArea(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              Text("Checkup",
+                  style: TextStyle(
+                      fontSize: 36.0,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Rosario')),
+              SizedBox(height: 30),
+              CheckupWidgets(),
+            ])),
+        backgroundColor: Color.fromARGB(255, 251, 249, 255));
   }
 }
 

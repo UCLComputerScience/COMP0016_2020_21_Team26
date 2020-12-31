@@ -135,19 +135,17 @@ class _HomePageState extends State<HomePage> {
     final previousScoreHolder = _previouScoreHolder(context);
     final thisWeekHolder = _thisWeekHolder(context);
 
-    return MaterialApp(
-        title: 'Home',
-        home: Scaffold(
-            body: SafeArea(
-                child: Column(
-              children: [
-                heading,
-                SizedBox(height: 20),
-                previousScoreHolder,
-                SizedBox(height: 30),
-                thisWeekHolder,
-              ],
-            )),
-            backgroundColor: Color.fromARGB(255, 251, 249, 255)));
+    return Scaffold(
+        body: SafeArea(
+            child: Column(
+          children: [
+            heading,
+            SizedBox(height: 20),
+            previousScoreHolder,
+            SizedBox(height: 30),
+            thisWeekHolder,
+          ],
+        )),
+        backgroundColor: Color.fromARGB(255, 251, 249, 255));
   }
 }

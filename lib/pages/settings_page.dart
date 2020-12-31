@@ -4,22 +4,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "Settings",
-        home: Scaffold(
-            body: SafeArea(
-                child: Column(children: [
-              Text("Settings",
-                  style: TextStyle(
-                      fontSize: 36.0,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Rosario')),
-              SizedBox(height: 30),
-              ChangePostcodeWidget(),
-              SizedBox(height: 75),
-              ChangeSupportWidget()
-            ])),
-            backgroundColor: Color.fromARGB(255, 251, 249, 255)));
+    return Scaffold(
+        body: SafeArea(
+            child: Column(children: [
+          Text("Settings",
+              style: TextStyle(
+                  fontSize: 36.0,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Rosario')),
+          SizedBox(height: 30),
+          ChangePostcodeWidget(),
+          SizedBox(height: 75),
+          ChangeSupportWidget()
+        ])),
+        backgroundColor: Color.fromARGB(255, 251, 249, 255));
   }
 }
 
