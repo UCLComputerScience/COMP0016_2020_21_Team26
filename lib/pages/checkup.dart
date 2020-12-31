@@ -114,11 +114,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
                     fontSize: 25,
                     color: Color.fromARGB(255, 182, 125, 226)));
           }
-          return Text("Loading...",
-              style: TextStyle(
-                  fontFamily: 'Rosario',
-                  fontSize: 25,
-                  color: Color.fromARGB(255, 182, 125, 226)));
+          return CircularProgressIndicator();
         },
       ),
       SizedBox(height: 40),
