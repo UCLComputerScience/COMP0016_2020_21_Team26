@@ -36,37 +36,26 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
               fontSize: 20,
               decoration: TextDecoration.underline)),
       SizedBox(height: 10),
-      FutureBuilder(
-          future: _getPostcode(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Current Postcode: ",
-                        style: TextStyle(
-                            fontFamily: 'Rosario',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15)),
-                    SizedBox(width: 10),
-                    Text(snapshot.data,
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
-                  ]);
-            } else if (snapshot.hasError) {
-              print(snapshot.error);
-              return Text("Something went wrong...",
-                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
-            }
-            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text("Current Postcode: ",
-                  style: TextStyle(
-                      fontFamily: 'Rosario',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500)),
-              SizedBox(width: 10),
-              CircularProgressIndicator()
-            ]);
-          }),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text("Current Postcode: ",
+            style: TextStyle(
+                fontFamily: 'Rosario',
+                fontWeight: FontWeight.w500,
+                fontSize: 15)),
+        FutureBuilder(
+            future: _getPostcode(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data,
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text("Something went wrong...",
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+              }
+              return CircularProgressIndicator();
+            })
+      ]),
       SizedBox(height: 20),
       Container(
           child: TextField(
