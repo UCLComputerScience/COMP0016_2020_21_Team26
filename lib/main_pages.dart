@@ -19,10 +19,14 @@ class MainPages extends StatefulWidget {
   ];
 
   final navBarItems = [
-    BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
-    BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-    BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
-    BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Testing"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.bar_chart, color: Colors.black), label: "Wellbeing"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.home, color: Colors.black), label: "Home"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.settings, color: Colors.black), label: "Settings"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.receipt, color: Colors.black), label: "Testing"),
   ];
 
   @override

@@ -28,55 +28,72 @@ class ChangePostcodeWidget extends StatefulWidget {
 
 class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
   String _currentPostcode;
-  //final Future<String> _nowPostcode = SharedPreferences.getInstance()
-  //    .then((prefs) => prefs.getString('postcode'));
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        FutureBuilder(
-            future: _getPostcode(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text("Current Postcode: " + snapshot.data);
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Text("Something went wrong...");
-              }
-              return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Text("Current Postcode: "), Text("Loading...")]);
-            }),
-      ]),
+      Text("Postcode ",
+          style: TextStyle(
+              fontFamily: 'Rosario',
+              fontSize: 20,
+              decoration: TextDecoration.underline)),
       SizedBox(height: 10),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text("Postcode: "),
-        SizedBox(width: 5),
-        Container(
-            child: TextField(
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: const BorderSide(
-                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
-                  ),
+      FutureBuilder(
+          future: _getPostcode(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Current Postcode: ",
+                        style: TextStyle(
+                            fontFamily: 'Rosario',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15)),
+                    SizedBox(width: 10),
+                    Text(snapshot.data,
+                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+                  ]);
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Something went wrong...",
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+            }
+            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text("Current Postcode: ",
+                  style: TextStyle(
+                      fontFamily: 'Rosario',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500)),
+              SizedBox(width: 10),
+              CircularProgressIndicator()
+            ]);
+          }),
+      SizedBox(height: 20),
+      Container(
+          child: TextField(
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                 ),
-                maxLength: 4,
-                onChanged: (text) {
-                  setState(() {
-                    _currentPostcode = text;
-                  });
-                }),
-            width: 120.0),
-        SizedBox(width: 5),
-        ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 0, 74, 173))),
-            child: const Text('Change'),
-            onPressed: () {
-              _updatePostcode(_currentPostcode);
-            })
-      ])
+              ),
+              maxLength: 4,
+              onChanged: (text) {
+                setState(() {
+                  _currentPostcode = text;
+                });
+              }),
+          width: 120.0),
+      SizedBox(width: 5),
+      ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Color.fromARGB(255, 0, 74, 173))),
+          child: const Text('Change'),
+          onPressed: () {
+            _updatePostcode(_currentPostcode);
+            setState(() {});
+          })
     ]);
   }
 }
@@ -87,57 +104,73 @@ class ChangeSupportWidget extends StatefulWidget {
 }
 
 class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
+  String _currentSupportCode;
   Widget build(BuildContext context) {
-    String _currentSupportCode;
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        FutureBuilder(
-            future: _getSupportCode(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text("Current Support Code: " + snapshot.data);
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Text("Something went wrong...");
-              }
-              return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text("Current Support Code: "),
-                    Text("Loading...")
-                  ]);
-            }),
-      ]),
+      Text("Support Code",
+          style: TextStyle(
+              fontFamily: 'Rosario',
+              fontSize: 20,
+              decoration: TextDecoration.underline)),
       SizedBox(height: 10),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text("Support Code: "),
-        SizedBox(width: 5),
-        Container(
-            child: TextField(
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: const BorderSide(
-                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
-                  ),
+      FutureBuilder(
+          future: _getSupportCode(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Current Support Code: ",
+                        style: TextStyle(
+                            fontFamily: 'Rosario',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15)),
+                    SizedBox(width: 10),
+                    Text(snapshot.data,
+                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+                  ]);
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Something went wrong...",
+                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+            }
+            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text("Current Support Code: ",
+                  style: TextStyle(
+                      fontFamily: 'Rosario',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500)),
+              SizedBox(width: 10),
+              CircularProgressIndicator()
+            ]);
+          }),
+      SizedBox(height: 20),
+      Container(
+          child: TextField(
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                 ),
-                maxLength: 4,
-                onChanged: (text) {
-                  setState(() {
-                    _currentSupportCode = text;
-                  });
-                }),
-            width: 120.0),
-        SizedBox(width: 5),
-        ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 0, 74, 173))),
-            child: const Text('Change'),
-            onPressed: () {
-              _updateSupportCode(_currentSupportCode);
-            })
-      ])
+              ),
+              maxLength: 4,
+              onChanged: (text) {
+                setState(() {
+                  _currentSupportCode = text;
+                });
+              }),
+          width: 120.0),
+      SizedBox(width: 5),
+      ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Color.fromARGB(255, 0, 74, 173))),
+          child: const Text('Change'),
+          onPressed: () {
+            _updateSupportCode(_currentSupportCode);
+            setState(() {});
+          })
     ]);
   }
 }
@@ -154,12 +187,12 @@ Future<String> _getSupportCode() async {
   return userSupportCode;
 }
 
-_updatePostcode(String value) async {
+void _updatePostcode(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('postcode', value);
 }
 
-_updateSupportCode(String value) async {
+void _updateSupportCode(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('support_code', value);
 }
