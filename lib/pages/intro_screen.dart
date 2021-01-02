@@ -89,8 +89,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         onSaved: (String text) {
                           _savePostcode(text);
                         },
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        autovalidateMode: AutovalidateMode.always,
                         validator: (text) {
+                          if (text.length == 0) {
+                            return "You must enter a postcode prefix";
+                          }
                           if (text.length < 2 || text.length > 4) {
                             return "Must be between 2 and 4 characters";
                           }
@@ -115,7 +118,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     onSaved: (String text) {
                       _saveSupportCode(text);
                     },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    autovalidateMode: AutovalidateMode.always,
                     validator: (text) {
                       if (text.length == 0) {
                         return "You must enter a support code";
