@@ -9,14 +9,10 @@ import 'package:nudge_me/notification.dart';
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
 /// its only done once.
-void main() {
-  runApp(IntroScreen());
-}
-
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(body: IntroScreenWidgets()));
+    return Scaffold(body: IntroScreenWidgets());
   }
 }
 
