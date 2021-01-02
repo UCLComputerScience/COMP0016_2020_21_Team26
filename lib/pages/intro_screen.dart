@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
@@ -9,11 +10,14 @@ import 'package:nudge_me/notification.dart';
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
 /// its only done once.
+void main() {
+  runApp(IntroScreen());
+}
 
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: IntroScreenWidgets());
+    return MaterialApp(home: Scaffold(body: IntroScreenWidgets()));
   }
 }
 
@@ -24,8 +28,7 @@ class IntroScreenWidgets extends StatefulWidget {
 
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final introKey = GlobalKey<IntroductionScreenState>();
-  String _currentPostcode;
-  String _currentSupportCode;
+
   void _savePostcode(String value) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', value);
@@ -40,15 +43,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
-    _savePostcode(_currentPostcode);
-    _saveSupportCode(_currentSupportCode);
-
     _finishSetup();
   }
 
   void _finishSetup() async {
     scheduleCheckup(DateTime.sunday, Time(12));
     schedulePublish(DateTime.monday, Time(12));
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
   }
 
   @override
@@ -79,21 +81,21 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     Text("What is the first half of your postcode?",
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
-                    TextField(
-                        maxLength: 4,
+                    TextFormField(
                         textAlign: TextAlign.center,
-                        onChanged: (text) {
-                          setState(() {
-                            _currentPostcode = text;
-                          });
-                        },
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r"[a-zA-Z0-9]+"))
-                        ],
                         decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: "Enter postcode here")),
+                            hintText: "Enter postcode here"),
+                        onSaved: (String text) {
+                          _savePostcode(text);
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (text) {
+                          if (text.length < 2 || text.length > 4) {
+                            return "Must be between 2 and 4 characters";
+                          }
+                          return null;
+                        })
                   ])),
               decoration: pageDecoration),
           PageViewModel(
@@ -101,28 +103,26 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               image: Center(
                   child: Image.asset("lib/images/IntroSupport.png",
                       height: 270.0)),
-              bodyWidget: (Column(
-                children: <Widget>[
-                  Text("Where do you primarily go to find support?",
-                      style: TextStyle(fontSize: 20.0),
-                      textAlign: TextAlign.center),
-                  TextField(
-                      maxLength: 4,
-                      textAlign: TextAlign.center,
-                      onChanged: (text) {
-                        setState(() {
-                          _currentSupportCode = text;
-                        });
-                      },
-                      //TODO: check what format service code should be in
-                      /*inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r"[0-9]+"))
-                      ],*/
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Enter support code here")),
-                ],
-              )),
+              bodyWidget: (Column(children: <Widget>[
+                Text("Where do you primarily go to find support?",
+                    style: TextStyle(fontSize: 20.0),
+                    textAlign: TextAlign.center),
+                TextFormField(
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Enter support code here"),
+                    onSaved: (String text) {
+                      _saveSupportCode(text);
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (text) {
+                      if (text.length == 0) {
+                        return "You must enter a support code";
+                      }
+                      return null;
+                    })
+              ])),
               decoration: pageDecoration),
         ],
         onDone: () => _onIntroEnd(context),
