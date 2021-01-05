@@ -80,8 +80,9 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
                   Color.fromARGB(255, 0, 74, 173))),
           child: const Text('Change'),
           onPressed: () {
-            _updatePostcode(_currentPostcode);
-            setState(() {});
+            setState(() {
+              _updatePostcode(_currentPostcode);
+            });
           })
     ]);
   }
@@ -143,7 +144,6 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                       color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                 ),
               ),
-              maxLength: 4,
               onChanged: (text) {
                 setState(() {
                   _currentSupportCode = text;
@@ -157,8 +157,9 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                   Color.fromARGB(255, 0, 74, 173))),
           child: const Text('Change'),
           onPressed: () {
-            _updateSupportCode(_currentSupportCode);
-            setState(() {});
+            setState(() {
+              _updateSupportCode(_currentSupportCode);
+            });
           })
     ]);
   }
