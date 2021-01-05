@@ -36,37 +36,26 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
               fontSize: 20,
               decoration: TextDecoration.underline)),
       SizedBox(height: 10),
-      FutureBuilder(
-          future: _getPostcode(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Current Postcode: ",
-                        style: TextStyle(
-                            fontFamily: 'Rosario',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15)),
-                    SizedBox(width: 10),
-                    Text(snapshot.data,
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
-                  ]);
-            } else if (snapshot.hasError) {
-              print(snapshot.error);
-              return Text("Something went wrong...",
-                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
-            }
-            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text("Current Postcode: ",
-                  style: TextStyle(
-                      fontFamily: 'Rosario',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500)),
-              SizedBox(width: 10),
-              CircularProgressIndicator()
-            ]);
-          }),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text("Current Postcode: ",
+            style: TextStyle(
+                fontFamily: 'Rosario',
+                fontWeight: FontWeight.w500,
+                fontSize: 15)),
+        FutureBuilder(
+            future: _getPostcode(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data,
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text("Something went wrong...",
+                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+              }
+              return CircularProgressIndicator();
+            })
+      ]),
       SizedBox(height: 20),
       Container(
           child: TextField(
@@ -91,8 +80,9 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
                   Color.fromARGB(255, 0, 74, 173))),
           child: const Text('Change'),
           onPressed: () {
-            _updatePostcode(_currentPostcode);
-            setState(() {});
+            setState(() {
+              _updatePostcode(_currentPostcode);
+            });
           })
     ]);
   }
@@ -154,7 +144,6 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                       color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                 ),
               ),
-              maxLength: 4,
               onChanged: (text) {
                 setState(() {
                   _currentSupportCode = text;
@@ -168,8 +157,9 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                   Color.fromARGB(255, 0, 74, 173))),
           child: const Text('Change'),
           onPressed: () {
-            _updateSupportCode(_currentSupportCode);
-            setState(() {});
+            setState(() {
+              _updateSupportCode(_currentSupportCode);
+            });
           })
     ]);
   }
