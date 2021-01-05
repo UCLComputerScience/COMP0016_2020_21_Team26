@@ -37,9 +37,11 @@ class UserWellbeingDB {
     final db = await database;
     List<Map> wellbeingMaps = await db.query(tableName,
         columns: columns, orderBy: "${columns[0]} DESC", limit: n);
-    return wellbeingMaps
+    final itemList = wellbeingMaps
         .map((wellbeingMap) => WellbeingItem.fromMap(wellbeingMap))
         .toList(growable: false);
+    itemList.sort((a, b) => a.id.compareTo(b.id));
+    return itemList;
   }
 
   void delete() async {
