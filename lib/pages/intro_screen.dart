@@ -18,7 +18,6 @@ class IntroScreen extends StatelessWidget {
 }
 
 class IntroScreenWidgets extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _IntroScreenWidgetsState();
 }
@@ -88,15 +87,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     Text("What is the first half of your postcode?",
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
-                      TextField(
-                        controller: postcodeController,
-                        textAlign: TextAlign.center,
-                        // https://github.com/flutter/flutter/issues/67236
-                        maxLength: 4, // length of a postcode prefix
-                        decoration: InputDecoration(
+                    TextField(
+                      controller: postcodeController,
+                      textAlign: TextAlign.center,
+                      // https://github.com/flutter/flutter/issues/67236
+                      maxLength: 4, // length of a postcode prefix
+                      decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "Enter postcode here"),
-                      ),
+                    ),
                   ])),
               decoration: pageDecoration),
           PageViewModel(
@@ -108,13 +107,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 Text("Where do you primarily go to find support?",
                     style: TextStyle(fontSize: 20.0),
                     textAlign: TextAlign.center),
-                  TextField(
-                    controller: supportCodeController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
+                TextField(
+                  controller: supportCodeController,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Enter support code here"),
-                  ),
+                ),
               ])),
               decoration: pageDecoration),
         ],
