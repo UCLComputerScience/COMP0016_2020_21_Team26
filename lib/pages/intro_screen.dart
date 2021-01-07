@@ -17,7 +17,13 @@ class IntroScreen extends StatelessWidget {
   }
 }
 
-class IntroScreenWidgets extends StatelessWidget {
+class IntroScreenWidgets extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => _IntroScreenWidgetsState();
+}
+
+class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final postcodeController = TextEditingController();
   final supportCodeController = TextEditingController();
 
@@ -127,5 +133,12 @@ class IntroScreenWidgets extends StatelessWidget {
             activeSize: Size(22.0, 10.0),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
+  }
+
+  void dispose() {
+    // need to dispose of [TextEditingController]
+    postcodeController.dispose();
+    supportCodeController.dispose();
+    super.dispose();
   }
 }
