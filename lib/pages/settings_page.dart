@@ -6,8 +6,9 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-            child: Column(children: [
+            child: ListView(children: [
           Text("Settings",
+              textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 36.0,
                   fontWeight: FontWeight.w700,
@@ -152,30 +153,33 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
             ]);
           }),
       SizedBox(height: 20),
-      Container(
-          child: Form(
-              key: _supportCodeKey,
-              child: TextFormField(
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 182, 125, 226),
-                          width: 1.0),
-                    ),
-                  ),
-                  validator: (text) {
-                    if (text.length == 0) {
-                      return "You must enter a support code";
-                    }
-                    return null;
-                  },
-                  onChanged: (String text) {
-                    setState(() {
-                      _currentSupportCode = text;
-                    });
-                  })),
-          width: 200),
+      Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+              child: Form(
+                  key: _supportCodeKey,
+                  child: TextFormField(
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromARGB(255, 182, 125, 226),
+                              width: 1.0),
+                        ),
+                      ),
+                      validator: (text) {
+                        if (text.length == 0) {
+                          return "You must enter a support code";
+                        }
+                        return null;
+                      },
+                      onChanged: (String text) {
+                        setState(() {
+                          _currentSupportCode = text;
+                        });
+                      })),
+              width: 200)),
       SizedBox(width: 5),
       ElevatedButton(
           style: ButtonStyle(
