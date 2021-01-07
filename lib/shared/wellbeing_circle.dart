@@ -43,6 +43,7 @@ class WellbeingCircle extends StatelessWidget {
         Text(
           _score == null ? "N/A" : _score.toString(),
           style: TextStyle(color: Colors.white, fontSize: 75),
+          textDirection: TextDirection.ltr,
         ),
       ],
     );

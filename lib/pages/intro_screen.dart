@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,6 +51,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     schedulePublish(DateTime.monday, Time(12));
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+    // only start tracking steps after user has done setup
+    initBackground();
   }
 
   @override
