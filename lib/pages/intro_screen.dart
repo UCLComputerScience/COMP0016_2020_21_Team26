@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
-
-void main() {
-  runApp(IntroScreen());
-}
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
@@ -22,23 +19,32 @@ class IntroScreen extends StatelessWidget {
 
 class IntroScreenWidgets extends StatefulWidget {
   @override
-  _IntroScreenWidgetsState createState() => _IntroScreenWidgetsState();
+  State<StatefulWidget> createState() => _IntroScreenWidgetsState();
 }
 
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
-  final introKey = GlobalKey<IntroductionScreenState>();
+  final postcodeController = TextEditingController();
+  final supportCodeController = TextEditingController();
 
-  void _savePostcode(String value) async {
+  void _saveInput(String postcode, String suppcode) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('postcode', value);
+    prefs.setString('postcode', postcode);
+    prefs.setString('support_code', suppcode);
   }
 
-  void _saveSupportCode(String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('support_code', value);
+  bool _isInputValid(String postcode, String suppCode) {
+    return 2 <= postcode.length && postcode.length <= 4 && suppCode.length > 0;
   }
 
   void _onIntroEnd(context) {
+    if (!_isInputValid(postcodeController.text, supportCodeController.text)) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Invalid postcode or support code."),
+      ));
+      return;
+    }
+
+    _saveInput(postcodeController.text, supportCodeController.text);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
@@ -50,12 +56,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     schedulePublish(DateTime.monday, Time(12));
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+    // only start tracking steps after user has done setup
+    initBackground();
   }
 
   @override
   Widget build(BuildContext context) {
-    final _postcodeKey = GlobalKey<FormState>();
-    final _supportCodeKey = GlobalKey<FormState>();
     const pageDecoration = const PageDecoration(
         titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
         bodyTextStyle: TextStyle(fontSize: 20.0),
@@ -64,7 +70,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         imagePadding: EdgeInsets.zero);
 
     return IntroductionScreen(
-        key: introKey,
         pages: [
           PageViewModel(
               title: "Welcome",
@@ -82,26 +87,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     Text("What is the first half of your postcode?",
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
-                    Form(
-                        key: _postcodeKey,
-                        child: TextFormField(
-                            textAlign: TextAlign.center,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Enter postcode here"),
-                            onChanged: (String text) {
-                              _supportCodeKey.currentState.save();
-                              _savePostcode(text);
-                            },
-                            validator: (text) {
-                              if (text.length == 0) {
-                                return "You must enter a postcode prefix";
-                              }
-                              if (text.length < 2 || text.length > 4) {
-                                return "Must be between 2 and 4 characters";
-                              }
-                              return null;
-                            }))
+                    TextField(
+                      controller: postcodeController,
+                      textAlign: TextAlign.center,
+                      // https://github.com/flutter/flutter/issues/67236
+                      maxLength: 4, // length of a postcode prefix
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter postcode here"),
+                    ),
                   ])),
               decoration: pageDecoration),
           PageViewModel(
@@ -113,23 +107,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 Text("Where do you primarily go to find support?",
                     style: TextStyle(fontSize: 20.0),
                     textAlign: TextAlign.center),
-                Form(
-                    key: _supportCodeKey,
-                    child: TextFormField(
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter support code here"),
-                        onChanged: (String text) {
-                          _supportCodeKey.currentState.save();
-                          _saveSupportCode(text);
-                        },
-                        validator: (text) {
-                          if (text.length == 0) {
-                            return "You must enter a support code";
-                          }
-                          return null;
-                        }))
+                TextField(
+                  controller: supportCodeController,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Enter support code here"),
+                ),
               ])),
               decoration: pageDecoration),
         ],
@@ -148,5 +132,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             activeSize: Size(22.0, 10.0),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
+  }
+
+  void dispose() {
+    // need to dispose of [TextEditingController]
+    postcodeController.dispose();
+    supportCodeController.dispose();
+    super.dispose();
   }
 }

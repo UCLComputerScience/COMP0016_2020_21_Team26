@@ -7,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 const CHECKUP_PAYLOAD = "checkup";
 const PUBLISH_PAYLOAD = "publish";
+const NUDGE_PAYLOAD = "nudge";
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -90,12 +91,27 @@ Future schedulePublish(int day, Time time) async {
     "Tap to review and publish your weekly score anonymously.",
     _nextInstanceOfDayTime(day, time),
     _getSpecifics(),
-    androidAllowWhileIdle: true,
+    // not important enough, no need to disturb idle mode:
+    androidAllowWhileIdle: false,
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
     payload: PUBLISH_PAYLOAD,
     // schedule recurring notification on matching day & time
     matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+  );
+}
+
+void scheduleNudge() async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    3,
+    "Nudge",
+    "Hey, your score or steps are low, want to share with a friend?",
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 2)),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: NUDGE_PAYLOAD,
   );
 }
 
