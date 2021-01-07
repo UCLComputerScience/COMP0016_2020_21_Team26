@@ -27,6 +27,7 @@ class ChangePostcodeWidget extends StatefulWidget {
 }
 
 class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
+  final _postcodeKey = GlobalKey<FormState>();
   String _currentPostcode;
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -58,21 +59,33 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
       ]),
       SizedBox(height: 20),
       Container(
-          child: TextField(
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
-                ),
-              ),
-              maxLength: 4,
-              onChanged: (text) {
-                setState(() {
-                  _currentPostcode = text;
-                });
-              }),
-          width: 120.0),
+          child: Form(
+              key: _postcodeKey,
+              child: TextFormField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 182, 125, 226),
+                          width: 1.0),
+                    ),
+                  ),
+                  maxLength: 4,
+                  validator: (text) {
+                    if (text.length == 0) {
+                      return "You must enter a postcode prefix";
+                    }
+                    if (text.length < 2 || text.length > 4) {
+                      return "Must be between 2 and 4 characters";
+                    }
+                    return null;
+                  },
+                  onChanged: (String text) {
+                    setState(() {
+                      _currentPostcode = text;
+                    });
+                  })),
+          width: 200.0),
       SizedBox(width: 5),
       ElevatedButton(
           style: ButtonStyle(
@@ -80,9 +93,11 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
                   Color.fromARGB(255, 0, 74, 173))),
           child: const Text('Change'),
           onPressed: () {
-            setState(() {
-              _updatePostcode(_currentPostcode);
-            });
+            if (_postcodeKey.currentState.validate()) {
+              setState(() {
+                _updatePostcode(_currentPostcode);
+              });
+            }
           })
     ]);
   }
@@ -95,6 +110,8 @@ class ChangeSupportWidget extends StatefulWidget {
 
 class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
   String _currentSupportCode;
+  final _supportCodeKey = GlobalKey<FormState>();
+
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text("Support Code",
@@ -136,20 +153,29 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
           }),
       SizedBox(height: 20),
       Container(
-          child: TextField(
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
-                ),
-              ),
-              onChanged: (text) {
-                setState(() {
-                  _currentSupportCode = text;
-                });
-              }),
-          width: 120.0),
+          child: Form(
+              key: _supportCodeKey,
+              child: TextFormField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 182, 125, 226),
+                          width: 1.0),
+                    ),
+                  ),
+                  validator: (text) {
+                    if (text.length == 0) {
+                      return "You must enter a support code";
+                    }
+                    return null;
+                  },
+                  onChanged: (String text) {
+                    setState(() {
+                      _currentSupportCode = text;
+                    });
+                  })),
+          width: 200),
       SizedBox(width: 5),
       ElevatedButton(
           style: ButtonStyle(
@@ -157,9 +183,11 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                   Color.fromARGB(255, 0, 74, 173))),
           child: const Text('Change'),
           onPressed: () {
-            setState(() {
-              _updateSupportCode(_currentSupportCode);
-            });
+            if (_supportCodeKey.currentState.validate()) {
+              setState(() {
+                _updateSupportCode(_currentSupportCode);
+              });
+            }
           })
     ]);
   }
