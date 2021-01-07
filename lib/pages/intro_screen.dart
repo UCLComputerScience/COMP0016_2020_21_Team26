@@ -52,7 +52,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   }
 
   void _finishSetup() async {
-    scheduleCheckup(DateTime.sunday, Time(12));
+    scheduleCheckup(DateTime.sunday, const Time(12));
     schedulePublish(DateTime.monday, Time(12));
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
