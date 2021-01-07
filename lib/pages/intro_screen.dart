@@ -6,13 +6,17 @@ import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 
+void main() {
+  runApp(IntroScreen());
+}
+
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
 /// its only done once.
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: IntroScreenWidgets());
+    return MaterialApp(home: Scaffold(body: IntroScreenWidgets()));
   }
 }
 
@@ -50,6 +54,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   @override
   Widget build(BuildContext context) {
+    final _postcodeKey = GlobalKey<FormState>();
+    final _supportCodeKey = GlobalKey<FormState>();
     const pageDecoration = const PageDecoration(
         titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
         bodyTextStyle: TextStyle(fontSize: 20.0),
@@ -76,24 +82,26 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     Text("What is the first half of your postcode?",
                         style: TextStyle(fontSize: 20.0),
                         textAlign: TextAlign.center),
-                    TextFormField(
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter postcode here"),
-                        onSaved: (String text) {
-                          _savePostcode(text);
-                        },
-                        autovalidateMode: AutovalidateMode.always,
-                        validator: (text) {
-                          if (text.length == 0) {
-                            return "You must enter a postcode prefix";
-                          }
-                          if (text.length < 2 || text.length > 4) {
-                            return "Must be between 2 and 4 characters";
-                          }
-                          return null;
-                        })
+                    Form(
+                        key: _postcodeKey,
+                        child: TextFormField(
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Enter postcode here"),
+                            onChanged: (String text) {
+                              _supportCodeKey.currentState.save();
+                              _savePostcode(text);
+                            },
+                            validator: (text) {
+                              if (text.length == 0) {
+                                return "You must enter a postcode prefix";
+                              }
+                              if (text.length < 2 || text.length > 4) {
+                                return "Must be between 2 and 4 characters";
+                              }
+                              return null;
+                            }))
                   ])),
               decoration: pageDecoration),
           PageViewModel(
@@ -105,21 +113,23 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 Text("Where do you primarily go to find support?",
                     style: TextStyle(fontSize: 20.0),
                     textAlign: TextAlign.center),
-                TextFormField(
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Enter support code here"),
-                    onSaved: (String text) {
-                      _saveSupportCode(text);
-                    },
-                    autovalidateMode: AutovalidateMode.always,
-                    validator: (text) {
-                      if (text.length == 0) {
-                        return "You must enter a support code";
-                      }
-                      return null;
-                    })
+                Form(
+                    key: _supportCodeKey,
+                    child: TextFormField(
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Enter support code here"),
+                        onChanged: (String text) {
+                          _supportCodeKey.currentState.save();
+                          _saveSupportCode(text);
+                        },
+                        validator: (text) {
+                          if (text.length == 0) {
+                            return "You must enter a support code";
+                          }
+                          return null;
+                        }))
               ])),
               decoration: pageDecoration),
         ],
