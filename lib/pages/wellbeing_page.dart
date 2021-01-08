@@ -10,15 +10,12 @@ class WellbeingPage extends StatelessWidget {
             child: Center(
                 child: Column(children: [
           Text("Wellbeing / Steps",
-              style: TextStyle(
-                  fontSize: 36.0,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Rosario')),
+              style: Theme.of(context).textTheme.headline1),
           Flexible(
               child: WellbeingGraph(
             animate: true,
           ))
         ]))),
-        backgroundColor: Color.fromARGB(255, 251, 249, 255));
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }

@@ -62,8 +62,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NudgeMe',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          scaffoldBackgroundColor: Color.fromARGB(255, 251, 249, 255),
+          primaryColor: Color.fromARGB(255, 0, 74, 173),
+          accentColor: Color.fromARGB(255, 182, 125, 226),
+          fontFamily: 'Rosario',
+          textTheme: TextTheme(
+              headline1: TextStyle(
+                  fontSize: 36.0,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Rosario'),
+              headline2: TextStyle(
+                  fontFamily: 'Rosario',
+                  fontSize: 20,
+                  decoration: TextDecoration.underline),
+              headline3: TextStyle(fontFamily: 'Rosario', fontSize: 20),
+              bodyText1: TextStyle(
+                  fontFamily: 'Rosario',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20),
+              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15))),
       home: FutureBuilder(
         future: _openIntro,
         builder: (context, snapshot) {

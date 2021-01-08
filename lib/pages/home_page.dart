@@ -28,8 +28,7 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.all(10),
       child: Text(
         "Welcome",
-        style: TextStyle(
-            fontSize: 36, fontWeight: FontWeight.w700, fontFamily: 'Rosario'),
+        style: Theme.of(context).textTheme.headline1,
       ),
     );
   }
@@ -44,7 +43,7 @@ class _HomePageState extends State<HomePage> {
             height: 5.0,
           ),
           Text("Last Week's Wellbeing Score",
-              style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
+              style: Theme.of(context).textTheme.headline3),
           const SizedBox(
             height: 10.0,
           ),
@@ -60,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                 } else if (snapshot.hasError) {
                   print(snapshot.error);
                   Text("Something went wrong.",
-                      style: TextStyle(fontFamily: 'Rosario'));
+                      style: Theme.of(context).textTheme.bodyText2);
                 }
                 return CircularProgressIndicator();
               }),
@@ -108,7 +107,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Text(
             "This Week's Activity",
-            style: TextStyle(fontFamily: 'Rosario', fontSize: 20),
+            style: Theme.of(context).textTheme.bodyText1,
           ),
           const SizedBox(
             height: 5.0,
@@ -120,7 +119,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Row(children: [
                   Icon(Icons.directions_walk_outlined),
-                  Text("Steps", style: TextStyle(fontFamily: 'Rosario'))
+                  Text("Steps", style: Theme.of(context).textTheme.bodyText1)
                 ]),
                 pedometer,
               ],
@@ -146,6 +145,6 @@ class _HomePageState extends State<HomePage> {
             thisWeekHolder,
           ],
         )),
-        backgroundColor: Color.fromARGB(255, 251, 249, 255));
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
