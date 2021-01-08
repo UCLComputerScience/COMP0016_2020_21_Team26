@@ -31,10 +31,7 @@ class _PublishScreenState extends State<PublishScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 25.0),
           child: Text("Publish Data?",
-              style: TextStyle(
-                  fontSize: 36.0,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Rosario')),
+              style: Theme.of(context).textTheme.headline1),
         ),
         FutureBuilder(
             future: _singleton,
@@ -44,15 +41,15 @@ class _PublishScreenState extends State<PublishScreen> {
                 return Column(
                   children: [
                     Text("Wellbeing Score: ${item.wellbeingScore.truncate()}",
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 20)),
+                        style: Theme.of(context).textTheme.bodyText2),
                     SizedBox(height: 10),
                     Text("Number of Steps: ${item.numSteps}",
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 20))
+                        style: Theme.of(context).textTheme.bodyText2)
                   ],
                 );
               } else if (snapshot.hasError) {
                 return Text("Error: ${snapshot.error}",
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 20));
+                    style: Theme.of(context).textTheme.bodyText2);
               }
               return SizedBox(
                 child: CircularProgressIndicator(),
@@ -70,7 +67,7 @@ class _PublishScreenState extends State<PublishScreen> {
                 onPressed: () => Navigator.pop(context),
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromARGB(255, 0, 74, 173))),
+                        Theme.of(context).primaryColor)),
               ),
               SizedBox(width: 20),
               ElevatedButton(
@@ -81,7 +78,7 @@ class _PublishScreenState extends State<PublishScreen> {
                 },
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromARGB(255, 0, 74, 173))),
+                        Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -92,7 +89,7 @@ class _PublishScreenState extends State<PublishScreen> {
     );
     return Scaffold(
         body: SafeArea(child: content),
-        backgroundColor: Color.fromARGB(255, 251, 249, 255));
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 
   /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the

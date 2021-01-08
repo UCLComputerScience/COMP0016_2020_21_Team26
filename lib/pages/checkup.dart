@@ -13,15 +13,11 @@ class Checkup extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-              Text("Checkup",
-                  style: TextStyle(
-                      fontSize: 36.0,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Rosario')),
+              Text("Checkup", style: Theme.of(context).textTheme.headline1),
               SizedBox(height: 30),
               CheckupWidgets(),
             ])),
-        backgroundColor: Color.fromARGB(255, 251, 249, 255));
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
@@ -90,9 +86,9 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
   @override
   Widget build(BuildContext context) {
-    const mainTextStyle = TextStyle(fontSize: 20, fontFamily: 'Rosario');
     return Column(children: [
-      Text("Your steps this week:", style: mainTextStyle),
+      Text("Your steps this week:",
+          style: Theme.of(context).textTheme.bodyText2),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
@@ -118,7 +114,8 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
         },
       ),
       SizedBox(height: 40),
-      Text("How did you feel this week?", style: mainTextStyle),
+      Text("How did you feel this week?",
+          style: Theme.of(context).textTheme.bodyText2),
       Container(
           child: Slider(
             value: _currentSliderValue,
@@ -126,7 +123,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
             max: 10,
             divisions: 10,
             label: _currentSliderValue.round().toString(),
-            activeColor: Color.fromARGB(255, 0, 74, 173),
+            activeColor: Theme.of(context).primaryColor,
             inactiveColor: Color.fromARGB(189, 189, 189, 255),
             onChanged: (double value) {
               setState(() {
@@ -154,7 +151,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
           },
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 0, 74, 173))),
+                  Theme.of(context).primaryColor)),
           child: const Text('Done', style: TextStyle(fontFamily: 'Rosario')))
     ]);
   }
