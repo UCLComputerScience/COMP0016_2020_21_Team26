@@ -13,7 +13,7 @@ import 'package:nudge_me/notification.dart';
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(body: IntroScreenWidgets()));
+    return Scaffold(body: IntroScreenWidgets());
   }
 }
 
