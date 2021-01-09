@@ -26,7 +26,18 @@ class ChangePostcodeWidget extends StatefulWidget {
 
 class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
   final _postcodeKey = GlobalKey<FormState>();
-  String _currentPostcode;
+
+  Future<String> _getPostcode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userPostcode = prefs.getString('postcode');
+    return userPostcode;
+  }
+
+  void _updatePostcode(String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('postcode', value);
+  }
+
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text("Postcode ", style: Theme.of(context).textTheme.headline2),
@@ -53,29 +64,25 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
           child: Form(
               key: _postcodeKey,
               child: TextFormField(
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 182, 125, 226),
-                          width: 1.0),
-                    ),
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 182, 125, 226), width: 1.0),
                   ),
-                  maxLength: 4,
-                  validator: (text) {
-                    if (text.length == 0) {
-                      return "You must enter a postcode prefix";
-                    }
-                    if (text.length < 2 || text.length > 4) {
-                      return "Must be between 2 and 4 characters";
-                    }
-                    return null;
-                  },
-                  onChanged: (String text) {
-                    setState(() {
-                      _currentPostcode = text;
-                    });
-                  })),
+                ),
+                maxLength: 4,
+                validator: (text) {
+                  if (text.length == 0) {
+                    return "You must enter a postcode prefix";
+                  }
+                  if (text.length < 2 || text.length > 4) {
+                    return "Must be between 2 and 4 characters";
+                  }
+                  return null;
+                },
+                onSaved: _updatePostcode,
+              )),
           width: 200.0),
       SizedBox(width: 5),
       ElevatedButton(
@@ -86,7 +93,7 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
           onPressed: () {
             if (_postcodeKey.currentState.validate()) {
               setState(() {
-                _updatePostcode(_currentPostcode);
+                _postcodeKey.currentState.save();
               });
             }
           })
@@ -100,8 +107,18 @@ class ChangeSupportWidget extends StatefulWidget {
 }
 
 class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
-  String _currentSupportCode;
   final _supportCodeKey = GlobalKey<FormState>();
+
+  Future<String> _getSupportCode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userSupportCode = prefs.getString('support_code');
+    return userSupportCode;
+  }
+
+  void _updateSupportCode(String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('support_code', value);
+  }
 
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -140,25 +157,22 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
               child: Form(
                   key: _supportCodeKey,
                   child: TextFormField(
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 182, 125, 226),
-                              width: 1.0),
-                        ),
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 182, 125, 226),
+                            width: 1.0),
                       ),
-                      validator: (text) {
-                        if (text.length == 0) {
-                          return "You must enter a support code";
-                        }
-                        return null;
-                      },
-                      onChanged: (String text) {
-                        setState(() {
-                          _currentSupportCode = text;
-                        });
-                      })),
+                    ),
+                    validator: (text) {
+                      if (text.length == 0) {
+                        return "You must enter a support code";
+                      }
+                      return null;
+                    },
+                    onSaved: _updateSupportCode,
+                  )),
               width: 200)),
       SizedBox(width: 5),
       ElevatedButton(
@@ -169,32 +183,10 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
           onPressed: () {
             if (_supportCodeKey.currentState.validate()) {
               setState(() {
-                _updateSupportCode(_currentSupportCode);
+                _supportCodeKey.currentState.save();
               });
             }
           })
     ]);
   }
-}
-
-Future<String> _getPostcode() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String userPostcode = prefs.getString('postcode');
-  return userPostcode;
-}
-
-Future<String> _getSupportCode() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String userSupportCode = prefs.getString('support_code');
-  return userSupportCode;
-}
-
-void _updatePostcode(String value) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('postcode', value);
-}
-
-void _updateSupportCode(String value) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('support_code', value);
 }
