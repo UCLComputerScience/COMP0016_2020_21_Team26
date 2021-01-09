@@ -9,7 +9,15 @@ class Checkup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Checkup")), body: CheckupWidgets());
+        body: SafeArea(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              Text("Checkup", style: Theme.of(context).textTheme.headline1),
+              SizedBox(height: 30),
+              CheckupWidgets(),
+            ])),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
@@ -79,20 +87,8 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Text("How did you feel this week?"),
-      Slider(
-        value: _currentSliderValue,
-        min: 0,
-        max: 10,
-        divisions: 10,
-        label: _currentSliderValue.toString(),
-        onChanged: (double value) {
-          setState(() {
-            _currentSliderValue = value;
-          });
-        },
-      ),
-      Text("Your steps this week:"),
+      Text("Your steps this week:",
+          style: Theme.of(context).textTheme.bodyText2),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
@@ -101,15 +97,43 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
             final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
                 ? _currentTotalSteps
                 : _currentTotalSteps - lastTotalSteps;
-            return Text(thisWeeksSteps.toString());
+            return Text(thisWeeksSteps.toString(),
+                style: TextStyle(
+                    fontFamily: 'Rosario',
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 182, 125, 226)));
           } else if (snapshot.hasError) {
             print(snapshot.error);
-            return Text("Something went wrong...");
+            return Text("Something went wrong...",
+                style: TextStyle(
+                    fontFamily: 'Rosario',
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 182, 125, 226)));
           }
-          return Text("Loading");
+          return CircularProgressIndicator();
         },
-      ), //steps
-      RaisedButton(
+      ),
+      SizedBox(height: 40),
+      Text("How did you feel this week?",
+          style: Theme.of(context).textTheme.bodyText2),
+      Container(
+          child: Slider(
+            value: _currentSliderValue,
+            min: 0,
+            max: 10,
+            divisions: 10,
+            label: _currentSliderValue.round().toString(),
+            activeColor: Theme.of(context).primaryColor,
+            inactiveColor: Color.fromARGB(189, 189, 189, 255),
+            onChanged: (double value) {
+              setState(() {
+                _currentSliderValue = value;
+              });
+            },
+          ),
+          width: 300.0),
+      SizedBox(height: 10),
+      ElevatedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
@@ -125,7 +149,10 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
             Navigator.pop(context);
           },
-          child: const Text('Done'))
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Theme.of(context).primaryColor)),
+          child: const Text('Done', style: TextStyle(fontFamily: 'Rosario')))
     ]);
   }
 }

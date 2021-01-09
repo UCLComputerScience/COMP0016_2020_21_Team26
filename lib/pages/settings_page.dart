@@ -9,16 +9,13 @@ class SettingsPage extends StatelessWidget {
             child: ListView(children: [
           Text("Settings",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 36.0,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Rosario')),
+              style: Theme.of(context).textTheme.headline1),
           SizedBox(height: 30),
           ChangePostcodeWidget(),
           SizedBox(height: 75),
           ChangeSupportWidget()
         ])),
-        backgroundColor: Color.fromARGB(255, 251, 249, 255));
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
@@ -32,28 +29,21 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
   String _currentPostcode;
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text("Postcode ",
-          style: TextStyle(
-              fontFamily: 'Rosario',
-              fontSize: 20,
-              decoration: TextDecoration.underline)),
+      Text("Postcode ", style: Theme.of(context).textTheme.headline2),
       SizedBox(height: 10),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Text("Current Postcode: ",
-            style: TextStyle(
-                fontFamily: 'Rosario',
-                fontWeight: FontWeight.w500,
-                fontSize: 15)),
+            style: Theme.of(context).textTheme.bodyText1),
         FutureBuilder(
             future: _getPostcode(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Text(snapshot.data,
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+                    style: Theme.of(context).textTheme.bodyText2);
               } else if (snapshot.hasError) {
                 print(snapshot.error);
                 return Text("Something went wrong...",
-                    style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+                    style: Theme.of(context).textTheme.bodyText2);
               }
               return CircularProgressIndicator();
             })
@@ -91,7 +81,7 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
       ElevatedButton(
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 0, 74, 173))),
+                  Theme.of(context).primaryColor)),
           child: const Text('Change'),
           onPressed: () {
             if (_postcodeKey.currentState.validate()) {
@@ -115,11 +105,7 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
 
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text("Support Code",
-          style: TextStyle(
-              fontFamily: 'Rosario',
-              fontSize: 20,
-              decoration: TextDecoration.underline)),
+      Text("Support Code", style: Theme.of(context).textTheme.headline2),
       SizedBox(height: 10),
       FutureBuilder(
           future: _getSupportCode(),
@@ -129,25 +115,19 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Current Support Code: ",
-                        style: TextStyle(
-                            fontFamily: 'Rosario',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15)),
+                        style: Theme.of(context).textTheme.bodyText1),
                     SizedBox(width: 10),
                     Text(snapshot.data,
-                        style: TextStyle(fontFamily: 'Rosario', fontSize: 15))
+                        style: Theme.of(context).textTheme.bodyText2)
                   ]);
             } else if (snapshot.hasError) {
               print(snapshot.error);
               return Text("Something went wrong...",
-                  style: TextStyle(fontFamily: 'Rosario', fontSize: 15));
+                  style: Theme.of(context).textTheme.bodyText2);
             }
             return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text("Current Support Code: ",
-                  style: TextStyle(
-                      fontFamily: 'Rosario',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500)),
+                  style: Theme.of(context).textTheme.bodyText1),
               SizedBox(width: 10),
               CircularProgressIndicator()
             ]);
