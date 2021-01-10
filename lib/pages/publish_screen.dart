@@ -60,12 +60,14 @@ class _PublishScreenState extends State<PublishScreen> {
               RaisedButton(
                   child: Icon(Icons.close),
                   onPressed: () => Navigator.pop(context)),
-              RaisedButton(
-                  child: Icon(Icons.check),
-                  onPressed: () {
-                    _publishData(context);
-                    Navigator.pop(context);
-                  })
+              Builder( // builder provides a context for scaffold
+                builder: (context) => RaisedButton(
+                    child: Icon(Icons.check),
+                    onPressed: () {
+                      _publishData(context);
+                      Navigator.pop(context);
+                    }),
+              ),
             ],
           ),
         ),
@@ -102,32 +104,27 @@ class _PublishScreenState extends State<PublishScreen> {
         : anonScore - normalizedSteps;
 
     final body = jsonEncode({
-      /*
-      TODO: improve the API, it shouldn't need weeklyCalls anymore. And
-            and it prob doesn't need everything as a string.
-       */
       "postCode": item.postcode,
-      "wellbeingScore": anonScore.toString(),
-      "weeklySteps": item.numSteps.toString(),
-      "weeklyCalls": "0",
-      "errorRate": errorRate.truncate().toString(),
+      "wellbeingScore": anonScore,
+      "weeklySteps": item.numSteps,
+      // TODO: Maybe change error rate to double
+      //       & confirm the units.
+      "errorRate": errorRate.truncate(),
       "supportCode": item.supportCode,
-      "date": item.date,
+      "date_sent": item.date,
     });
 
+    print("Sending body $body");
     http
         .post(BASE_URL,
-            headers: {"Content-Type": "application/json;charset=UTF-8"},
-            body: body)
+            headers: {"Content-Type": "application/json"}, body: body)
         .then((response) {
       print("Reponse status: ${response.statusCode}");
       print("Reponse body: ${response.body}");
       final asJson = jsonDecode(response.body);
-      if (!asJson['success']) {
+      // could be null:
+      if (asJson['success'] != true) {
         Scaffold.of(context).showSnackBar(
-            // HACK: this sometimes throws an exception because it is used async
-            //       and the scaffold might not exist anymore or something?
-            //       (This is unrelated to the actual POST failure)
             SnackBar(content: Text("Oops. Something went wrong.")));
       }
     });
