@@ -4,6 +4,8 @@
 
 V2 of the CarerCare app.
 
+This is built on Flutter's stable branch.
+
 ## Initial Requirements
 
 - The system should be designed for a user between 13 and 99
@@ -15,3 +17,23 @@ This will be facilitated.
 - They will also be encouraged to do the same of there is no pedometer reading over two days. 
 On a Monday each week they will be asked if they to share their average wellbeing score (in a locally differentially private manner) with a central wellbeing hub. 
 This hub will request put requests in the same manner as the previous App
+
+## API Docs
+
+Endpoint to send wellbeing data: `https://comp0016.cyberchris.xyz/add-wellbeing-record`
+
+- postCode: string e.g. TW6
+- wellbeingScore: integer
+- weeklySteps: integer
+- errorRate: integer, this is abs(score-userScore), where score is our estimate of their score
+- supportCode: String
+- date_sent: string, 'yyyy-MM-dd'
+
+### Example POST
+
+Using curl:
+
+``` sh
+DATA='{"postCode":"TW5", "wellbeingScore":9, "weeklySteps":650, "errorRate":9, "supportCode":"GP", "date_sent":"2021-01-02"}'
+curl -d $DATA -H 'Content-Type: application/json;charset=UTF-8' https://comp0016.cyberchris.xyz/add-wellbeing-record
+```
