@@ -41,15 +41,15 @@ class _PublishScreenState extends State<PublishScreen> {
                 return Column(
                   children: [
                     Text("Wellbeing Score: ${item.wellbeingScore.truncate()}",
-                        style: Theme.of(context).textTheme.bodyText2),
+                        style: Theme.of(context).textTheme.bodyText1),
                     SizedBox(height: 10),
                     Text("Number of Steps: ${item.numSteps}",
-                        style: Theme.of(context).textTheme.bodyText2)
+                        style: Theme.of(context).textTheme.bodyText1)
                   ],
                 );
               } else if (snapshot.hasError) {
                 return Text("Error: ${snapshot.error}",
-                    style: Theme.of(context).textTheme.bodyText2);
+                    style: Theme.of(context).textTheme.bodyText1);
               }
               return SizedBox(
                 child: CircularProgressIndicator(),
@@ -84,7 +84,7 @@ class _PublishScreenState extends State<PublishScreen> {
           ),
         ),
         Text("Your data will be sent anonymously.",
-            style: TextStyle(fontSize: 15.0)),
+            style: Theme.of(context).textTheme.bodyText2),
       ],
     );
     return Scaffold(

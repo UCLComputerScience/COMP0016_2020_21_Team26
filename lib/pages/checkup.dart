@@ -89,7 +89,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Your steps this week:",
-          style: Theme.of(context).textTheme.bodyText2),
+          style: Theme.of(context).textTheme.bodyText1),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
@@ -116,7 +116,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
       ),
       SizedBox(height: 40),
       Text("How did you feel this week?",
-          style: Theme.of(context).textTheme.bodyText2),
+          style: Theme.of(context).textTheme.bodyText1),
       Container(
           child: Slider(
             value: _currentSliderValue,

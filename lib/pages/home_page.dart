@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                 } else if (snapshot.hasError) {
                   print(snapshot.error);
                   Text("Something went wrong.",
-                      style: Theme.of(context).textTheme.bodyText2);
+                      style: Theme.of(context).textTheme.bodyText1);
                 }
                 return CircularProgressIndicator();
               }),
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Row(children: [
                   Icon(Icons.directions_walk_outlined),
-                  Text("Steps", style: Theme.of(context).textTheme.bodyText1)
+                  Text("Steps", style: Theme.of(context).textTheme.subtitle1)
                 ]),
                 pedometer,
               ],

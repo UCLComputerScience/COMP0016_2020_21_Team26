@@ -76,11 +76,12 @@ class MyApp extends StatelessWidget {
                   fontSize: 25,
                   decoration: TextDecoration.underline),
               headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
-              bodyText1: TextStyle(
+              subtitle1: TextStyle(
                   fontFamily: 'Rosario',
                   fontWeight: FontWeight.w500,
                   fontSize: 20),
-              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 20))),
+              bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
+              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15))),
       home: FutureBuilder(
         future: _openIntro,
         builder: (context, snapshot) {

@@ -44,17 +44,17 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
       SizedBox(height: 10),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Text("Current Postcode: ",
-            style: Theme.of(context).textTheme.bodyText1),
+            style: Theme.of(context).textTheme.subtitle1),
         FutureBuilder(
             future: _getPostcode(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Text(snapshot.data,
-                    style: Theme.of(context).textTheme.bodyText2);
+                    style: Theme.of(context).textTheme.bodyText1);
               } else if (snapshot.hasError) {
                 print(snapshot.error);
                 return Text("Something went wrong...",
-                    style: Theme.of(context).textTheme.bodyText2);
+                    style: Theme.of(context).textTheme.bodyText1);
               }
               return CircularProgressIndicator();
             })
@@ -132,19 +132,19 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Current Support Code: ",
-                        style: Theme.of(context).textTheme.bodyText1),
+                        style: Theme.of(context).textTheme.subtitle1),
                     SizedBox(width: 10),
                     Text(snapshot.data,
-                        style: Theme.of(context).textTheme.bodyText2)
+                        style: Theme.of(context).textTheme.bodyText1)
                   ]);
             } else if (snapshot.hasError) {
               print(snapshot.error);
               return Text("Something went wrong...",
-                  style: Theme.of(context).textTheme.bodyText2);
+                  style: Theme.of(context).textTheme.bodyText1);
             }
             return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text("Current Support Code: ",
-                  style: Theme.of(context).textTheme.bodyText1),
+                  style: Theme.of(context).textTheme.subtitle1),
               SizedBox(width: 10),
               CircularProgressIndicator()
             ]);
