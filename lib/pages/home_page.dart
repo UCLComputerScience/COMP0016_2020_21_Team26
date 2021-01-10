@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Text(
             "This Week's Activity",
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.headline3,
           ),
           const SizedBox(
             height: 5.0,

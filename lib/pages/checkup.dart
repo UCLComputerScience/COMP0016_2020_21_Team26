@@ -10,13 +10,14 @@ class Checkup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+            child: Center(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
               Text("Checkup", style: Theme.of(context).textTheme.headline1),
               SizedBox(height: 30),
               CheckupWidgets(),
-            ])),
+            ]))),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
@@ -86,7 +87,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Your steps this week:",
           style: Theme.of(context).textTheme.bodyText2),
       FutureBuilder(
@@ -101,14 +102,14 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
                 style: TextStyle(
                     fontFamily: 'Rosario',
                     fontSize: 25,
-                    color: Color.fromARGB(255, 182, 125, 226)));
+                    color: Theme.of(context).accentColor));
           } else if (snapshot.hasError) {
             print(snapshot.error);
             return Text("Something went wrong...",
                 style: TextStyle(
                     fontFamily: 'Rosario',
                     fontSize: 25,
-                    color: Color.fromARGB(255, 182, 125, 226)));
+                    color: Theme.of(context).accentColor));
           }
           return CircularProgressIndicator();
         },
