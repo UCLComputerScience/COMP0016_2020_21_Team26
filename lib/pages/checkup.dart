@@ -138,10 +138,11 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
       RaisedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
+            final dateString =
+                DateTime.now().toIso8601String().substring(0, 10);
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
                 id: null,
-                date: DateTime.now()
-                    .toString(), // TODO: check if in correct format
+                date: dateString,
                 postcode: await _getPostcode(),
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
