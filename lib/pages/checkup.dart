@@ -11,16 +11,7 @@ class Checkup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-            child: Center(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-              Text("Checkup", style: Theme.of(context).textTheme.headline1),
-              SizedBox(height: 30),
-              CheckupWidgets(),
-            ]))),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
+        appBar: AppBar(title: const Text("Checkup")), body: CheckupWidgets());
   }
 }
 
@@ -113,9 +104,21 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      Text("Your steps this week:",
-          style: Theme.of(context).textTheme.bodyText1),
+    return Column(children: [
+      Text("How did you feel this week?"),
+      Slider(
+        value: _currentSliderValue,
+        min: 0,
+        max: 10,
+        divisions: 10,
+        label: _currentSliderValue.toString(),
+        onChanged: (double value) {
+          setState(() {
+            _currentSliderValue = value;
+          });
+        },
+      ),
+      Text("Your steps this week:"),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
@@ -124,43 +127,15 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
             final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
                 ? _currentTotalSteps
                 : _currentTotalSteps - lastTotalSteps;
-            return Text(thisWeeksSteps.toString(),
-                style: TextStyle(
-                    fontFamily: 'Rosario',
-                    fontSize: 25,
-                    color: Theme.of(context).accentColor));
+            return Text(thisWeeksSteps.toString());
           } else if (snapshot.hasError) {
             print(snapshot.error);
-            return Text("Something went wrong...",
-                style: TextStyle(
-                    fontFamily: 'Rosario',
-                    fontSize: 25,
-                    color: Theme.of(context).accentColor));
+            return Text("Something went wrong...");
           }
-          return CircularProgressIndicator();
+          return Text("Loading");
         },
-      ),
-      SizedBox(height: 40),
-      Text("How did you feel this week?",
-          style: Theme.of(context).textTheme.bodyText1),
-      Container(
-          child: Slider(
-            value: _currentSliderValue,
-            min: 0,
-            max: 10,
-            divisions: 10,
-            label: _currentSliderValue.round().toString(),
-            activeColor: Theme.of(context).primaryColor,
-            inactiveColor: Color.fromARGB(189, 189, 189, 255),
-            onChanged: (double value) {
-              setState(() {
-                _currentSliderValue = value;
-              });
-            },
-          ),
-          width: 300.0),
-      SizedBox(height: 10),
-      ElevatedButton(
+      ), //steps
+      RaisedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
             final dateString =
@@ -179,10 +154,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
             _checkWellbeing(2); // nudges if scores dropped twice
           },
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                  Theme.of(context).primaryColor)),
-          child: const Text('Done', style: TextStyle(fontFamily: 'Rosario')))
+          child: const Text('Done'))
     ]);
   }
 }

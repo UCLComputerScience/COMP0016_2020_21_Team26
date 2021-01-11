@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.all(10),
       child: Text(
         "Welcome",
-        style: Theme.of(context).textTheme.headline1,
+        style: TextStyle(fontSize: 30),
       ),
     );
   }
@@ -36,37 +36,37 @@ class _HomePageState extends State<HomePage> {
   Widget _previouScoreHolder(BuildContext ctx) {
     return Container(
       width: double.infinity, // stretches the width
-      child: Column(
-        children: [
-          // SizedBox to add some spacing
-          const SizedBox(
-            height: 5.0,
-          ),
-          Text("Last Week's Wellbeing Score",
-              style: Theme.of(context).textTheme.headline3),
-          const SizedBox(
-            height: 10.0,
-          ),
-          FutureBuilder(
-              future: _lastItemListFuture,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final List<WellbeingItem> lastItemList = snapshot.data;
-                  return lastItemList.isNotEmpty
-                      ? WellbeingCircle(
-                          lastItemList[0].wellbeingScore.truncate())
-                      : WellbeingCircle();
-                } else if (snapshot.hasError) {
-                  print(snapshot.error);
-                  Text("Something went wrong.",
-                      style: Theme.of(context).textTheme.bodyText1);
-                }
-                return CircularProgressIndicator();
-              }),
-          const SizedBox(
-            height: 5.0,
-          ),
-        ],
+      child: Card(
+        child: Column(
+          children: [
+            // SizedBox to add some spacing
+            const SizedBox(
+              height: 5.0,
+            ),
+            Text("Last Week's Wellbeing Score"),
+            const SizedBox(
+              height: 10.0,
+            ),
+            FutureBuilder(
+                future: _lastItemListFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final List<WellbeingItem> lastItemList = snapshot.data;
+                    return lastItemList.isNotEmpty
+                        ? WellbeingCircle(
+                            lastItemList[0].wellbeingScore.truncate())
+                        : WellbeingCircle();
+                  } else if (snapshot.hasError) {
+                    print(snapshot.error);
+                    Text("Something went wrong.");
+                  }
+                  return CircularProgressIndicator();
+                }),
+            const SizedBox(
+              height: 5.0,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -101,14 +101,12 @@ class _HomePageState extends State<HomePage> {
 
     return Container(
         width: double.infinity,
-        child: Column(children: [
+        child: Card(
+            child: Column(children: [
           const SizedBox(
             height: 5.0,
           ),
-          Text(
-            "This Week's Activity",
-            style: Theme.of(context).textTheme.headline3,
-          ),
+          Text("This Week's Activity"),
           const SizedBox(
             height: 5.0,
           ),
@@ -119,13 +117,13 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Row(children: [
                   Icon(Icons.directions_walk_outlined),
-                  Text("Steps", style: Theme.of(context).textTheme.subtitle1)
+                  Text("Steps")
                 ]),
                 pedometer,
               ],
             ),
           ),
-        ]));
+        ])));
   }
 
   @override
@@ -134,17 +132,12 @@ class _HomePageState extends State<HomePage> {
     final previousScoreHolder = _previouScoreHolder(context);
     final thisWeekHolder = _thisWeekHolder(context);
 
-    return Scaffold(
-        body: SafeArea(
-            child: Column(
-          children: [
-            heading,
-            SizedBox(height: 20),
-            previousScoreHolder,
-            SizedBox(height: 30),
-            thisWeekHolder,
-          ],
-        )),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
+    return Column(
+      children: [
+        heading,
+        previousScoreHolder,
+        thisWeekHolder,
+      ],
+    );
   }
 }

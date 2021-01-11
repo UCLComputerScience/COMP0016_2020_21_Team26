@@ -30,8 +30,7 @@ class _PublishScreenState extends State<PublishScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 25.0),
-          child: Text("Publish Data?",
-              style: Theme.of(context).textTheme.headline1),
+          child: Text("Publish Data?", style: TextStyle(fontSize: 35.0)),
         ),
         FutureBuilder(
             future: _singleton,
@@ -40,16 +39,12 @@ class _PublishScreenState extends State<PublishScreen> {
                 WellbeingItem item = snapshot.data[0];
                 return Column(
                   children: [
-                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}",
-                        style: Theme.of(context).textTheme.bodyText1),
-                    SizedBox(height: 10),
-                    Text("Number of Steps: ${item.numSteps}",
-                        style: Theme.of(context).textTheme.bodyText1)
+                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}"),
+                    Text("Number of Steps: ${item.numSteps}")
                   ],
                 );
               } else if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}",
-                    style: Theme.of(context).textTheme.bodyText1);
+                return Text("Error: ${snapshot.error}");
               }
               return SizedBox(
                 child: CircularProgressIndicator(),
@@ -62,35 +57,27 @@ class _PublishScreenState extends State<PublishScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
-              ElevatedButton(
-                child: Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).primaryColor)),
+              RaisedButton(
+                  child: Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context)),
+              Builder( // builder provides a context for scaffold
+                builder: (context) => RaisedButton(
+                    child: Icon(Icons.check),
+                    onPressed: () {
+                      _publishData(context);
+                      Navigator.pop(context);
+                    }),
               ),
-              SizedBox(width: 20),
-              ElevatedButton(
-                child: Icon(Icons.check),
-                onPressed: () {
-                  _publishData(context);
-                  Navigator.pop(context);
-                },
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).primaryColor)),
-              )
             ],
           ),
         ),
         Text("Your data will be sent anonymously.",
-            style: Theme.of(context).textTheme.bodyText2),
+            style: TextStyle(fontSize: 10.0)),
       ],
     );
     return Scaffold(
-        body: SafeArea(child: content),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
+      body: SafeArea(child: content),
+    );
   }
 
   /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
