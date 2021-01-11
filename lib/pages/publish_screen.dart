@@ -8,7 +8,7 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 
-const BASE_URL = "https://comp0016.cyberchris.xyz/add-wellbeing-record";
+const BASE_URL = "http://178.79.172.202:3001/map/androidData";
 
 class PublishScreen extends StatefulWidget {
   @override
@@ -30,8 +30,7 @@ class _PublishScreenState extends State<PublishScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 25.0),
-          child: Text("Publish Data?",
-              style: Theme.of(context).textTheme.headline1),
+          child: Text("Publish Data?", style: TextStyle(fontSize: 35.0)),
         ),
         FutureBuilder(
             future: _singleton,
@@ -40,16 +39,12 @@ class _PublishScreenState extends State<PublishScreen> {
                 WellbeingItem item = snapshot.data[0];
                 return Column(
                   children: [
-                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}",
-                        style: Theme.of(context).textTheme.bodyText1),
-                    SizedBox(height: 10),
-                    Text("Number of Steps: ${item.numSteps}",
-                        style: Theme.of(context).textTheme.bodyText1)
+                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}"),
+                    Text("Number of Steps: ${item.numSteps}")
                   ],
                 );
               } else if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}",
-                    style: Theme.of(context).textTheme.bodyText1);
+                return Text("Error: ${snapshot.error}");
               }
               return SizedBox(
                 child: CircularProgressIndicator(),
@@ -62,34 +57,25 @@ class _PublishScreenState extends State<PublishScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              RaisedButton(
                   child: Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Theme.of(context).primaryColor))),
-              Builder(
-                // builder provides a context for scaffold
-                builder: (context) => ElevatedButton(
-                    child: Icon(Icons.check),
-                    onPressed: () {
-                      _publishData(context);
-                      Navigator.pop(context);
-                    },
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Theme.of(context).primaryColor))),
-              ),
+                  onPressed: () => Navigator.pop(context)),
+              RaisedButton(
+                  child: Icon(Icons.check),
+                  onPressed: () {
+                    _publishData(context);
+                    Navigator.pop(context);
+                  })
             ],
           ),
         ),
         Text("Your data will be sent anonymously.",
-            style: Theme.of(context).textTheme.bodyText2),
+            style: TextStyle(fontSize: 10.0)),
       ],
     );
     return Scaffold(
-        body: SafeArea(child: content),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
+      body: SafeArea(child: content),
+    );
   }
 
   /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
@@ -116,27 +102,32 @@ class _PublishScreenState extends State<PublishScreen> {
         : anonScore - normalizedSteps;
 
     final body = jsonEncode({
+      /*
+      TODO: improve the API, it shouldn't need weeklyCalls anymore. And
+            and it prob doesn't need everything as a string.
+       */
       "postCode": item.postcode,
-      "wellbeingScore": anonScore,
-      "weeklySteps": item.numSteps,
-      // TODO: Maybe change error rate to double
-      //       & confirm the units.
-      "errorRate": errorRate.truncate(),
+      "wellbeingScore": anonScore.toString(),
+      "weeklySteps": item.numSteps.toString(),
+      "weeklyCalls": "0",
+      "errorRate": errorRate.truncate().toString(),
       "supportCode": item.supportCode,
-      "date_sent": item.date,
+      "date": item.date,
     });
 
-    print("Sending body $body");
     http
         .post(BASE_URL,
-            headers: {"Content-Type": "application/json"}, body: body)
+            headers: {"Content-Type": "application/json;charset=UTF-8"},
+            body: body)
         .then((response) {
       print("Reponse status: ${response.statusCode}");
       print("Reponse body: ${response.body}");
       final asJson = jsonDecode(response.body);
-      // could be null:
-      if (asJson['success'] != true) {
+      if (!asJson['success']) {
         Scaffold.of(context).showSnackBar(
+            // HACK: this sometimes throws an exception because it is used async
+            //       and the scaffold might not exist anymore or something?
+            //       (This is unrelated to the actual POST failure)
             SnackBar(content: Text("Oops. Something went wrong.")));
       }
     });
