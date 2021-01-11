@@ -21,33 +21,6 @@ class TestingPage extends StatelessWidget {
       TextField(
         onSubmitted: _updatePostcode,
       ),
-      return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-//       ElevatedButton(
-//           onPressed: () => scheduleNotification(
-//               tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
-//           child: Text("Test Notification")),
-//       ElevatedButton(
-//           onPressed: () => Navigator.push(
-//               context, MaterialPageRoute(builder: (context) => Checkup())),
-//           child: Text("Checkup Screen")),
-//       ElevatedButton(
-//           onPressed: () => Navigator.push(context,
-//               MaterialPageRoute(builder: (context) => PublishScreen())),
-//           child: Text("Publish Screen")),
-//       ElevatedButton(
-//         onPressed: () async {
-//           final prefs = await SharedPreferences.getInstance();
-//           final dateStr = DateTime.now().toIso8601String().substring(0, 10);
-//           UserWellbeingDB().insert(WellbeingItem(
-//             postcode: prefs.getString('postcode'),
-//             wellbeingScore: Random().nextDouble() * 10.0,
-//             numSteps: Random().nextInt(70001),
-//             supportCode: prefs.getString('support_code'),
-//             date: dateStr,
-//           ));
-//         },
-//         child: Text("Generate WellbeingItem"),
-//       ),
       ElevatedButton(
           onPressed: () => Navigator.push(
               context,
@@ -70,12 +43,6 @@ class TestingPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => PublishScreen())),
           child: Text("Publish Screen")),
       ElevatedButton(
-        onPressed: () => UserWellbeingDB().insert(WellbeingItem(
-            wellbeingScore: Random().nextDouble() * 10.0,
-            numSteps: Random().nextInt(70001))),
-        child: Text("Generate WellbeingItem"),
-      ),
-      ElevatedButton(
         onPressed: () async {
           final prefs = await SharedPreferences.getInstance();
           final dateStr = DateTime.now().toIso8601String().substring(0, 10);
@@ -89,6 +56,10 @@ class TestingPage extends StatelessWidget {
         },
         child: Text("Generate WellbeingItem"),
       ),
-    ])]);
+      ElevatedButton(
+        onPressed: () => UserWellbeingDB().delete(),
+        child: Text("Reset Wellbeing Data"),
+      )
+    ]);
   }
 }

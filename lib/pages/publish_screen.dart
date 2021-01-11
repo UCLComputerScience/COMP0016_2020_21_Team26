@@ -30,7 +30,8 @@ class _PublishScreenState extends State<PublishScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 25.0),
-          child: Text("Publish Data?", style: TextStyle(fontSize: 35.0)),
+          child: Text("Publish Data?",
+              style: Theme.of(context).textTheme.headline1),
         ),
         FutureBuilder(
             future: _singleton,
@@ -39,12 +40,16 @@ class _PublishScreenState extends State<PublishScreen> {
                 WellbeingItem item = snapshot.data[0];
                 return Column(
                   children: [
-                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}"),
-                    Text("Number of Steps: ${item.numSteps}")
+                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}",
+                        style: Theme.of(context).textTheme.bodyText1),
+                    SizedBox(height: 10),
+                    Text("Number of Steps: ${item.numSteps}",
+                        style: Theme.of(context).textTheme.bodyText1)
                   ],
                 );
               } else if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}");
+                return Text("Error: ${snapshot.error}",
+                    style: Theme.of(context).textTheme.bodyText1);
               }
               return SizedBox(
                 child: CircularProgressIndicator(),
