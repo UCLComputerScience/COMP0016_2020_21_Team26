@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
+import 'package:nudge_me/notification.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
@@ -85,6 +87,30 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
     return userSupportCode;
   }
 
+  /// returns `true` if given [List] is monotonically decreasing
+  bool _isDecreasing(List<dynamic> items) {
+    for (int i = 0; i < items.length - 1; ++i) {
+      if (items[i] <= items[i + 1]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// nudges user if score drops n times in the last n+1 weeks.
+  /// For example if n == 2 and we have these 3 weeks/scores 8 7 6, the user
+  /// will be nudged.
+  void _checkWellbeing(final int n) async {
+    assert(n >= 1);
+    final List<WellbeingItem> items =
+        await UserWellbeingDB().getLastNWeeks(n + 1);
+    if (items.length == n + 1 &&
+        _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
+      // if there were enough scores, and they were decreasing
+      scheduleNudge();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -137,18 +163,21 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
       ElevatedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
+            final dateString =
+                DateTime.now().toIso8601String().substring(0, 10);
             WellbeingItem weeklyWellbeingItem = new WellbeingItem(
                 id: null,
-                date: DateTime.now()
-                    .toString(), // TODO: check if in correct format
+                date: dateString,
                 postcode: await _getPostcode(),
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
                 supportCode: await _getSupportCode());
-            UserWellbeingDB().insert(weeklyWellbeingItem);
+            await UserWellbeingDB().insert(weeklyWellbeingItem);
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
             Navigator.pop(context);
+
+            _checkWellbeing(2); // nudges if scores dropped twice
           },
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(

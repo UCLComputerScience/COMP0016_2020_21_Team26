@@ -14,6 +14,9 @@ const FIRST_TIME_DONE_KEY = "first_time_done";
 /// key to retrieve the previous step count total from [SharedPreferences]
 const PREV_STEP_COUNT_KEY = "step_count_total";
 
+/// key to retrieve the last time a step was taken (along with timestamp)
+const PREV_PEDOMETER_PAIR_KEY = "prev_pedometer_pair";
+
 /// used to push without context
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
 
@@ -33,24 +36,34 @@ Future<bool> _isFirstTime() async {
 }
 
 void _appInit() async {
-  tz.initializeTimeZones();
-  // app is for UK population, so london timezone should be fine
-  tz.setLocalLocation(tz.getLocation("Europe/London"));
-
-  initializePlatformSpecifics(); // init notification settings
-
+  await initNotification();
   if (await _isFirstTime()) {
     _setupStepCountTotal();
   }
 }
 
+/// initializes timezone and notification settings
+Future initNotification() async {
+  tz.initializeTimeZones();
+  // app is for UK population, so london timezone should be fine
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
+  initializePlatformSpecifics(); // init notification settings
+}
+
 /// Initialize the 'previous' step count total to the current value.
 void _setupStepCountTotal() async {
   final prefs = await SharedPreferences.getInstance();
+  final int totalSteps =
+      await Pedometer.stepCountStream.first.then((value) => value.steps);
 
   if (!prefs.containsKey(PREV_STEP_COUNT_KEY)) {
-    prefs.setInt(PREV_STEP_COUNT_KEY,
-        await Pedometer.stepCountStream.first.then((value) => value.steps));
+    prefs.setInt(PREV_STEP_COUNT_KEY, totalSteps);
+  }
+  if (!prefs.containsKey(PREV_PEDOMETER_PAIR_KEY)) {
+    prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
+        // ISO date format allows easier parsing
+        [totalSteps.toString(), DateTime.now().toIso8601String()]);
   }
 }
 
