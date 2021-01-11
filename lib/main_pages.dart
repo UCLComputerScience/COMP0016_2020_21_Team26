@@ -5,8 +5,9 @@ import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/nudge_screen.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
-import 'package:nudge_me/pages/settings_page.dart';
+import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
+import 'package:nudge_me/pages/settings_page.dart';
 
 import 'main.dart';
 
@@ -15,12 +16,14 @@ class MainPages extends StatefulWidget {
     WellbeingPage(),
     HomePage(),
     SettingsPage(),
+    TestingPage(),
   ];
 
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+    BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Testing"),
   ];
 
   @override
