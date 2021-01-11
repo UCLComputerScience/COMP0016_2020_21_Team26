@@ -57,27 +57,34 @@ class _PublishScreenState extends State<PublishScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              RaisedButton(
+              ElevatedButton(
                   child: Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context)),
-              Builder( // builder provides a context for scaffold
-                builder: (context) => RaisedButton(
-                    child: Icon(Icons.check),
-                    onPressed: () {
-                      _publishData(context);
-                      Navigator.pop(context);
-                    }),
-              ),
+                  onPressed: () => Navigator.pop(context),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).primaryColor))),
+              SizedBox(width: 20),
+              Builder(
+                  // builder provides a context for scaffold
+                  builder: (context) => ElevatedButton(
+                      child: Icon(Icons.check),
+                      onPressed: () {
+                        _publishData(context);
+                        Navigator.pop(context);
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Theme.of(context).primaryColor)))),
             ],
           ),
         ),
         Text("Your data will be sent anonymously.",
-            style: TextStyle(fontSize: 10.0)),
+            style: Theme.of(context).textTheme.bodyText2),
       ],
     );
     return Scaffold(
-      body: SafeArea(child: content),
-    );
+        body: SafeArea(child: content),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 
   /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
