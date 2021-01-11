@@ -39,38 +39,6 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
   }
 
   Widget build(BuildContext context) {
-// <<<<<<< backend-update-2
-//     return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-//       TextField(
-//         onSubmitted: _updatePostcode,
-//       ),
-//       ElevatedButton(
-//           onPressed: () => scheduleNotification(
-//               tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
-//           child: Text("Test Notification")),
-//       ElevatedButton(
-//           onPressed: () => Navigator.push(
-//               context, MaterialPageRoute(builder: (context) => Checkup())),
-//           child: Text("Checkup Screen")),
-//       ElevatedButton(
-//           onPressed: () => Navigator.push(context,
-//               MaterialPageRoute(builder: (context) => PublishScreen())),
-//           child: Text("Publish Screen")),
-//       ElevatedButton(
-//         onPressed: () async {
-//           final prefs = await SharedPreferences.getInstance();
-//           final dateStr = DateTime.now().toIso8601String().substring(0, 10);
-//           UserWellbeingDB().insert(WellbeingItem(
-//             postcode: prefs.getString('postcode'),
-//             wellbeingScore: Random().nextDouble() * 10.0,
-//             numSteps: Random().nextInt(70001),
-//             supportCode: prefs.getString('support_code'),
-//             date: dateStr,
-//           ));
-//         },
-//         child: Text("Generate WellbeingItem"),
-//       ),
-// =======
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text("Postcode ", style: Theme.of(context).textTheme.headline2),
       SizedBox(height: 10),
