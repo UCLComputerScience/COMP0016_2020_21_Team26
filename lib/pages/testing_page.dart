@@ -43,9 +43,17 @@ class TestingPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => PublishScreen())),
           child: Text("Publish Screen")),
       ElevatedButton(
-        onPressed: () => UserWellbeingDB().insert(WellbeingItem(
+        onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          final dateStr = DateTime.now().toIso8601String().substring(0, 10);
+          UserWellbeingDB().insert(WellbeingItem(
+            postcode: prefs.getString('postcode'),
             wellbeingScore: Random().nextDouble() * 10.0,
-            numSteps: Random().nextInt(70001))),
+            numSteps: Random().nextInt(70001),
+            supportCode: prefs.getString('support_code'),
+            date: dateStr,
+          ));
+        },
         child: Text("Generate WellbeingItem"),
       ),
       ElevatedButton(

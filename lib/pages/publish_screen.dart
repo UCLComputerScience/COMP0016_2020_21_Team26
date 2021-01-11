@@ -62,25 +62,24 @@ class _PublishScreenState extends State<PublishScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               ElevatedButton(
-                child: Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).primaryColor)),
-              ),
+                  child: Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).primaryColor))),
               SizedBox(width: 20),
-              ElevatedButton(
-                child: Icon(Icons.check),
-                onPressed: () {
-                  _publishData(context);
-                  Navigator.pop(context);
-                },
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).primaryColor)),
-              )
+              Builder(
+                  // builder provides a context for scaffold
+                  builder: (context) => ElevatedButton(
+                      child: Icon(Icons.check),
+                      onPressed: () {
+                        _publishData(context);
+                        Navigator.pop(context);
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Theme.of(context).primaryColor)))),
             ],
           ),
         ),
