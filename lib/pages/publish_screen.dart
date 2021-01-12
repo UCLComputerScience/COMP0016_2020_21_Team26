@@ -39,12 +39,15 @@ class _PublishScreenState extends State<PublishScreen> {
                 WellbeingItem item = snapshot.data[0];
                 return Column(
                   children: [
-                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}"),
-                    Text("Number of Steps: ${item.numSteps}")
+                    Text("Wellbeing Score: ${item.wellbeingScore.truncate()}",
+                        style: Theme.of(context).textTheme.bodyText1),
+                    Text("Number of Steps: ${item.numSteps}",
+                        style: Theme.of(context).textTheme.bodyText1),
                   ],
                 );
               } else if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}");
+                return Text("Error: ${snapshot.error}",
+                    style: Theme.of(context).textTheme.bodyText2);
               }
               return SizedBox(
                 child: CircularProgressIndicator(),
@@ -57,15 +60,22 @@ class _PublishScreenState extends State<PublishScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              RaisedButton(
+              ElevatedButton(
                   child: Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context)),
-              RaisedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).primaryColor))),
+              SizedBox(width: 10),
+              ElevatedButton(
                   child: Icon(Icons.check),
                   onPressed: () {
                     _publishData(context);
                     Navigator.pop(context);
-                  })
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).primaryColor)))
             ],
           ),
         ),
