@@ -27,7 +27,10 @@ dependencies:
   # util
   http: ^0.12.2
   flutter_local_notifications: ^3.0.2
-  pedometer: ^2.0.2
+  pedometer:
+    git:
+      url: git://github.com/thevirtuoso1973/flutter-plugins.git
+      path: packages/pedometer
   timezone: ^0.5.9 # needed for scheduling notifications
   workmanager: ^0.2.3
   pdf: ^1.13.0

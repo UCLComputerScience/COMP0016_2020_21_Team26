@@ -460,9 +460,11 @@ packages:
   pedometer:
     dependency: "direct main"
     description:
-      name: pedometer
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "packages/pedometer"
+      ref: HEAD
+      resolved-ref: "66f9da384f1ad9c118f0973e99c12060f01ee706"
+      url: "git://github.com/thevirtuoso1973/flutter-plugins.git"
+    source: git
     version: "2.0.2"
   petitparser:
     dependency: transitive

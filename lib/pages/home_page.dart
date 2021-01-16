@@ -78,6 +78,8 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.hasData) {
             final lastTotalSteps = snapshot.data;
             return StreamBuilder(
+              // TODO: use alt step count stream if needed
+              //       (and everywhere else)
               stream: Pedometer.stepCountStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/shared/alt_step_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -10,10 +11,15 @@ class SettingsPage extends StatelessWidget {
           Text("Settings",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headline1),
+          // REVIEW: Can we specify spacing between all children without having
+          //         a [SizedBox] between each of them?
           SizedBox(height: 30),
           ChangePostcodeWidget(),
-          SizedBox(height: 75),
-          ChangeSupportWidget()
+          SizedBox(height: 60),
+          ChangeSupportWidget(),
+          SizedBox(height: 60),
+          AltStepSwitch(),
+          SizedBox(height: 20),
         ])),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
