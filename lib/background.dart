@@ -24,8 +24,9 @@ void callbackDispatcher() {
         final prevTotal = int.parse(pedometerPair.first);
         final prevDateTime = DateTime.parse(pedometerPair.last);
 
-        final int currTotal =
-            await Pedometer.stepCountStream.first.then((value) => value.steps);
+        final int currTotal = await Pedometer.stepCountStream.first
+            .then((value) => value.steps)
+            .catchError((_) => 0);
         if (currTotal > prevTotal || currTotal < prevTotal) {
           // if steps have increased or the device has been rebooted
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,

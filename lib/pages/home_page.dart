@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> {
                   return Text(actualSteps.toString());
                 } else if (snapshot.hasError) {
                   print(snapshot.error);
+                  return Text("N/A");
                 }
                 return CircularProgressIndicator();
               },
