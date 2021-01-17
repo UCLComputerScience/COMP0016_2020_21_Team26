@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/shared/alt_step_switch.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
@@ -24,9 +25,13 @@ void callbackDispatcher() {
         final prevTotal = int.parse(pedometerPair.first);
         final prevDateTime = DateTime.parse(pedometerPair.last);
 
-        final int currTotal = await Pedometer.stepCountStream.first
+        final _stream = prefs.getBool(ALT_STEP_COUNT_KEY) == true
+            ? Pedometer.altStepCountStream
+            : Pedometer.stepCountStream;
+        final int currTotal = await _stream.first
             .then((value) => value.steps)
-            .catchError((_) => 0);
+            .catchError((_) => 0); // FIXME: don't send notification if there's an error
+
         if (currTotal > prevTotal || currTotal < prevTotal) {
           // if steps have increased or the device has been rebooted
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,

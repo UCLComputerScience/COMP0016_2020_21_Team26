@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nudge_me/pages/intro_screen.dart';
 
 /// key for [SharedPreferences] to check if the user has switched on the
-/// alternate step counter
+/// alternate step counter.
+///
+/// It may not be set in prefs, so be aware that the value in prefs
+/// could be null.
 const ALT_STEP_COUNT_KEY = 'using_alt_step_count';
 
 class AltStepSwitch extends StatefulWidget {
@@ -12,21 +16,18 @@ class AltStepSwitch extends StatefulWidget {
 }
 
 class _AltStepSwitchState extends State<AltStepSwitch> {
-  // booleans to check if the device has a step counter, and if
-  // if it's currently in use
-  Future<_FutureHolder> _futureHolder = Pedometer.hasStepCounter.then((a1) =>
-      SharedPreferences.getInstance().then(
-          (prefs) => _FutureHolder(a1, prefs.getBool(ALT_STEP_COUNT_KEY))));
-
   @override
   Widget build(BuildContext context) => FutureBuilder(
-        future: _futureHolder,
+    future: SharedPreferences.getInstance(),
         builder: (ctx, data) {
           if (data.hasData) {
-            final _FutureHolder holder = data.data;
+            final SharedPreferences prefs = data.data;
+            final hasStepCounter = prefs.getBool(HAS_STEP_COUNTER_KEY);
+            final isUsingAlt = prefs.getBool(ALT_STEP_COUNT_KEY) == true;
+
             return SwitchTile(
-              disabled: holder.hasStepCounter,
-              initial: holder.isUsing == true,
+              disabled: hasStepCounter,
+              initial: isUsingAlt == true,
             );
           } else if (data.hasError) {
             return Text("Something went wrong.");
@@ -34,13 +35,6 @@ class _AltStepSwitchState extends State<AltStepSwitch> {
           return LinearProgressIndicator();
         },
       );
-}
-
-class _FutureHolder {
-  final hasStepCounter;
-  final isUsing;
-
-  _FutureHolder(this.hasStepCounter, this.isUsing);
 }
 
 class SwitchTile extends StatefulWidget {
@@ -79,5 +73,8 @@ class _SwitchTileState extends State<SwitchTile> {
     });
     await SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(ALT_STEP_COUNT_KEY, value));
+    // TODO: don't rely on prefs to detemine service running.
+    //       Some devices don't reset SharedPreferences on reinstall so
+    //       it will think the service is running even though it's not.
   }
 }

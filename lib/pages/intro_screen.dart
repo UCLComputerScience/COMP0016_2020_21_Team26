@@ -4,8 +4,11 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:nudge_me/background.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
+
+const HAS_STEP_COUNTER_KEY = 'has_step_counter';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
@@ -54,8 +57,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   void _finishSetup() async {
     scheduleCheckup(DateTime.sunday, const Time(12));
     schedulePublish(DateTime.monday, const Time(12));
-    SharedPreferences.getInstance()
-        .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(FIRST_TIME_DONE_KEY, true);
+    Pedometer.hasStepCounter.then((b) => prefs.setBool(HAS_STEP_COUNTER_KEY, b));
+
     // only start tracking steps after user has done setup
     initBackground();
   }

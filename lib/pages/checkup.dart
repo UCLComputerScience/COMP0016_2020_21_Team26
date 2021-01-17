@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/shared/alt_step_switch.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
@@ -40,7 +41,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   // the actual step count for the week.
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
-  int _currentTotalSteps;
+  int _currentTotalSteps = 0;
 
   @override
   void initState() {
@@ -48,8 +49,12 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
     _startListening();
   }
 
-  void _startListening() {
-    Stream<StepCount> stream = Pedometer.stepCountStream;
+  void _startListening() async {
+    final isUsingAlt = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getBool(ALT_STEP_COUNT_KEY));
+
+    Stream<StepCount> stream =
+        isUsingAlt ? Pedometer.altStepCountStream : Pedometer.stepCountStream;
     _subscription = stream.listen(
       _onStepCount,
       onError: _onError,

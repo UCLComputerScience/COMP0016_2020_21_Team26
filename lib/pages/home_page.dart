@@ -83,7 +83,8 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.hasData) {
             final List<dynamic> _data = snapshot.data;
             final lastTotalSteps = _data[0];
-            final bool isUsingAlt = _data[1];
+            final bool isUsingAlt = _data[1] == true;
+
             return StreamBuilder(
               stream: isUsingAlt
                   ? Pedometer.altStepCountStream
