@@ -122,7 +122,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
                 child: Text(
-                  "The 'healthy' section represents the recommended number of steps per week, which is 70,000.",
+                  "The 'healthy' section represents the recommended number of steps per week (close to 70,000).",
                   style: TextStyle(
                       fontSize: 20,
                       color: Colors.black,
