@@ -67,6 +67,7 @@ flutter:
     - lib/images/IntroLogo.png
     - lib/images/IntroPostcode.png
     - lib/images/IntroSupport.png
+    - lib/images/IntroCheckup.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
