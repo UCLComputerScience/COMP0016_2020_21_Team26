@@ -54,8 +54,9 @@ Future initNotification() async {
 /// Initialize the 'previous' step count total to the current value.
 void _setupStepCountTotal() async {
   final prefs = await SharedPreferences.getInstance();
-  final int totalSteps =
-      await Pedometer.stepCountStream.first.then((value) => value.steps);
+  final int totalSteps = await Pedometer.stepCountStream.first
+      .then((value) => value.steps)
+      .catchError((_) => 0);
 
   if (!prefs.containsKey(PREV_STEP_COUNT_KEY)) {
     prefs.setInt(PREV_STEP_COUNT_KEY, totalSteps);
