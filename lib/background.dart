@@ -30,7 +30,8 @@ void callbackDispatcher() {
             : Pedometer.stepCountStream;
         final int currTotal = await _stream.first
             .then((value) => value.steps)
-            .catchError((_) => 0); // FIXME: don't send notification if there's an error
+            .catchError(
+                (_) => 0); // FIXME: don't send notification if there's an error
 
         if (currTotal > prevTotal || currTotal < prevTotal) {
           // if steps have increased or the device has been rebooted

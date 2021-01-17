@@ -60,7 +60,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(FIRST_TIME_DONE_KEY, true);
-    Pedometer.hasStepCounter.then((b) => prefs.setBool(HAS_STEP_COUNTER_KEY, b));
+    Pedometer.hasStepCounter
+        .then((b) => prefs.setBool(HAS_STEP_COUNTER_KEY, b));
 
     // only start tracking steps after user has done setup
     initBackground();

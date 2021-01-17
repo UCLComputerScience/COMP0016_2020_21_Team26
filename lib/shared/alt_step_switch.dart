@@ -18,7 +18,7 @@ class AltStepSwitch extends StatefulWidget {
 class _AltStepSwitchState extends State<AltStepSwitch> {
   @override
   Widget build(BuildContext context) => FutureBuilder(
-    future: SharedPreferences.getInstance(),
+        future: SharedPreferences.getInstance(),
         builder: (ctx, data) {
           if (data.hasData) {
             final SharedPreferences prefs = data.data;
