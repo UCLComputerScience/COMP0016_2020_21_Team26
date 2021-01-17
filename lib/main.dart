@@ -93,6 +93,11 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'Rosario',
                 fontWeight: FontWeight.w500,
                 fontSize: 20),
+            subtitle2: TextStyle(
+                fontFamily: 'Rosario',
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
+                fontSize: 20), //for tutorial
             bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
             bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(

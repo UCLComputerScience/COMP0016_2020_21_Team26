@@ -1,9 +1,20 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:highlighter_coachmark/highlighter_coachmark.dart';
+
+///key to retreive [bool] that is true if the tutorial has been completed
+const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
+
+Future<bool> _isHomeTutorialDone() async {
+  final prefs = await SharedPreferences.getInstance();
+  return !prefs.containsKey(HOME_TUTORIAL_DONE_KEY) ||
+      !prefs.getBool(HOME_TUTORIAL_DONE_KEY);
+}
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,9 +29,63 @@ class _HomePageState extends State<HomePage> {
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
+  GlobalKey _lastWeekWBTutorialKey = GlobalObjectKey("laskweek_wb");
+  GlobalKey _stepsTutorialKey = GlobalObjectKey("steps");
+
   @override
   void initState() {
     super.initState();
+    showTutorial();
+  }
+
+  void showTutorial() async {
+    final Future<bool> _showTutorial = _isHomeTutorialDone();
+
+    if (await _showTutorial) {
+      Timer(Duration(seconds: 1), () => showCoachMarkWB());
+    }
+  }
+
+  void showCoachMarkWB() {
+    CoachMark coachMarkWB = CoachMark();
+    RenderBox target = _lastWeekWBTutorialKey.currentContext.findRenderObject();
+    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
+    markRect = Rect.fromCircle(
+        center: markRect.center, radius: markRect.longestSide * 0.6);
+    coachMarkWB.show(
+        targetContext: _lastWeekWBTutorialKey.currentContext,
+        markRect: markRect,
+        children: [
+          Center(
+              child: Text("This is where you can view \n last week's score.",
+                  style: Theme.of(context).textTheme.subtitle2))
+        ],
+        duration: Duration(seconds: 3),
+        onClose: () {
+          Timer(Duration(seconds: 1), () => showCoachMarkSteps());
+        });
+  }
+
+  void showCoachMarkSteps() {
+    CoachMark coachMarkSteps = CoachMark();
+    RenderBox target = _stepsTutorialKey.currentContext.findRenderObject();
+    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
+    markRect = Rect.fromCircle(
+        center: markRect.center, radius: markRect.longestSide * 0.6);
+    coachMarkSteps.show(
+        targetContext: _lastWeekWBTutorialKey.currentContext,
+        markRect: markRect,
+        children: [
+          Center(
+              child: Text(
+                  "This is where you can view your steps so far \n (we start counting now)",
+                  style: Theme.of(context).textTheme.subtitle2))
+        ],
+        duration: Duration(seconds: 5),
+        onClose: () {
+          SharedPreferences.getInstance()
+              .then((prefs) => prefs.setBool(HOME_TUTORIAL_DONE_KEY, true));
+        });
   }
 
   Widget _heading(BuildContext ctx) {
@@ -48,6 +113,7 @@ class _HomePageState extends State<HomePage> {
             height: 10.0,
           ),
           FutureBuilder(
+              key: _lastWeekWBTutorialKey,
               future: _lastItemListFuture,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -73,6 +139,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _thisWeekHolder(BuildContext ctx) {
     final pedometer = FutureBuilder(
+        key: _stepsTutorialKey,
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
