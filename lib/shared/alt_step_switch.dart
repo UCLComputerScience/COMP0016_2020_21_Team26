@@ -24,7 +24,10 @@ class _AltStepSwitchState extends State<AltStepSwitch> {
         builder: (ctx, data) {
           if (data.hasData) {
             final _FutureHolder holder = data.data;
-            return SwitchTile(disabled: holder.hasStepCounter, initial: holder.isUsing == true,);
+            return SwitchTile(
+              disabled: holder.hasStepCounter,
+              initial: holder.isUsing == true,
+            );
           } else if (data.hasError) {
             return Text("Something went wrong.");
           }
@@ -66,7 +69,7 @@ class _SwitchTileState extends State<SwitchTile> {
 
   void _toggleAltCounter(bool value) async {
     if (value) {
-    // TODO: wait for start/stop and change only if succeeded
+      // TODO: wait for start/stop and change only if succeeded
       Pedometer.startPlatform();
     } else {
       Pedometer.stopPlatform();

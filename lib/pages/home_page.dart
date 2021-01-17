@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
+import 'package:nudge_me/shared/alt_step_switch.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,14 +74,20 @@ class _HomePageState extends State<HomePage> {
 
   Widget _thisWeekHolder(BuildContext ctx) {
     final pedometer = FutureBuilder(
-        future: _lastTotalStepsFuture,
+        future: Future.wait([
+          _lastTotalStepsFuture,
+          SharedPreferences.getInstance()
+              .then((prefs) => prefs.getBool(ALT_STEP_COUNT_KEY))
+        ]),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final lastTotalSteps = snapshot.data;
+            final List<dynamic> _data = snapshot.data;
+            final lastTotalSteps = _data[0];
+            final bool isUsingAlt = _data[1];
             return StreamBuilder(
-              // TODO: use alt step count stream if needed
-              //       (and everywhere else)
-              stream: Pedometer.stepCountStream,
+              stream: isUsingAlt
+                  ? Pedometer.altStepCountStream
+                  : Pedometer.stepCountStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final StepCount stepCount = snapshot.data;
