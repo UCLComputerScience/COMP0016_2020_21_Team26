@@ -57,8 +57,11 @@ class _HomePageState extends State<HomePage> {
         markRect: markRect,
         children: [
           Center(
-              child: Text("This is where you can view \n last week's score.",
-                  style: Theme.of(context).textTheme.subtitle2))
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Text(
+                      "This is where you can view \n last week's score.",
+                      style: Theme.of(context).textTheme.subtitle2)))
         ],
         duration: Duration(seconds: 3),
         onClose: () {
@@ -77,9 +80,11 @@ class _HomePageState extends State<HomePage> {
         markRect: markRect,
         children: [
           Center(
-              child: Text(
-                  "This is where you can view your steps so far \n (we start counting now)",
-                  style: Theme.of(context).textTheme.subtitle2))
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(30, 0, 60, 0),
+                  child: Text(
+                      "This is where you can view your steps so far \n (we start counting now)",
+                      style: Theme.of(context).textTheme.subtitle2)))
         ],
         duration: Duration(seconds: 5),
         onClose: () {
