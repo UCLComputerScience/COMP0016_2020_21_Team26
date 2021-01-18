@@ -10,7 +10,7 @@ import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
-Future<bool> _isTutorialDone() async {
+Future<bool> _isHomeTutorialDone() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) ||
       prefs.getBool(HOME_TUTORIAL_DONE_KEY);
@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showTutorial() async {
-    if (!(await _isTutorialDone())) {
+    if (!(await _isHomeTutorialDone())) {
       Timer(Duration(milliseconds: 500), () => showCoachMarkWB());
     }
   }

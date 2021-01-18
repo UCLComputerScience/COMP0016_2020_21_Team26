@@ -13,7 +13,7 @@ const RECOMMENDED_STEPS_IN_WEEK = 70000;
 const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
 
 /// function that returns whether tutorial should be played
-Future<bool> _isTutorialDone() async {
+Future<bool> _isWBTutorialDone() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.containsKey(WB_TUTORIAL_DONE_KEY) ||
       prefs.getBool(WB_TUTORIAL_DONE_KEY);
@@ -45,7 +45,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   void showTutorial() async {
-    if (!(await _isTutorialDone())) {
+    if (!(await _isWBTutorialDone())) {
       Timer(Duration(seconds: 1), () => showCoachMarkGraph());
     }
   }
