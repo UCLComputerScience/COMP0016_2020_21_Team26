@@ -48,10 +48,18 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     final Future<bool> _showTutorial = _isFirstTime();
 
     if (await _showTutorial) {
-      Timer(Duration(seconds: 1), () => showCoachMarkGraph());
+      Timer(Duration(milliseconds: 500), () => showCoachMarkGraph());
     }
   }
 
+  TextStyle tutorialTextStyle = TextStyle(
+      //style for tutorial text for large widgets, requires black background
+      fontSize: 20,
+      color: Colors.white,
+      fontStyle: FontStyle.italic,
+      backgroundColor: Colors.black);
+
+  ///function to show the first slide of the tutorial, explaining the wellbeing graph
   void showCoachMarkGraph() {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
@@ -66,50 +74,23 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
                 child: Text(
-                    "This is where you can find checkups from past weeks \n \n Wellbeing scores and steps are plotted on the same graph, as a purple bar chart and a blue line graph respectively.",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontStyle: FontStyle.italic))),
-          ])
-        ],
-        duration: null,
-        onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkNormalisation());
-          SharedPreferences.getInstance()
-              .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
-        });
-  }
-
-  void showCoachMarkNormalisation() {
-    CoachMark coachMarkNormalisation = CoachMark();
-    RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
-    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-    markRect = Rect.fromCircle(
-        center: markRect.center, radius: markRect.longestSide * 0.6);
-    coachMarkNormalisation.show(
-        targetContext: _wbGraphTutorialKey.currentContext,
-        markRect: markRect,
-        children: [
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    "This is where you can find checkups from past weeks.",
+                    style: tutorialTextStyle)),
+            SizedBox(height: 10),
             Padding(
-                padding: EdgeInsets.fromLTRB(20, 120.0, 80, 0),
+                padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
                 child: Text(
-                    "'Normalised Steps' means your steps are shown as a score out of 10, where 0 is 0 steps and 10 is 70,000 steps",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontStyle: FontStyle.italic))),
+                    "Wellbeing scores and steps are plotted on the same graph, as a purple bar chart and a blue line graph respectively.",
+                    style: tutorialTextStyle)),
           ])
         ],
         duration: null,
         onClose: () {
           Timer(Duration(seconds: 1), () => showCoachMarkHealthy());
-          SharedPreferences.getInstance()
-              .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
         });
   }
 
+  ///function to show the second slide of the tutorial, explaining the healthy section
   void showCoachMarkHealthy() {
     CoachMark coachMarkHealthy = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
@@ -125,11 +106,34 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                 padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
                 child: Text(
                   "The 'healthy' section represents the recommended number of steps per week (close to 70,000).",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontStyle: FontStyle.italic),
+                  style: tutorialTextStyle,
                 )),
+          ])
+        ],
+        duration: null,
+        onClose: () {
+          Timer(Duration(seconds: 1), () => showCoachMarkNormalisation);
+        });
+  }
+
+  ///function to show the third slide of the tutorial, explaining the normalised steps
+  void showCoachMarkNormalisation() {
+    CoachMark coachMarkNormalisation = CoachMark();
+    RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
+    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
+    markRect = Rect.fromCircle(
+        center: markRect.center, radius: markRect.longestSide * 0.6);
+    coachMarkNormalisation.show(
+        targetContext: _wbGraphTutorialKey.currentContext,
+        markRect: markRect,
+        children: [
+          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 120.0, 80, 0),
+              child: Text(
+                  "'Normalised Steps' means your steps are shown as a score out of 10, where 0 is 0 steps and 10 is 70,000 steps",
+                  style: tutorialTextStyle),
+            )
           ])
         ],
         duration: null,
@@ -138,6 +142,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
+  ///function to show the fourth slide of the tutorial, explaining the share button
   void showCoachMarkShare() {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
