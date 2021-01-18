@@ -26,17 +26,19 @@ class IntroScreenWidgets extends StatefulWidget {
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final postcodeController = TextEditingController();
   final supportCodeController = TextEditingController();
+  final stepsController = TextEditingController();
+
   double _currentSliderValue = 0;
 
-  void setInitialWellbeing(
-      double _currentSliderValue, String postcode, String suppode) async {
+  void setInitialWellbeing(double _currentSliderValue, String steps,
+      String postcode, String suppode) async {
     final dateString = DateTime.now().toIso8601String().substring(0, 10);
     WellbeingItem weeklyWellbeingItem = new WellbeingItem(
         id: null,
         date: dateString,
         postcode: await _getPostcode(),
         wellbeingScore: _currentSliderValue,
-        numSteps: 0,
+        numSteps: int.parse(steps),
         supportCode: await _getSupportCode());
     await UserWellbeingDB().insert(weeklyWellbeingItem);
   }
@@ -47,17 +49,22 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
 
-    setInitialWellbeing(_currentSliderValue, postcode, suppcode);
+    setInitialWellbeing(
+        _currentSliderValue, stepsController.text, postcode, suppcode);
   }
 
-  bool _isInputValid(String postcode, String suppCode) {
-    return 2 <= postcode.length && postcode.length <= 4 && suppCode.length > 0;
+  bool _isInputValid(String postcode, String suppCode, String steps) {
+    return 2 <= postcode.length &&
+        postcode.length <= 4 &&
+        suppCode.length > 0 &&
+        int.tryParse(steps) != null;
   }
 
   void _onIntroEnd(context, double _currentSliderValue) {
-    if (!_isInputValid(postcodeController.text, supportCodeController.text)) {
+    if (!_isInputValid(postcodeController.text, supportCodeController.text,
+        stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Invalid postcode or support code."),
+        content: Text("Invalid postcode, support code or steps."),
       ));
       return;
     }
@@ -173,6 +180,17 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           },
                         ),
                         width: 300.0),
+                    SizedBox(height: 20),
+                    Text(
+                        "Approximately, how many steps have you done in the past week?",
+                        style: Theme.of(context).textTheme.bodyText1),
+                    TextField(
+                      controller: stepsController,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter approximate steps here"),
+                    ),
                   ])),
               decoration: pageDecoration),
         ],
