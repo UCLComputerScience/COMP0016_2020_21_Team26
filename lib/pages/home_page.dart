@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
               child: Padding(
                   padding: EdgeInsets.fromLTRB(30, 0, 60, 0),
                   child: Text(
-                      "This is where you can view your steps so far \n (we start counting now)",
+                      "This is where you can view your steps so far (we start counting now)",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
         duration: Duration(seconds: 5),
