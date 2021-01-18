@@ -183,7 +183,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     SizedBox(height: 20),
                     Text(
                         "Approximately, how many steps have you done in the past week?",
-                        style: Theme.of(context).textTheme.bodyText1),
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center),
                     TextField(
                       controller: stepsController,
                       textAlign: TextAlign.center,
