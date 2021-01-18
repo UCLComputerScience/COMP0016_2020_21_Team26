@@ -7,10 +7,10 @@ import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
-///key to retreive [bool] that is true if the tutorial has been completed
+/// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
-Future<bool> _isHomeTutorialDone() async {
+Future<bool> _isFirstTime() async {
   final prefs = await SharedPreferences.getInstance();
   return !prefs.containsKey(HOME_TUTORIAL_DONE_KEY) ||
       !prefs.getBool(HOME_TUTORIAL_DONE_KEY);
@@ -39,13 +39,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showTutorial() async {
-    final Future<bool> _showTutorial = _isHomeTutorialDone();
-
-    if (await _showTutorial) {
-      Timer(Duration(seconds: 1), () => showCoachMarkWB());
+    if (await _isFirstTime()) {
+      Timer(Duration(milliseconds: 500), () => showCoachMarkWB());
     }
   }
 
+  ///function to show the first slide of the tutorial, explaining the wellbeing circle
   void showCoachMarkWB() {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _lastWeekWBTutorialKey.currentContext.findRenderObject();
@@ -69,6 +68,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  ///function to show the second slide of the tutorial, explaining the steps counter
   void showCoachMarkSteps() {
     CoachMark coachMarkSteps = CoachMark();
     RenderBox target = _stepsTutorialKey.currentContext.findRenderObject();

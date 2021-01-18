@@ -28,7 +28,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final supportCodeController = TextEditingController();
   double _currentSliderValue = 0;
 
-  void setInitialWellbeing(double _currentSliderValue) async {
+  void setInitialWellbeing(
+      double _currentSliderValue, String postcode, String suppode) async {
     final dateString = DateTime.now().toIso8601String().substring(0, 10);
     WellbeingItem weeklyWellbeingItem = new WellbeingItem(
         id: null,
@@ -46,7 +47,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
 
-    setInitialWellbeing(_currentSliderValue);
+    setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
 
   bool _isInputValid(String postcode, String suppCode) {

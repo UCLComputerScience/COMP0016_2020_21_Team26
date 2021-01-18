@@ -9,9 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const RECOMMENDED_STEPS_IN_WEEK = 70000;
 
+/// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
 
-Future<bool> _isWBTutorialDone() async {
+/// function that returns whether tutorial should be played
+Future<bool> _isFirstTime() async {
   final prefs = await SharedPreferences.getInstance();
   return !prefs.containsKey(WB_TUTORIAL_DONE_KEY) ||
       !prefs.getBool(WB_TUTORIAL_DONE_KEY);
@@ -43,7 +45,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   void showTutorial() async {
-    final Future<bool> _showTutorial = _isWBTutorialDone();
+    final Future<bool> _showTutorial = _isFirstTime();
 
     if (await _showTutorial) {
       Timer(Duration(seconds: 1), () => showCoachMarkGraph());
