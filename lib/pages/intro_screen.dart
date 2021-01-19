@@ -86,18 +86,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     initBackground();
   }
 
-  Future<String> _getPostcode() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userPostcode = prefs.getString('postcode');
-    return userPostcode;
-  }
-
-  Future<String> _getSupportCode() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userSupportCode = prefs.getString('support_code');
-    return userSupportCode;
-  }
-
   @override
   Widget build(BuildContext context) {
     const pageDecoration = const PageDecoration(
