@@ -12,7 +12,7 @@ const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
 Future<bool> _isHomeTutorialDone() async {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) ||
+  return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
       prefs.getBool(HOME_TUTORIAL_DONE_KEY);
 }
 

@@ -15,7 +15,7 @@ const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
 /// function that returns whether tutorial should be played
 Future<bool> _isWBTutorialDone() async {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.containsKey(WB_TUTORIAL_DONE_KEY) ||
+  return prefs.containsKey(WB_TUTORIAL_DONE_KEY) &&
       prefs.getBool(WB_TUTORIAL_DONE_KEY);
 }
 

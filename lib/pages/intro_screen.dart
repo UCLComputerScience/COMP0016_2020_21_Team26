@@ -36,10 +36,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     WellbeingItem weeklyWellbeingItem = new WellbeingItem(
         id: null,
         date: dateString,
-        postcode: await _getPostcode(),
+        postcode: postcode,
         wellbeingScore: _currentSliderValue,
         numSteps: int.parse(steps),
-        supportCode: await _getSupportCode());
+        supportCode: suppode);
     await UserWellbeingDB().insert(weeklyWellbeingItem);
   }
 
