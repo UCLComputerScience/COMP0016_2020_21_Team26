@@ -87,35 +87,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  ///function to show the second slide of the tutorial, explaining the normalised steps
-  void showCoachMarkNormalisation() {
-    CoachMark coachMarkNormalisation = CoachMark();
-    RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
-    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-    markRect = Rect.fromCircle(
-        center: markRect.center, radius: markRect.longestSide * 0.6);
-    coachMarkNormalisation.show(
-        targetContext: _wbGraphTutorialKey.currentContext,
-        markRect: markRect,
-        children: [
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 120.0, 80, 0),
-              child: Text(
-                  "'Normalised Steps' means your steps are shown as a score out of 10, where 0 is 0 steps and 10 is 70,000 steps",
-                  style: tutorialTextStyle),
-            )
-          ])
-        ],
-        duration: null,
-        onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkShare());
-          SharedPreferences.getInstance()
-              .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
-        });
-  }
-
-  ///function to show the third slide of the tutorial, explaining the healthy section
+  ///function to show the second slide of the tutorial, explaining the healthy section
   void showCoachMarkHealthy() {
     CoachMark coachMarkHealthy = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
@@ -137,11 +109,11 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         ],
         duration: null,
         onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkNormalisation());
+          Timer(Duration(seconds: 1), () => showCoachMarkShare());
         });
   }
 
-  ///function to show the fourth slide of the tutorial, explaining the share button
+  ///function to show the third slide of the tutorial, explaining the share button
   void showCoachMarkShare() {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
