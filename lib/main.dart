@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,6 +74,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
     return MaterialApp(
       title: 'NudgeMe',
       theme: ThemeData(
@@ -94,6 +98,11 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'Rosario',
                 fontWeight: FontWeight.w500,
                 fontSize: 20),
+            subtitle2: TextStyle(
+                fontFamily: 'Rosario',
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
+                fontSize: 20), //for tutorial
             bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
             bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(

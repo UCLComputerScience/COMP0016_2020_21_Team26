@@ -7,6 +7,7 @@ import 'package:nudge_me/main_pages.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/model/user_model.dart';
 
 const HAS_STEP_COUNTER_KEY = 'has_step_counter';
 
@@ -28,26 +29,51 @@ class IntroScreenWidgets extends StatefulWidget {
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final postcodeController = TextEditingController();
   final supportCodeController = TextEditingController();
+  final stepsController = TextEditingController();
 
-  void _saveInput(String postcode, String suppcode) async {
+  double _currentSliderValue = 0;
+
+  void setInitialWellbeing(double _currentSliderValue, String steps,
+      String postcode, String suppode) async {
+    final dateString = DateTime.now().toIso8601String().substring(0, 10);
+    WellbeingItem weeklyWellbeingItem = new WellbeingItem(
+        id: null,
+        date: dateString,
+        postcode: postcode,
+        wellbeingScore: _currentSliderValue,
+        numSteps: int.parse(steps),
+        supportCode: suppode);
+    await UserWellbeingDB().insert(weeklyWellbeingItem);
+  }
+
+  void _saveInput(
+      String postcode, String suppcode, double _currentSliderValue) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
+
+    setInitialWellbeing(
+        _currentSliderValue, stepsController.text, postcode, suppcode);
   }
 
-  bool _isInputValid(String postcode, String suppCode) {
-    return 2 <= postcode.length && postcode.length <= 4 && suppCode.length > 0;
+  bool _isInputValid(String postcode, String suppCode, String steps) {
+    return 2 <= postcode.length &&
+        postcode.length <= 4 &&
+        suppCode.length > 0 &&
+        int.tryParse(steps) != null;
   }
 
-  void _onIntroEnd(context) {
-    if (!_isInputValid(postcodeController.text, supportCodeController.text)) {
+  void _onIntroEnd(context, double _currentSliderValue) {
+    if (!_isInputValid(postcodeController.text, supportCodeController.text,
+        stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Invalid postcode or support code."),
+        content: Text("Invalid postcode, support code or steps."),
       ));
       return;
     }
 
-    _saveInput(postcodeController.text, supportCodeController.text);
+    _saveInput(postcodeController.text, supportCodeController.text,
+        _currentSliderValue);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
@@ -123,8 +149,48 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 ),
               ])),
               decoration: pageDecoration),
+          PageViewModel(
+              title: "Checkup",
+              image: Center(
+                  child: Image.asset("lib/images/IntroCheckup.png",
+                      height: 270.0)),
+              bodyWidget: (Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("How did you feel this week?",
+                        style: Theme.of(context).textTheme.bodyText1),
+                    Container(
+                        child: Slider(
+                          value: _currentSliderValue,
+                          min: 0,
+                          max: 10,
+                          divisions: 10,
+                          label: _currentSliderValue.round().toString(),
+                          activeColor: Theme.of(context).primaryColor,
+                          inactiveColor: Color.fromARGB(189, 189, 189, 255),
+                          onChanged: (double value) {
+                            setState(() {
+                              _currentSliderValue = value;
+                            });
+                          },
+                        ),
+                        width: 300.0),
+                    SizedBox(height: 20),
+                    Text(
+                        "Approximately, how many steps have you done in the past week?",
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center),
+                    TextField(
+                      controller: stepsController,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter approximate steps here"),
+                    ),
+                  ])),
+              decoration: pageDecoration),
         ],
-        onDone: () => _onIntroEnd(context),
+        onDone: () => _onIntroEnd(context, _currentSliderValue),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
