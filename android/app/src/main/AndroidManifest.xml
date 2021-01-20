@@ -1,6 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ucl.nudge_me">
-   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <!-- this gets permission to schedule notifications-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- this gets vibration permission-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- For pedometer -->
+    <uses-permission android:name="android.gms.permission.ACTIVITY_RECOGNITION"/>
+
     <application
         android:label="nudge_me"
         android:icon="@mipmap/ic_launcher">

@@ -7,6 +7,7 @@ import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
@@ -60,7 +61,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         int.tryParse(steps) != null;
   }
 
-  void _onIntroEnd(context, double _currentSliderValue) {
+  void _onIntroEnd(context, double _currentSliderValue) async {
     if (!_isInputValid(postcodeController.text, supportCodeController.text,
         stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -71,6 +72,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
     _saveInput(postcodeController.text, supportCodeController.text,
         _currentSliderValue);
+
+    // NOTE: this is the 'proper' way of requesting permissions (instead of
+    // just lowering the targetSdkVersion) but it doesn't seem to work and
+    // I don't have access to an Android 10 device to further test it
+    // so... *shrug*
+    await Permission.sensors.request();
+    await Permission.activityRecognition.request();
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
