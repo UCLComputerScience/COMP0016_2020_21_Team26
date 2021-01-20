@@ -22,12 +22,14 @@ class _AltStepSwitchState extends State<AltStepSwitch> {
         builder: (ctx, data) {
           if (data.hasData) {
             final SharedPreferences prefs = data.data;
-            final hasStepCounter = prefs.getBool(HAS_STEP_COUNTER_KEY);
-            final isUsingAlt = prefs.getBool(ALT_STEP_COUNT_KEY) == true;
+            // either could be null:
+            final bool hasStepCounter =
+                prefs.getBool(HAS_STEP_COUNTER_KEY) == true;
+            final bool isUsingAlt = prefs.getBool(ALT_STEP_COUNT_KEY) == true;
 
             return SwitchTile(
               disabled: hasStepCounter,
-              initial: isUsingAlt == true,
+              initial: isUsingAlt,
             );
           } else if (data.hasError) {
             return Text("Something went wrong.");
