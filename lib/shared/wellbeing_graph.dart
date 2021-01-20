@@ -87,35 +87,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  ///function to show the second slide of the tutorial, explaining the normalised steps
-  void showCoachMarkNormalisation() {
-    CoachMark coachMarkNormalisation = CoachMark();
-    RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
-    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-    markRect = Rect.fromCircle(
-        center: markRect.center, radius: markRect.longestSide * 0.6);
-    coachMarkNormalisation.show(
-        targetContext: _wbGraphTutorialKey.currentContext,
-        markRect: markRect,
-        children: [
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 120.0, 80, 0),
-              child: Text(
-                  "'Normalised Steps' means your steps are shown as a score out of 10, where 0 is 0 steps and 10 is 70,000 steps",
-                  style: tutorialTextStyle),
-            )
-          ])
-        ],
-        duration: null,
-        onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkShare());
-          SharedPreferences.getInstance()
-              .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
-        });
-  }
-
-  ///function to show the third slide of the tutorial, explaining the healthy section
+  ///function to show the second slide of the tutorial, explaining the healthy section
   void showCoachMarkHealthy() {
     CoachMark coachMarkHealthy = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
@@ -137,11 +109,11 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         ],
         duration: null,
         onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkNormalisation());
+          Timer(Duration(seconds: 1), () => showCoachMarkShare());
         });
   }
 
-  ///function to show the fourth slide of the tutorial, explaining the share button
+  ///function to show the third slide of the tutorial, explaining the share button
   void showCoachMarkShare() {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
@@ -168,51 +140,43 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
-    final scoreSeries = new charts.Series<WellbeingItem, int>(
+    final scoreSeries = new charts.Series<WellbeingItem, String>(
       id: 'Wellbeing Score',
       colorFn: (_, __) =>
           charts.ColorUtil.fromDartColor(Color.fromARGB(255, 182, 125, 226)),
-      domainFn: (WellbeingItem item, _) => item.id,
+      domainFn: (WellbeingItem item, _) => item.id.toString(),
       measureFn: (WellbeingItem item, _) => item.wellbeingScore,
       data: items,
-    )..setAttribute(charts.rendererIdKey, 'customBar');
-    final stepSeries = new charts.Series<WellbeingItem, int>(
-      // TODO: use a 'flex factor'? This text may go out of bounds:
-      id: 'Normalized Steps',
+    );
+    final stepSeries = new charts.Series<WellbeingItem, String>(
+      id: 'Steps',
       colorFn: (_, __) =>
           charts.ColorUtil.fromDartColor(Color.fromARGB(255, 0, 74, 173)),
-      domainFn: (WellbeingItem a, _) => a.id,
-      measureFn: // normalize the num of steps
-          (WellbeingItem a, _) =>
-              (a.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0,
+      domainFn: (WellbeingItem a, _) => a.id.toString(),
+      measureFn: (WellbeingItem a, _) => a.numSteps,
       data: items,
-    );
+    )..setAttribute(charts.measureAxisIdKey, 'secondaryMeasureAxisId');
     final seriesList = [scoreSeries, stepSeries];
 
     return Flexible(
       child: RepaintBoundary(
         // uses [RepaintBoundary] so we have .toImage()
         key: _printKey, // this container will be 'printed'/shared
-        child: charts.NumericComboChart(
+        child: charts.BarChart(
+          // feedback from UCL recommended to use bar chart
           seriesList,
           animate: animate,
-          defaultRenderer: new charts.LineRendererConfig(),
-          customSeriesRenderers: [
-            new charts.BarRendererConfig(
-                cornerStrategy: const charts.ConstCornerStrategy(25),
-                customRendererId: 'customBar')
-          ],
+          barGroupingType: charts.BarGroupingType.grouped,
+          // 'tick counts' used to match grid lines
+          primaryMeasureAxis: charts.NumericAxisSpec(
+              tickProviderSpec:
+                  charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
+          secondaryMeasureAxis: charts.NumericAxisSpec(
+            tickProviderSpec:
+                charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
+          ),
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
-            new charts.RangeAnnotation([
-              new charts.RangeAnnotationSegment(
-                8, // start score for healthy
-                10, // end score for healthy
-                charts.RangeAnnotationAxisType.measure,
-                endLabel: 'Healthy',
-                color: charts.MaterialPalette.gray.shade200,
-              ),
-            ]),
             // using title as axes label:
             new charts.ChartTitle('Week Number',
                 behaviorPosition: charts.BehaviorPosition.bottom,
