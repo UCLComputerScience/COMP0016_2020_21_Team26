@@ -40,7 +40,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   // the actual step count for the week.
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
-  int _currentTotalSteps;
+  int _currentTotalSteps = 0;
 
   @override
   void initState() {
