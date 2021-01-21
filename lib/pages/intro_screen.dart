@@ -203,6 +203,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         onChange: (int _) {
           FocusScopeNode currentFocus = FocusScope.of(context);
           if (!currentFocus.hasPrimaryFocus) {
+            // unfocusing dismisses the keyboard
             currentFocus.unfocus();
           }
         },
