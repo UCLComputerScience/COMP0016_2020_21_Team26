@@ -93,7 +93,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     TextStyle introTextStyle = TextStyle(fontSize: width * 0.045);
 
     const pageDecoration = const PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 60.0, fontWeight: FontWeight.w700),
+        titleTextStyle: TextStyle(fontSize: 27.0, fontWeight: FontWeight.w700),
         descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
         pageColor: Color.fromARGB(255, 251, 249, 255),
         imagePadding: EdgeInsets.zero);
