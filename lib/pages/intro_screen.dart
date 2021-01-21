@@ -200,6 +200,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Color.fromARGB(255, 182, 125, 226))),
+        onChange: (int _) {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+        },
         dotsDecorator: const DotsDecorator(
             size: Size(10.0, 10.0),
             color: Color(0xFFBDBDBD),
