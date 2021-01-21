@@ -33,6 +33,7 @@ dependencies:
   pdf: ^1.13.0
   printing: ^3.7.2
   clock: ^1.0.1 # useful for testing
+  permission_handler: ^5.0.1+1
 
   # data-related
   provider: ^3.0.0
