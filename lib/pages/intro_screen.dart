@@ -88,9 +88,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
+    TextStyle introTextStyle = TextStyle(fontSize: width * 0.045);
+
     const pageDecoration = const PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
-        bodyTextStyle: TextStyle(fontSize: 20.0),
+        titleTextStyle: TextStyle(fontSize: 60.0, fontWeight: FontWeight.w700),
         descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
         pageColor: Color.fromARGB(255, 251, 249, 255),
         imagePadding: EdgeInsets.zero);
@@ -99,20 +102,19 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         pages: [
           PageViewModel(
               title: "Welcome",
-              image: Image.asset("lib/images/IntroLogo.png", height: 350.0),
-              body: "Swipe to set up",
+              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              bodyWidget: Text("Swipe to set up", style: introTextStyle),
               decoration: pageDecoration),
           PageViewModel(
               title: "Postcode",
               image: Center(
                   child: Image.asset("lib/images/IntroPostcode.png",
-                      height: 270.0)),
+                      height: 225.0)),
               bodyWidget: (Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("What is the first half of your postcode?",
-                        style: TextStyle(fontSize: 20.0),
-                        textAlign: TextAlign.center),
+                        style: introTextStyle, textAlign: TextAlign.center),
                     TextField(
                       controller: postcodeController,
                       textAlign: TextAlign.center,
@@ -120,7 +122,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                       maxLength: 4, // length of a postcode prefix
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Enter postcode here"),
+                          hintText: "Enter postcode here",
+                          hintStyle: introTextStyle),
                     ),
                   ])),
               decoration: pageDecoration),
@@ -128,17 +131,17 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "Support",
               image: Center(
                   child: Image.asset("lib/images/IntroSupport.png",
-                      height: 270.0)),
+                      height: 225.0)),
               bodyWidget: (Column(children: <Widget>[
                 Text("Where do you primarily go to find support?",
-                    style: TextStyle(fontSize: 20.0),
-                    textAlign: TextAlign.center),
+                    style: introTextStyle, textAlign: TextAlign.center),
                 TextField(
                   controller: supportCodeController,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter support code here"),
+                      hintText: "Enter support code here",
+                      hintStyle: introTextStyle),
                 ),
               ])),
               decoration: pageDecoration),
@@ -146,12 +149,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "Checkup",
               image: Center(
                   child: Image.asset("lib/images/IntroCheckup.png",
-                      height: 270.0)),
-              bodyWidget: (Column(
+                      height: 225.0)),
+              bodyWidget: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("How did you feel this week?",
-                        style: Theme.of(context).textTheme.bodyText1),
+                    Text("How did you feel this week?", style: introTextStyle),
                     Container(
                         child: Slider(
                           value: _currentSliderValue,
@@ -168,19 +170,20 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           },
                         ),
                         width: 300.0),
-                    SizedBox(height: 20),
+                    SizedBox(height: 15),
                     Text(
                         "Approximately, how many steps have you done in the past week?",
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: introTextStyle,
                         textAlign: TextAlign.center),
                     TextField(
                       controller: stepsController,
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Enter approximate steps here"),
+                          hintText: "Enter approximate steps here",
+                          hintStyle: introTextStyle),
                     ),
-                  ])),
+                  ]),
               decoration: pageDecoration),
         ],
         onDone: () => _onIntroEnd(context, _currentSliderValue),
