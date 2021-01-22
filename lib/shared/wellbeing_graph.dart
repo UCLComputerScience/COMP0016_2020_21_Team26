@@ -177,6 +177,12 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           ),
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
+            // This should force the wellbeing score axis to go up to 10:
+            charts.RangeAnnotation([charts.RangeAnnotationSegment(
+              8, 10,
+              charts.RangeAnnotationAxisType.measure,
+              color: charts.MaterialPalette.transparent,
+            )]),
             // using title as axes label:
             new charts.ChartTitle('Week Number',
                 behaviorPosition: charts.BehaviorPosition.bottom,
