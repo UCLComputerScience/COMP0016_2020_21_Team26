@@ -35,8 +35,10 @@ class TestingPage extends StatelessWidget {
               tz.TZDateTime.now(tz.local).add(Duration(seconds: 2))),
           child: Text("Test Notification")),
       ElevatedButton(
-          onPressed: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => WellbeingCheck())),
+          onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WellbeingCheck(UserWellbeingDB()))),
           child: Text("Wellbeing Check Screen")),
       ElevatedButton(
           onPressed: () => Navigator.push(context,

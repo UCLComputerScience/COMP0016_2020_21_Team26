@@ -32,6 +32,25 @@ class UserWellbeingDB {
     return id;
   }
 
+  /// inserts a [WellbeingItem] constructed with the given data.
+  /// returns the id of the newly inserted record
+  Future<int> insertWithData(
+      {date: String,
+      postcode: String,
+      wellbeingScore: double,
+      numSteps: int,
+      supportCode: String}) async {
+    assert(wellbeingScore != null);
+    return insert(WellbeingItem(
+      id: null,
+      date: date,
+      postcode: postcode,
+      wellbeingScore: wellbeingScore,
+      numSteps: numSteps,
+      supportCode: supportCode,
+    ));
+  }
+
   /// returns up to n wellbeing items
   Future<List<WellbeingItem>> getLastNWeeks(int n) async {
     final db = await database;
