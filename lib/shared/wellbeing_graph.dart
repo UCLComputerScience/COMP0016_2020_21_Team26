@@ -72,7 +72,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
                 child: Text(
-                    "This is where you can find checkups from past weeks.",
+                    "This is where you can find wellbeing data from past weeks.",
                     style: tutorialTextStyle)),
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),

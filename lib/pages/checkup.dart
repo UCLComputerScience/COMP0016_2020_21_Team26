@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Checkup extends StatelessWidget {
+class WellbeingCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,22 +16,23 @@ class Checkup extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-              Text("Checkup", style: Theme.of(context).textTheme.headline1),
+              Text("Wellbeing Check",
+                  style: Theme.of(context).textTheme.headline1),
               SizedBox(height: 30),
-              CheckupWidgets(),
+              WellbeingCheckWidgets(),
             ]))),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
-class CheckupWidgets extends StatefulWidget {
-  CheckupWidgets({Key key}) : super(key: key);
+class WellbeingCheckWidgets extends StatefulWidget {
+  WellbeingCheckWidgets({Key key}) : super(key: key);
 
   @override
-  _CheckupWidgetsState createState() => _CheckupWidgetsState();
+  _WellbeingCheckWidgetsState createState() => _WellbeingCheckWidgetsState();
 }
 
-class _CheckupWidgetsState extends State<CheckupWidgets> {
+class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
   double _currentSliderValue = 0;
 
   StreamSubscription<StepCount> _subscription;

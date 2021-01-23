@@ -158,7 +158,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               ])),
               decoration: pageDecoration),
           PageViewModel(
-              title: "Checkup",
+              title: "Wellbeing Check",
               image: Center(
                   child: Image.asset("lib/images/IntroCheckup.png",
                       height: 225.0)),
