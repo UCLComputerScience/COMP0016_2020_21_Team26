@@ -87,7 +87,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  ///function to show the third slide of the tutorial, explaining the share button
+  ///function to show the second slide of the tutorial, explaining the share button
   void showCoachMarkShare() {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
