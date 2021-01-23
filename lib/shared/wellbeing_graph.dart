@@ -75,7 +75,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     "This is where you can find wellbeing data from past weeks.",
                     style: tutorialTextStyle)),
             Padding(
-                padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
+                padding: EdgeInsets.fromLTRB(30, 10.0, 30, 0),
                 child: Text(
                     "Wellbeing scores and steps are plotted on the same graph. Wellbeing are represented by the purple bars and the left axis. Steps are represented by the blue bars and the right axis.",
                     style: tutorialTextStyle)),
@@ -152,11 +152,14 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
             // This should force the wellbeing score axis to go up to 10:
-            charts.RangeAnnotation([charts.RangeAnnotationSegment(
-              8, 10,
-              charts.RangeAnnotationAxisType.measure,
-              color: charts.MaterialPalette.transparent,
-            )]),
+            charts.RangeAnnotation([
+              charts.RangeAnnotationSegment(
+                8,
+                10,
+                charts.RangeAnnotationAxisType.measure,
+                color: charts.MaterialPalette.transparent,
+              )
+            ]),
             // using title as axes label:
             new charts.ChartTitle('Week Number',
                 behaviorPosition: charts.BehaviorPosition.bottom,
