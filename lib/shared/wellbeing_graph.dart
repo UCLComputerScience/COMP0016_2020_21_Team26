@@ -53,9 +53,9 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   TextStyle tutorialTextStyle = TextStyle(
       //style for tutorial text for large widgets, requires black background
       fontSize: 20,
-      color: Colors.white,
+      color: Colors.black,
       fontStyle: FontStyle.italic,
-      backgroundColor: Colors.black);
+      backgroundColor: Colors.white);
 
   ///function to show the first slide of the tutorial, explaining the wellbeing graph
   void showCoachMarkGraph() {
