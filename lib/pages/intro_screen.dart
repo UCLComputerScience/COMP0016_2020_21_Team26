@@ -112,7 +112,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           PageViewModel(
               title: "Welcome",
               image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
-              bodyWidget: Text("Swipe to set up", style: introTextStyle),
+              bodyWidget: Text(
+                  "This app has been designed to encourage you to take care of yourself. \n \n Swipe to set up.",
+                  style: introTextStyle,
+                  textAlign: TextAlign.center),
               decoration: pageDecoration),
           PageViewModel(
               title: "Postcode",
@@ -142,7 +145,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   child: Image.asset("lib/images/IntroSupport.png",
                       height: 225.0)),
               bodyWidget: (Column(children: <Widget>[
-                Text("Where do you primarily go to find support?",
+                Text("What is your support code?",
                     style: introTextStyle, textAlign: TextAlign.center),
                 TextField(
                   controller: supportCodeController,
@@ -162,7 +165,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               bodyWidget: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("How did you feel this week?", style: introTextStyle),
+                    Text(
+                        "Move the blue circle left or right on the scale to rate your wellbeing: ",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
                     Container(
                         child: Slider(
                           value: _currentSliderValue,
