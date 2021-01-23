@@ -6,8 +6,13 @@ import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clock/clock.dart';
 
 class Checkup extends StatelessWidget {
+  final UserWellbeingDB _userWellbeingDB;
+
+  const Checkup(this._userWellbeingDB, {Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,14 +23,16 @@ class Checkup extends StatelessWidget {
                     children: [
               Text("Checkup", style: Theme.of(context).textTheme.headline1),
               SizedBox(height: 30),
-              CheckupWidgets(),
+              CheckupWidgets(_userWellbeingDB),
             ]))),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
 class CheckupWidgets extends StatefulWidget {
-  CheckupWidgets({Key key}) : super(key: key);
+  final UserWellbeingDB _userWellbeingDB;
+
+  CheckupWidgets(this._userWellbeingDB, {Key key}) : super(key: key);
 
   @override
   _CheckupWidgetsState createState() => _CheckupWidgetsState();
@@ -40,7 +47,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   // the actual step count for the week.
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
-  int _currentTotalSteps;
+  int _currentTotalSteps = 0;
 
   @override
   void initState() {
@@ -103,7 +110,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   void _checkWellbeing(final int n) async {
     assert(n >= 1);
     final List<WellbeingItem> items =
-        await UserWellbeingDB().getLastNWeeks(n + 1);
+        await widget._userWellbeingDB.getLastNWeeks(n + 1);
     if (items.length == n + 1 &&
         _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
@@ -163,18 +170,18 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
       ElevatedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
-            final dateString =
-                DateTime.now().toIso8601String().substring(0, 10);
-            WellbeingItem weeklyWellbeingItem = new WellbeingItem(
-                id: null,
+            final dateString = // get date with fakeable clock
+                clock.now().toIso8601String().substring(0, 10);
+
+            await widget._userWellbeingDB.insertWithData(
                 date: dateString,
                 postcode: await _getPostcode(),
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
                 supportCode: await _getSupportCode());
-            await UserWellbeingDB().insert(weeklyWellbeingItem);
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
+
             Navigator.pop(context);
 
             _checkWellbeing(2); // nudges if scores dropped twice
