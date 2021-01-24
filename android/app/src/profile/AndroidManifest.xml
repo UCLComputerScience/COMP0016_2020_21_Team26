@@ -4,4 +4,13 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- this gets permission to schedule notifications-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- this gets vibration permission-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- For pedometer -->
+    <uses-permission android:name="android.gms.permission.ACTIVITY_RECOGNITION"/>
 </manifest>

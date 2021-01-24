@@ -36,8 +36,10 @@ class TestingPage extends StatelessWidget {
           child: Text("Test Notification")),
       ElevatedButton(
           onPressed: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Checkup())),
-          child: Text("Checkup Screen")),
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WellbeingCheck(UserWellbeingDB()))),
+          child: Text("Wellbeing Check Screen")),
       ElevatedButton(
           onPressed: () => Navigator.push(context,
               MaterialPageRoute(builder: (context) => PublishScreen())),

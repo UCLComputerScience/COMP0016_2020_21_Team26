@@ -6,6 +6,8 @@ import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/model/user_model.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the checkup/publish notifications here to ensure that
@@ -25,35 +27,72 @@ class IntroScreenWidgets extends StatefulWidget {
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final postcodeController = TextEditingController();
   final supportCodeController = TextEditingController();
+  final stepsController = TextEditingController();
 
-  void _saveInput(String postcode, String suppcode) async {
+  double _currentSliderValue = 0;
+  bool _currentSwitchValue = false;
+
+  void setInitialWellbeing(double _currentSliderValue, String steps,
+      String postcode, String suppode) async {
+    final dateString = DateTime.now().toIso8601String().substring(0, 10);
+    WellbeingItem weeklyWellbeingItem = new WellbeingItem(
+        id: null,
+        date: dateString,
+        postcode: postcode,
+        wellbeingScore: _currentSliderValue,
+        numSteps: int.parse(steps),
+        supportCode: suppode);
+    await UserWellbeingDB().insert(weeklyWellbeingItem);
+  }
+
+  void _saveInput(
+      String postcode, String suppcode, double _currentSliderValue) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
+
+    setInitialWellbeing(
+        _currentSliderValue, stepsController.text, postcode, suppcode);
   }
 
-  bool _isInputValid(String postcode, String suppCode) {
-    return 2 <= postcode.length && postcode.length <= 4 && suppCode.length > 0;
+  bool _isInputValid(String postcode, String suppCode, String steps) {
+    return 2 <= postcode.length &&
+        postcode.length <= 4 &&
+        suppCode.length > 0 &&
+        int.tryParse(steps) != null;
   }
 
-  void _onIntroEnd(context) {
-    if (!_isInputValid(postcodeController.text, supportCodeController.text)) {
+  void _onIntroEnd(
+      context, double _currentSliderValue, bool _currentSwitchValue) async {
+    if (!_isInputValid(postcodeController.text, supportCodeController.text,
+        stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Invalid postcode or support code."),
+        content: Text("Invalid postcode, support code or steps."),
       ));
       return;
     }
 
-    _saveInput(postcodeController.text, supportCodeController.text);
+    _saveInput(postcodeController.text, supportCodeController.text,
+        _currentSliderValue);
+
+    // NOTE: this is the 'proper' way of requesting permissions (instead of
+    // just lowering the targetSdkVersion) but it doesn't seem to work and
+    // I don't have access to an Android 10 device to further test it
+    // so... *shrug*
+    await Permission.sensors.request();
+    await Permission.activityRecognition.request();
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
-    _finishSetup();
+    _finishSetup(_currentSwitchValue);
   }
 
-  void _finishSetup() async {
+  void _finishSetup(bool _currentSwitchValue) async {
     scheduleCheckup(DateTime.sunday, const Time(12));
-    schedulePublish(DateTime.monday, const Time(12));
+    if (_currentSwitchValue) {
+      schedulePublish(DateTime.monday, const Time(12));
+    }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
     // only start tracking steps after user has done setup
@@ -62,9 +101,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    TextStyle introTextStyle = TextStyle(fontSize: width * 0.045);
+
     const pageDecoration = const PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
-        bodyTextStyle: TextStyle(fontSize: 20.0),
+        titleTextStyle: TextStyle(fontSize: 27.0, fontWeight: FontWeight.w700),
         descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
         pageColor: Color.fromARGB(255, 251, 249, 255),
         imagePadding: EdgeInsets.zero);
@@ -73,20 +114,22 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         pages: [
           PageViewModel(
               title: "Welcome",
-              image: Image.asset("lib/images/IntroLogo.png", height: 350.0),
-              body: "Swipe to set up",
+              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              bodyWidget: Text(
+                  "This app has been designed to encourage you to take care of yourself. \n \n Swipe to set up.",
+                  style: introTextStyle,
+                  textAlign: TextAlign.center),
               decoration: pageDecoration),
           PageViewModel(
               title: "Postcode",
               image: Center(
                   child: Image.asset("lib/images/IntroPostcode.png",
-                      height: 270.0)),
+                      height: 225.0)),
               bodyWidget: (Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("What is the first half of your postcode?",
-                        style: TextStyle(fontSize: 20.0),
-                        textAlign: TextAlign.center),
+                        style: introTextStyle, textAlign: TextAlign.center),
                     TextField(
                       controller: postcodeController,
                       textAlign: TextAlign.center,
@@ -94,7 +137,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                       maxLength: 4, // length of a postcode prefix
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Enter postcode here"),
+                          hintText: "Enter postcode here",
+                          hintStyle: introTextStyle),
                     ),
                   ])),
               decoration: pageDecoration),
@@ -102,22 +146,87 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "Support",
               image: Center(
                   child: Image.asset("lib/images/IntroSupport.png",
-                      height: 270.0)),
+                      height: 225.0)),
               bodyWidget: (Column(children: <Widget>[
-                Text("Where do you primarily go to find support?",
-                    style: TextStyle(fontSize: 20.0),
-                    textAlign: TextAlign.center),
+                Text("What is your support code?",
+                    style: introTextStyle, textAlign: TextAlign.center),
                 TextField(
                   controller: supportCodeController,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter support code here"),
+                      hintText: "Enter support code here",
+                      hintStyle: introTextStyle),
                 ),
               ])),
               decoration: pageDecoration),
+          PageViewModel(
+              title: "Wellbeing Check",
+              image: Center(
+                  child: Image.asset("lib/images/IntroCheckup.png",
+                      height: 225.0)),
+              bodyWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                        "Move the blue circle left or right on the scale to rate your wellbeing: ",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
+                    Container(
+                        child: Slider(
+                          value: _currentSliderValue,
+                          min: 0,
+                          max: 10,
+                          divisions: 10,
+                          label: _currentSliderValue.round().toString(),
+                          activeColor: Theme.of(context).primaryColor,
+                          inactiveColor: Color.fromARGB(189, 189, 189, 255),
+                          onChanged: (double value) {
+                            setState(() {
+                              _currentSliderValue = value;
+                            });
+                          },
+                        ),
+                        width: 300.0),
+                    SizedBox(height: 15),
+                    Text(
+                        "Approximately, how many steps have you done in the past week?",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
+                    TextField(
+                      controller: stepsController,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter approximate steps here",
+                          hintStyle: introTextStyle),
+                    ),
+                  ]),
+              decoration: pageDecoration),
+          PageViewModel(
+              title: "Sharing",
+              image: Center(
+                  child:
+                      Image.asset("lib/images/IntroShare.png", height: 225.0)),
+              bodyWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                        "Click the toggle to consent to the creation of a map that enables you and other app users to understand the effect of exercise on your wellbeing. By consenting, you will not be sharing personally identifiable data. All data used to create the map will be anonymised to protect your privacy.\n"),
+                    Text(
+                        "This is not necessary to use the app. The only difference is that you will not be asked to publish your data."),
+                    Switch(
+                        value: _currentSwitchValue,
+                        onChanged: (value) {
+                          setState(() {
+                            _currentSwitchValue = value;
+                          });
+                        })
+                  ]),
+              decoration: pageDecoration),
         ],
-        onDone: () => _onIntroEnd(context),
+        onDone: () =>
+            _onIntroEnd(context, _currentSliderValue, _currentSwitchValue),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
@@ -125,8 +234,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Color.fromARGB(255, 182, 125, 226))),
+        onChange: (int _) {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            // unfocusing dismisses the keyboard
+            currentFocus.unfocus();
+          }
+        },
         dotsDecorator: const DotsDecorator(
-            size: Size(10.0, 10.0),
+            size: Size(8.0, 8.0),
             color: Color(0xFFBDBDBD),
             activeColor: Color.fromARGB(255, 0, 74, 173),
             activeSize: Size(22.0, 10.0),

@@ -62,7 +62,7 @@ class _MainPagesState extends State<MainPages> {
     switch (payload) {
       case CHECKUP_PAYLOAD:
         await navigatorKey.currentState
-            .push(MaterialPageRoute(builder: (context) => Checkup()));
+            .push(MaterialPageRoute(builder: (context) => WellbeingCheck(UserWellbeingDB())));
         break;
       case PUBLISH_PAYLOAD:
         if (!await UserWellbeingDB().empty) {
