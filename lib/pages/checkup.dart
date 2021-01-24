@@ -30,7 +30,6 @@ class WellbeingCheck extends StatelessWidget {
   }
 }
 
-
 class WellbeingCheckWidgets extends StatefulWidget {
   final UserWellbeingDB _userWellbeingDB;
   WellbeingCheckWidgets(this._userWellbeingDB, {Key key}) : super(key: key);

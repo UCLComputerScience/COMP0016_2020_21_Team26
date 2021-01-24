@@ -115,6 +115,35 @@ void scheduleNudge() async {
   );
 }
 
+Future scheduleCheckupOnce(tz.TZDateTime scheduledDate) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    4,
+    "Weekly Wellbeing Check",
+    "Tap to report your wellbeing.",
+    scheduledDate,
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: CHECKUP_PAYLOAD,
+  );
+}
+
+Future schedulePublishOnce(tz.TZDateTime scheduledDate) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    5,
+    "Publish Score",
+    "Tap to review and publish your weekly score anonymously.",
+    scheduledDate,
+    _getSpecifics(),
+    // not important enough, no need to disturb idle mode:
+    androidAllowWhileIdle: false,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: PUBLISH_PAYLOAD,
+  );
+}
+
 tz.TZDateTime _nextInstanceOfDayTime(int weekday, Time time) {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   tz.TZDateTime targetDate = tz.TZDateTime(tz.local, now.year, now.month,
