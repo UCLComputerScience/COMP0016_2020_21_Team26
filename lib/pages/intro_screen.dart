@@ -221,7 +221,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           setState(() {
                             _currentSwitchValue = value;
                           });
-                          //
                         })
                   ]),
               decoration: pageDecoration),

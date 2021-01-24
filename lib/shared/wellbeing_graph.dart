@@ -51,7 +51,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   TextStyle tutorialTextStyle = TextStyle(
-      //style for tutorial text for large widgets, requires black background
+      //style for tutorial text for large widgets, requires white background
       fontSize: 20,
       color: Colors.black,
       fontStyle: FontStyle.italic,
