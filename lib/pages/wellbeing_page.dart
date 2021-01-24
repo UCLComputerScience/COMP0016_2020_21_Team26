@@ -9,8 +9,7 @@ class WellbeingPage extends StatelessWidget {
         body: SafeArea(
             child: Center(
                 child: Column(children: [
-          Text("Wellbeing / Steps",
-              style: Theme.of(context).textTheme.headline1),
+          Text("Wellbeing Diary", style: Theme.of(context).textTheme.headline1),
           Flexible(
               child: WellbeingGraph(
             animate: true,

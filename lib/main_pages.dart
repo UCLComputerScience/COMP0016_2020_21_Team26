@@ -61,8 +61,8 @@ class _MainPagesState extends State<MainPages> {
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
-        await navigatorKey.currentState.push(MaterialPageRoute(
-            builder: (context) => Checkup(UserWellbeingDB())));
+        await navigatorKey.currentState
+            .push(MaterialPageRoute(builder: (context) => WellbeingCheck(UserWellbeingDB())));
         break;
       case PUBLISH_PAYLOAD:
         if (!await UserWellbeingDB().empty) {

@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Center(
               child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
                   child: Text(
                       "This is where you can view \n last week's score.",
                       style: Theme.of(context).textTheme.subtitle2)))

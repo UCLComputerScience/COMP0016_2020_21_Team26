@@ -69,8 +69,8 @@ Future scheduleNotification([tz.TZDateTime scheduledDate]) async {
 Future scheduleCheckup(int day, Time time) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     1,
-    "Weekly Checkup",
-    "Tap to get your weekly checkup.",
+    "Weekly Wellbeing Check",
+    "Tap to report your wellbeing.",
     _nextInstanceOfDayTime(day, time),
     _getSpecifics(),
     androidAllowWhileIdle: true,

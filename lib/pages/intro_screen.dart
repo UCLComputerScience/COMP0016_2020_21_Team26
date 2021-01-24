@@ -30,6 +30,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final stepsController = TextEditingController();
 
   double _currentSliderValue = 0;
+  bool _currentSwitchValue = false;
 
   void setInitialWellbeing(double _currentSliderValue, String steps,
       String postcode, String suppode) async {
@@ -61,7 +62,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         int.tryParse(steps) != null;
   }
 
-  void _onIntroEnd(context, double _currentSliderValue) async {
+  void _onIntroEnd(
+      context, double _currentSliderValue, bool _currentSwitchValue) async {
     if (!_isInputValid(postcodeController.text, supportCodeController.text,
         stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -83,12 +85,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
-    _finishSetup();
+    _finishSetup(_currentSwitchValue);
   }
 
-  void _finishSetup() async {
+  void _finishSetup(bool _currentSwitchValue) async {
     scheduleCheckup(DateTime.sunday, const Time(12));
-    schedulePublish(DateTime.monday, const Time(12));
+    if (_currentSwitchValue) {
+      schedulePublish(DateTime.monday, const Time(12));
+    }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
     // only start tracking steps after user has done setup
@@ -98,7 +102,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-
     TextStyle introTextStyle = TextStyle(fontSize: width * 0.045);
 
     const pageDecoration = const PageDecoration(
@@ -112,7 +115,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           PageViewModel(
               title: "Welcome",
               image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
-              bodyWidget: Text("Swipe to set up", style: introTextStyle),
+              bodyWidget: Text(
+                  "This app has been designed to encourage you to take care of yourself. \n \n Swipe to set up.",
+                  style: introTextStyle,
+                  textAlign: TextAlign.center),
               decoration: pageDecoration),
           PageViewModel(
               title: "Postcode",
@@ -142,7 +148,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   child: Image.asset("lib/images/IntroSupport.png",
                       height: 225.0)),
               bodyWidget: (Column(children: <Widget>[
-                Text("Where do you primarily go to find support?",
+                Text("What is your support code?",
                     style: introTextStyle, textAlign: TextAlign.center),
                 TextField(
                   controller: supportCodeController,
@@ -155,14 +161,17 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               ])),
               decoration: pageDecoration),
           PageViewModel(
-              title: "Checkup",
+              title: "Wellbeing Check",
               image: Center(
                   child: Image.asset("lib/images/IntroCheckup.png",
                       height: 225.0)),
               bodyWidget: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("How did you feel this week?", style: introTextStyle),
+                    Text(
+                        "Move the blue circle left or right on the scale to rate your wellbeing: ",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
                     Container(
                         child: Slider(
                           value: _currentSliderValue,
@@ -194,8 +203,30 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     ),
                   ]),
               decoration: pageDecoration),
+          PageViewModel(
+              title: "Sharing",
+              image: Center(
+                  child:
+                      Image.asset("lib/images/IntroShare.png", height: 225.0)),
+              bodyWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                        "Click the toggle to consent to the creation of a map that enables you and other app users to understand the effect of exercise on your wellbeing. By consenting, you will not be sharing personally identifiable data. All data used to create the map will be anonymised to protect your privacy.\n"),
+                    Text(
+                        "This is not necessary to use the app. The only difference is that you will not be asked to publish your data."),
+                    Switch(
+                        value: _currentSwitchValue,
+                        onChanged: (value) {
+                          setState(() {
+                            _currentSwitchValue = value;
+                          });
+                        })
+                  ]),
+              decoration: pageDecoration),
         ],
-        onDone: () => _onIntroEnd(context, _currentSliderValue),
+        onDone: () =>
+            _onIntroEnd(context, _currentSliderValue, _currentSwitchValue),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
@@ -211,7 +242,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           }
         },
         dotsDecorator: const DotsDecorator(
-            size: Size(10.0, 10.0),
+            size: Size(8.0, 8.0),
             color: Color(0xFFBDBDBD),
             activeColor: Color.fromARGB(255, 0, 74, 173),
             activeSize: Size(22.0, 10.0),
