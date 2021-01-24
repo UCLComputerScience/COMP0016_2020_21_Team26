@@ -30,8 +30,7 @@ setupCrypto() async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(
       RSA_PRIVATE_PEM_KEY, _encodePrivateKeyInPem(keyPair.privateKey));
-  prefs.setString(
-      RSA_PUBLIC_PEM_KEY, _encodePublicKeyInPem(keyPair.publicKey));
+  prefs.setString(RSA_PUBLIC_PEM_KEY, _encodePublicKeyInPem(keyPair.publicKey));
   prefs.setString(USER_IDENTIFIER_KEY, identifier);
 
   // TODO: generate password and tell server about new user
@@ -39,12 +38,10 @@ setupCrypto() async {
 
 /// get fingerprint of a public key by hashing with sha-1 and concatenating
 /// the hex values
-String _getFingerprint(RSAPublicKey key) {
-  return SHA1Digest()
-      .process(_getPublicKeyBytes(key))
-      .map((e) => e.toRadixString(16)) // convert to hex
-      .join();
-}
+String _getFingerprint(RSAPublicKey key) => SHA1Digest()
+    .process(_getPublicKeyBytes(key))
+    .map((e) => e.toRadixString(16)) // convert to hex
+    .join();
 
 AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair(
     SecureRandom secureRandom,
@@ -94,7 +91,7 @@ String _encodePrivateKeyInPem(RSAPrivateKey key) {
   asn.add(ASN1Integer(key.privateExponent % (key.q - BigInt.one))); // exp2
   asn.add(ASN1Integer(key.q.modInverse(key.p))); // coefficient
 
-  final base64Data = base64.encode(asn.encodedBytes);
+  final base64Data = base64.encode(asn.encode());
   return '-----BEGIN PRIVATE KEY-----\n$base64Data\n-----END PRIVATE KEY-----';
 }
 
@@ -112,5 +109,5 @@ Uint8List _getPublicKeyBytes(RSAPublicKey key) {
   asn.add(ASN1Integer(key.modulus));
   asn.add(ASN1Integer(key.exponent));
 
-  return asn.encodedBytes;
+  return asn.encode();
 }

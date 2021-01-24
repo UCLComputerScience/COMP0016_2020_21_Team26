@@ -84,6 +84,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
+
+    // TODO: add a loading screen.
+    // _finishSetup may take a while so maybe add a loading screen that
+    // awaits for this and then pushes the MainPages().
+    // Maybe just having a pop up dialog with a future builder would
+    // work.
     _finishSetup();
   }
 
