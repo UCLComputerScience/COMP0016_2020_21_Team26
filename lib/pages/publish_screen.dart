@@ -8,7 +8,10 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 
-const BASE_URL = "https://comp0016.cyberchris.xyz/add-wellbeing-record";
+/// URL of the server running back-end code. This should be changed
+/// if the domain has changed.
+/// Also ensure 'https' is used since we want to securely send data.
+const BASE_URL = "https://comp0016.cyberchris.xyz";
 
 class PublishScreen extends StatefulWidget {
   @override
@@ -128,7 +131,7 @@ class _PublishScreenState extends State<PublishScreen> {
 
     print("Sending body $body");
     http
-        .post(BASE_URL,
+        .post(BASE_URL + "/add-wellbeing-record",
             headers: {"Content-Type": "application/json"}, body: body)
         .then((response) {
       print("Reponse status: ${response.statusCode}");

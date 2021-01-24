@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
+import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:pointycastle/export.dart';
 import 'package:pointycastle/pointycastle.dart';
+import 'package:random_string/random_string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // General Idea:
@@ -26,55 +29,27 @@ setupCrypto() async {
   final keyPair = _generateRSAKeyPair(_getSecureRandom());
   // using fingerprint as identifier:
   final identifier = _getFingerprint(keyPair.publicKey);
+  final password = randomAlphaNumeric(20);
 
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(
       RSA_PRIVATE_PEM_KEY, _encodePrivateKeyInPem(keyPair.privateKey));
   prefs.setString(RSA_PUBLIC_PEM_KEY, _encodePublicKeyInPem(keyPair.publicKey));
   prefs.setString(USER_IDENTIFIER_KEY, identifier);
+  prefs.setString(USER_PASSWORD_KEY, randomAlphaNumeric(20));
 
-  // TODO: generate password and tell server about new user
+  _addUserBackend(identifier, password);
 }
 
-/// get fingerprint of a public key by hashing with sha-1 and concatenating
-/// the hex values
-String _getFingerprint(RSAPublicKey key) => SHA1Digest()
-    .process(_getPublicKeyBytes(key))
-    .map((e) => e.toRadixString(16)) // convert to hex
-    .join();
-
-AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair(
-    SecureRandom secureRandom,
-    {int bitLength = 2048}) {
-  final publicExponent = BigInt.parse('65537');
-
-  // setup generator
-  final keyGen = RSAKeyGenerator()
-    ..init(ParametersWithRandom(
-        RSAKeyGeneratorParameters(publicExponent, bitLength, 64),
-        secureRandom));
-
-  final pair = keyGen.generateKeyPair();
-
-  // Cast the generated key pair into the RSA key types
-  final myPublic = pair.publicKey as RSAPublicKey;
-  final myPrivate = pair.privateKey as RSAPrivateKey;
-
-  return AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(myPublic, myPrivate);
-}
-
-/// get secure source of randomness, using dart's math library to get seed
-SecureRandom _getSecureRandom() {
-  final secureRandom = FortunaRandom();
-
-  final seedSource = Random.secure();
-  final seeds = <int>[];
-  for (int i = 0; i < 32; i++) {
-    seeds.add(seedSource.nextInt(255));
-  }
-  secureRandom.seed(KeyParameter(Uint8List.fromList(seeds)));
-
-  return secureRandom;
+Future<void> _addUserBackend(String identifier, String password) async {
+  final body = jsonEncode({"identifier": identifier, "password": password});
+  http
+      .post(BASE_URL + "/user/new",
+          headers: {"Content-Type": "application/json"}, body: body)
+      .then((response) {
+    print("Response body: ${response.body}");
+    // TODO: notify user in case something went wrong
+  });
 }
 
 /// encodes RSA private key into PKCS#1 format
@@ -101,6 +76,33 @@ String _encodePublicKeyInPem(RSAPublicKey key) {
   return '-----BEGIN PUBLIC KEY-----\n$base64Data\n-----END PUBLIC KEY-----';
 }
 
+AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair(
+    SecureRandom secureRandom,
+    {int bitLength = 2048}) {
+  final publicExponent = BigInt.parse('65537');
+
+  // setup generator
+  final keyGen = RSAKeyGenerator()
+    ..init(ParametersWithRandom(
+        RSAKeyGeneratorParameters(publicExponent, bitLength, 64),
+        secureRandom));
+
+  final pair = keyGen.generateKeyPair();
+
+  // Cast the generated key pair into the RSA key types
+  final myPublic = pair.publicKey as RSAPublicKey;
+  final myPrivate = pair.privateKey as RSAPrivateKey;
+
+  return AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(myPublic, myPrivate);
+}
+
+/// get fingerprint of a public key by hashing with sha-1 and concatenating
+/// the hex values
+String _getFingerprint(RSAPublicKey key) => SHA1Digest()
+    .process(_getPublicKeyBytes(key))
+    .map((e) => e.toRadixString(16)) // convert to hex
+    .join();
+
 /// Get the bytes used in the middle part of the PEM format.
 /// Useful for generating fingerprints.
 Uint8List _getPublicKeyBytes(RSAPublicKey key) {
@@ -110,4 +112,18 @@ Uint8List _getPublicKeyBytes(RSAPublicKey key) {
   asn.add(ASN1Integer(key.exponent));
 
   return asn.encode();
+}
+
+/// get secure source of randomness, using dart's math library to get seed
+SecureRandom _getSecureRandom() {
+  final secureRandom = FortunaRandom();
+
+  final seedSource = Random.secure();
+  final seeds = <int>[];
+  for (int i = 0; i < 32; i++) {
+    seeds.add(seedSource.nextInt(255));
+  }
+  secureRandom.seed(KeyParameter(Uint8List.fromList(seeds)));
+
+  return secureRandom;
 }

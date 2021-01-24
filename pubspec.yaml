@@ -34,9 +34,9 @@ dependencies:
   printing: ^3.7.2
   clock: ^1.0.1 # useful for testing
   permission_handler: ^5.0.1+1
-  # encrypt for high-level API, pointycastle for keygen
-  encrypt: ^4.1.0
-  pointycastle: ^2.0.1
+  encrypt: ^4.1.0 # high-level API
+  pointycastle: ^2.0.1 # used for keygen
+  random_string: ^2.1.0
 
   # data-related
   provider: ^3.0.0
