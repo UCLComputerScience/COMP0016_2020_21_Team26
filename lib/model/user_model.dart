@@ -104,7 +104,7 @@ class UserWellbeingDB {
   }
 }
 
-/// Immutable data item of a week's wellbeing record
+/// (Effectively) immutable data item of a week's wellbeing record
 class WellbeingItem {
   int id;
   String date;
