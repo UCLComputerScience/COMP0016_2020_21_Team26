@@ -87,8 +87,9 @@ class FriendDB {
       whereArgs: [identifier]
     );
     assert(friendMaps.length == 1);
+    final out = friendMaps[0][_columns[4]];
 
-    return friendMaps[0][_columns[4]];
+    return out == null ? "" : out;
   }
 
   void delete() async {

@@ -90,6 +90,7 @@ class SharingPageState extends State<SharingPage> {
           showKeyButton,
           addFriendButton,
           refreshButton,
+          Divider(thickness: 3,),
           friendsList,
         ],
       ),

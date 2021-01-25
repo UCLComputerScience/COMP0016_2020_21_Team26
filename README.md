@@ -44,13 +44,13 @@ We would like to share the last 5 weeks, like with the PDF, so the JSON data wou
 something like this:
 
 ``` json
-{
-'1': {'score': 8, 'steps': 1005},
-'2': {'score': 9, 'steps': 12300},
-'3': {'score': 7, 'steps': 105},
-'4': {'score': 2, 'steps': 200},
-'5': {'score': 3, 'steps': 300},
-}
+[
+{'week': 1, 'score': 8, 'steps': 1005},
+{'week': 2, 'score': 9, 'steps': 12300},
+{'week': 3, 'score': 7, 'steps': 105},
+{'week': 4, 'score': 2, 'steps': 200},
+{'week': 5, 'score': 3, 'steps': 300},
+]
 ```
 (Using a dictionary instead of an array because we may want their week number.)
 

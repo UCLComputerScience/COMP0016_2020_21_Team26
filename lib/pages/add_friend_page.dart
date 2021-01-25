@@ -18,48 +18,50 @@ class AddFriendPageState extends State<AddFriendPage> {
     return Scaffold(
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            Text("Name"),
-            TextFormField(
-              onSaved: (val) {
-                setState(() {
-                  name = val;
-                });
-              },
-            ),
-            Text("Id"),
-            TextFormField(
-              onSaved: (val) {
-                setState(() {
-                  identifier = val;
-                });
-              },
-            ),
-            Text("Key:"),
-            TextFormField(
-              onSaved: (val) {
-                setState(() {
-                  publicKey = val;
-                });
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _formKey.currentState.save();
-                // TODO: verify that user identifier exists before inserting
-                setState(() {
-                  FriendDB().insertWithData(
-                      name: name,
-                      identifier: identifier,
-                      publicKey: publicKey,
-                      latestData: null);
-                });
-                Navigator.pop(context);
-              },
-              child: Text("Done"),
-            ),
-          ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              Text("Name"),
+              TextFormField(
+                onSaved: (val) {
+                  setState(() {
+                    name = val;
+                  });
+                },
+              ),
+              Text("Id"),
+              TextFormField(
+                onSaved: (val) {
+                  setState(() {
+                    identifier = val;
+                  });
+                },
+              ),
+              Text("Key:"),
+              TextFormField(
+                onSaved: (val) {
+                  setState(() {
+                    publicKey = val;
+                  });
+                },
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _formKey.currentState.save();
+                  // TODO: verify that user identifier exists before inserting
+                  setState(() {
+                    FriendDB().insertWithData(
+                        name: name,
+                        identifier: identifier,
+                        publicKey: publicKey,
+                        latestData: null);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text("Done"),
+              ),
+            ],
+          ),
         ),
       ),
     );
