@@ -40,7 +40,7 @@ Future<void> setupCrypto() async {
       RSA_PRIVATE_PEM_KEY, _encodePrivateKeyInPem(keyPair.privateKey));
   prefs.setString(RSA_PUBLIC_PEM_KEY, _encodePublicKeyInPem(keyPair.publicKey));
   prefs.setString(USER_IDENTIFIER_KEY, identifier);
-  prefs.setString(USER_PASSWORD_KEY, randomAlphaNumeric(20));
+  prefs.setString(USER_PASSWORD_KEY, password);
 
   _addUserBackend(identifier, password);
 }
