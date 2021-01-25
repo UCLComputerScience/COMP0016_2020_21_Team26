@@ -13,8 +13,8 @@ List<String> days = [
   "Saturday",
   "Sunday"
 ];
-var hours = [for (var i = 1; i < 25; i += 1) i];
-var minutes = [for (var i = 00; i < 60; i += 1) i];
+final hours = [for (var i = 1; i < 25; i += 1) i];
+final minutes = [for (var i = 00; i < 60; i += 1) i];
 
 class SettingsPage extends StatelessWidget {
   @override

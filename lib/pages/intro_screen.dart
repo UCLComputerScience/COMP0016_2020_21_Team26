@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:nudge_me/pages/settings_page.dart';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the wbCheck/share notifications here to ensure that
@@ -37,17 +38,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _shareNotifDay;
   int _shareNotifHour;
   int _shareNotifMinute;
-  List<String> days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
-  ];
-  var hours = [for (var i = 1; i < 25; i += 1) i];
-  var minutes = [for (var i = 00; i < 60; i += 1) i];
 
   void setInitialWellbeing(double _currentSliderValue, String steps,
       String postcode, String suppode) async {
@@ -137,6 +127,245 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
     // only start tracking steps after user has done setup
     initBackground();
+  }
+
+  PageViewModel _getWBCheckNotificationPage(
+      context, TextStyle introTextStyle, PageDecoration pageDecoration) {
+    return PageViewModel(
+        title: "Wellbeing Check Notification",
+        image: Center(
+            child: Image.asset("lib/images/IntroWBCheckNotification.png",
+                height: 225.0)),
+        bodyWidget: Column(
+          children: [
+            Text(
+                "Once a week, NudgeMe will send you a notification asking you to report your wellbeing." +
+                    "Clicking on this notification will take you to a page that allows you to do this.\n",
+                style: introTextStyle,
+                textAlign: TextAlign.center),
+            Text(
+                "When do you want to receive your weekly Wellbeing Check notification?",
+                style: introTextStyle,
+                textAlign: TextAlign.center),
+            SizedBox(height: 5),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              DropdownButton(
+                value: _wbCheckNotifDay,
+                hint: Text("Day"),
+                icon: Icon(Icons.arrow_downward,
+                    color: Theme.of(context).primaryColor),
+                iconSize: 20,
+                elevation: 16,
+                style: introTextStyle,
+                underline: Container(
+                  height: 2,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      _wbCheckNotifDay = value;
+                    }
+                  });
+                },
+                items: <int>[
+                  DateTime.monday,
+                  DateTime.tuesday,
+                  DateTime.wednesday,
+                  DateTime.thursday,
+                  DateTime.friday,
+                  DateTime.saturday,
+                  DateTime.sunday
+                ].map<DropdownMenuItem<int>>((int value) {
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(days[value - 1]),
+                  );
+                }).toList(),
+              ),
+              SizedBox(width: 10),
+              DropdownButton(
+                  value: _wbCheckNotifHour,
+                  hint: Text("Hour"),
+                  icon: Icon(Icons.arrow_downward,
+                      color: Theme.of(context).primaryColor),
+                  iconSize: 20,
+                  elevation: 16,
+                  style: introTextStyle,
+                  underline: Container(
+                    height: 2,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _wbCheckNotifHour = value;
+                      }
+                    });
+                  },
+                  items: hours.map<DropdownMenuItem>((value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList()),
+              SizedBox(width: 5),
+              DropdownButton(
+                  value: _wbCheckNotifMinute,
+                  hint: Text("Minutes"),
+                  icon: Icon(Icons.arrow_downward,
+                      color: Theme.of(context).primaryColor),
+                  iconSize: 20,
+                  elevation: 16,
+                  style: introTextStyle,
+                  underline: Container(
+                    height: 2,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _wbCheckNotifMinute = value;
+                      }
+                    });
+                  },
+                  items: minutes.map<DropdownMenuItem>((value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList())
+            ]),
+          ],
+        ),
+        decoration: pageDecoration);
+  }
+
+  PageViewModel _getShareNotificationPage(
+      context, TextStyle introTextStyle, PageDecoration pageDecoration) {
+    return PageViewModel(
+        title: "Share Data Notification",
+        image: Center(
+            child: Image.asset("lib/images/IntroShareNotification.png",
+                height: 225.0)),
+        bodyWidget: Column(
+          children: [
+            Visibility(
+                visible: _currentSwitchValue,
+                child: Column(children: [
+                  Text(
+                      "Once a week, NudgeMe will send you a notification asking you to share your wellbeing data. " +
+                          "Clicking on this notification will take you to a page that asks you whether you want to share.\n",
+                      style: introTextStyle,
+                      textAlign: TextAlign.center),
+                  Text(
+                      "When do you want to receive your weekly Share Data notification?",
+                      style: introTextStyle,
+                      textAlign: TextAlign.center),
+                  SizedBox(height: 5),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    DropdownButton(
+                      value: _shareNotifDay,
+                      hint: Text("Day"),
+                      icon: Icon(Icons.arrow_downward,
+                          color: Theme.of(context).primaryColor),
+                      iconSize: 20,
+                      elevation: 16,
+                      style: introTextStyle,
+                      underline: Container(
+                        height: 2,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value != null) {
+                            _shareNotifDay = value;
+                          }
+                        });
+                      },
+                      items: <int>[
+                        DateTime.monday,
+                        DateTime.tuesday,
+                        DateTime.wednesday,
+                        DateTime.thursday,
+                        DateTime.friday,
+                        DateTime.saturday,
+                        DateTime.sunday
+                      ].map<DropdownMenuItem<int>>((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(days[value - 1]),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(width: 10),
+                    DropdownButton(
+                        value: _shareNotifHour,
+                        hint: Text("Hour"),
+                        icon: Icon(Icons.arrow_downward,
+                            color: Theme.of(context).primaryColor),
+                        iconSize: 20,
+                        elevation: 16,
+                        style: introTextStyle,
+                        underline: Container(
+                          height: 2,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              _shareNotifHour = value;
+                            }
+                          });
+                        },
+                        items: hours.map<DropdownMenuItem>((value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(value.toString()),
+                          );
+                        }).toList()),
+                    SizedBox(width: 5),
+                    DropdownButton(
+                        value: _shareNotifMinute,
+                        hint: Text("Minutes"),
+                        icon: Icon(Icons.arrow_downward,
+                            color: Theme.of(context).primaryColor),
+                        iconSize: 20,
+                        elevation: 16,
+                        style: introTextStyle,
+                        underline: Container(
+                          height: 2,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              _shareNotifMinute = value;
+                            }
+                          });
+                        },
+                        items: minutes.map<DropdownMenuItem>((value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(value.toString()),
+                          );
+                        }).toList())
+                  ]),
+                ])),
+            Visibility(
+              visible: !_currentSwitchValue,
+              child: Column(
+                children: [
+                  Text(
+                      "You have disabled publishing data so you will not receive a publish notification.",
+                      style: introTextStyle,
+                      textAlign: TextAlign.center)
+                ],
+              ),
+            )
+          ],
+        ),
+        decoration: pageDecoration);
   }
 
   @override
@@ -244,113 +473,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     ),
                   ]),
               decoration: pageDecoration),
-          PageViewModel(
-              title: "Wellbeing Check Notification",
-              image: Center(
-                  child: Image.asset("lib/images/IntroWBCheckNotification.png",
-                      height: 225.0)),
-              bodyWidget: Column(
-                children: [
-                  Text(
-                      "Once a week, NudgeMe will send you a notification asking you to report your wellbeing. Clicking on this notification will take you to a page that allows you to do this.\n",
-                      style: introTextStyle,
-                      textAlign: TextAlign.center),
-                  Text(
-                      "When do you want to receive your weekly Wellbeing Check notification?",
-                      style: introTextStyle,
-                      textAlign: TextAlign.center),
-                  SizedBox(height: 5),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    DropdownButton(
-                      value: _wbCheckNotifDay,
-                      hint: Text("Day"),
-                      icon: Icon(Icons.arrow_downward,
-                          color: Theme.of(context).primaryColor),
-                      iconSize: 20,
-                      elevation: 16,
-                      style: introTextStyle,
-                      underline: Container(
-                        height: 2,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          if (value != null) {
-                            _wbCheckNotifDay = value;
-                          }
-                        });
-                      },
-                      items: <int>[
-                        DateTime.monday,
-                        DateTime.tuesday,
-                        DateTime.wednesday,
-                        DateTime.thursday,
-                        DateTime.friday,
-                        DateTime.saturday,
-                        DateTime.sunday
-                      ].map<DropdownMenuItem<int>>((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text(days[value - 1]),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(width: 10),
-                    DropdownButton(
-                        value: _wbCheckNotifHour,
-                        hint: Text("Hour"),
-                        icon: Icon(Icons.arrow_downward,
-                            color: Theme.of(context).primaryColor),
-                        iconSize: 20,
-                        elevation: 16,
-                        style: introTextStyle,
-                        underline: Container(
-                          height: 2,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _wbCheckNotifHour = value;
-                            }
-                          });
-                        },
-                        items: hours.map<DropdownMenuItem>((value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value.toString()),
-                          );
-                        }).toList()),
-                    SizedBox(width: 5),
-                    DropdownButton(
-                        value: _wbCheckNotifMinute,
-                        hint: Text("Minutes"),
-                        icon: Icon(Icons.arrow_downward,
-                            color: Theme.of(context).primaryColor),
-                        iconSize: 20,
-                        elevation: 16,
-                        style: introTextStyle,
-                        underline: Container(
-                          height: 2,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _wbCheckNotifMinute = value;
-                            }
-                          });
-                        },
-                        items: minutes.map<DropdownMenuItem>((value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value.toString()),
-                          );
-                        }).toList())
-                  ]),
-                ],
-              ),
-              decoration: pageDecoration),
+          _getWBCheckNotificationPage(context, introTextStyle, pageDecoration),
           PageViewModel(
               title: "Share Data",
               image: Center(
@@ -360,11 +483,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                        "Click the toggle to consent to the creation of a map that enables you and other app users to understand the effect of exercise on your wellbeing. By consenting, you will not be sharing personally identifiable data. All data used to create the map will be anonymised to protect your privacy.\n",
+                        "Click the toggle to consent to the creation of a map that enables you and other app " +
+                            "users to understand the effect of exercise on your wellbeing. " +
+                            "By consenting, you will not be sharing personally identifiable data. " +
+                            "All data used to create the map will be anonymised to protect your privacy.\n",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                     Text(
-                        "This is not necessary to use the app. The only difference is that you will not be asked to publish your data.",
+                        "This is not necessary to use the app. " +
+                            "The only difference is that you will not be asked to publish your data.",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                     Switch(
@@ -376,130 +503,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         }),
                   ]),
               decoration: pageDecoration),
-          PageViewModel(
-              title: "Share Data Notification",
-              image: Center(
-                  child: Image.asset("lib/images/IntroShareNotification.png",
-                      height: 225.0)),
-              bodyWidget: Column(
-                children: [
-                  Visibility(
-                      visible: _currentSwitchValue,
-                      child: Column(children: [
-                        Text(
-                            "Once a week, NudgeMe will send you a notification asking you to share your wellbeing data. Clicking on this notification will take you to a page that asks you whether you want to share.\n",
-                            style: introTextStyle,
-                            textAlign: TextAlign.center),
-                        Text(
-                            "When do you want to receive your weekly Share Data notification?",
-                            style: introTextStyle,
-                            textAlign: TextAlign.center),
-                        SizedBox(height: 5),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              DropdownButton(
-                                value: _shareNotifDay,
-                                hint: Text("Day"),
-                                icon: Icon(Icons.arrow_downward,
-                                    color: Theme.of(context).primaryColor),
-                                iconSize: 20,
-                                elevation: 16,
-                                style: introTextStyle,
-                                underline: Container(
-                                  height: 2,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value != null) {
-                                      _shareNotifDay = value;
-                                    }
-                                  });
-                                },
-                                items: <int>[
-                                  DateTime.monday,
-                                  DateTime.tuesday,
-                                  DateTime.wednesday,
-                                  DateTime.thursday,
-                                  DateTime.friday,
-                                  DateTime.saturday,
-                                  DateTime.sunday
-                                ].map<DropdownMenuItem<int>>((int value) {
-                                  return DropdownMenuItem<int>(
-                                    value: value,
-                                    child: Text(days[value - 1]),
-                                  );
-                                }).toList(),
-                              ),
-                              SizedBox(width: 10),
-                              DropdownButton(
-                                  value: _shareNotifHour,
-                                  hint: Text("Hour"),
-                                  icon: Icon(Icons.arrow_downward,
-                                      color: Theme.of(context).primaryColor),
-                                  iconSize: 20,
-                                  elevation: 16,
-                                  style: introTextStyle,
-                                  underline: Container(
-                                    height: 2,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value != null) {
-                                        _shareNotifHour = value;
-                                      }
-                                    });
-                                  },
-                                  items: hours.map<DropdownMenuItem>((value) {
-                                    return DropdownMenuItem(
-                                      value: value,
-                                      child: Text(value.toString()),
-                                    );
-                                  }).toList()),
-                              SizedBox(width: 5),
-                              DropdownButton(
-                                  value: _shareNotifMinute,
-                                  hint: Text("Minutes"),
-                                  icon: Icon(Icons.arrow_downward,
-                                      color: Theme.of(context).primaryColor),
-                                  iconSize: 20,
-                                  elevation: 16,
-                                  style: introTextStyle,
-                                  underline: Container(
-                                    height: 2,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value != null) {
-                                        _shareNotifMinute = value;
-                                      }
-                                    });
-                                  },
-                                  items: minutes.map<DropdownMenuItem>((value) {
-                                    return DropdownMenuItem(
-                                      value: value,
-                                      child: Text(value.toString()),
-                                    );
-                                  }).toList())
-                            ]),
-                      ])),
-                  Visibility(
-                    visible: !_currentSwitchValue,
-                    child: Column(
-                      children: [
-                        Text(
-                            "You have disabled publishing data so you will not receive a publish notification.",
-                            style: introTextStyle,
-                            textAlign: TextAlign.center)
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              decoration: pageDecoration),
+          _getShareNotificationPage(context, introTextStyle, pageDecoration)
         ],
         onDone: () => _onIntroEnd(
             context,
