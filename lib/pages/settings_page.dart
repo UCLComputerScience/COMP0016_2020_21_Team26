@@ -321,9 +321,16 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
                 rescheduleCheckup(wbCheckNotifDay,
                     Time(wbCheckNotifHour, wbCheckNotifMinute));
                 String wbCheckNotifDayName = days[wbCheckNotifDay - 1];
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                        "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $wbCheckNotifHour:$wbCheckNotifMinute")));
+                if (wbCheckNotifMinute.toString().length == 1) {
+                  String shareNotifMinuteFull = "0$wbCheckNotifMinute";
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $wbCheckNotifHour:$shareNotifMinuteFull")));
+                } else {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $wbCheckNotifHour:$wbCheckNotifMinute")));
+                }
               }
             });
           })
@@ -448,9 +455,16 @@ class _RescheduleShareNotifState extends State<RescheduleShareNotif> {
                     shareNotifDay, Time(shareNotifHour, shareNotifMinute));
                 String shareNotifDayName = days[shareNotifDay -
                     1]; //name of day means "monday" rather than 1
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                        "Your Share Data notification has been rescheduled to $shareNotifDayName at $shareNotifHour:$shareNotifMinute")));
+                if (shareNotifMinute.toString().length == 1) {
+                  String shareNotifMinuteFull = "0$shareNotifMinute";
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "Your Share Data notification has been rescheduled to $shareNotifDayName at $shareNotifHour:$shareNotifMinuteFull")));
+                } else {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "Your Share Data notification has been rescheduled to $shareNotifDayName at $shareNotifHour:$shareNotifMinute")));
+                }
               }
             });
           })
