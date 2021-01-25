@@ -23,17 +23,18 @@ class FriendGraph extends StatelessWidget {
           final decoded = jsonDecode(data);
           final seriesList = _getSeriesList(decoded);
 
-          return Flexible(child: charts.BarChart(
+          return Flexible(
+              child: charts.BarChart(
             seriesList,
             animate: animate,
             barGroupingType: charts.BarGroupingType.grouped,
             // 'tick counts' used to match grid lines
             primaryMeasureAxis: charts.NumericAxisSpec(
                 tickProviderSpec:
-                charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
+                    charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
             secondaryMeasureAxis: charts.NumericAxisSpec(
               tickProviderSpec:
-              charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
+                  charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
             ),
             behaviors: [
               new charts.SeriesLegend(), // adds labels to colors
@@ -50,7 +51,7 @@ class FriendGraph extends StatelessWidget {
               new charts.ChartTitle('Week Number',
                   behaviorPosition: charts.BehaviorPosition.bottom,
                   titleOutsideJustification:
-                  charts.OutsideJustification.middleDrawArea),
+                      charts.OutsideJustification.middleDrawArea),
               new charts.PanAndZoomBehavior(),
             ],
           ));
@@ -58,7 +59,8 @@ class FriendGraph extends StatelessWidget {
           return Text(dat.error);
         }
         return CircularProgressIndicator();
-    },);
+      },
+    );
   }
 
   List<dynamic> _getSeriesList(List<Map<String, dynamic>> json) {

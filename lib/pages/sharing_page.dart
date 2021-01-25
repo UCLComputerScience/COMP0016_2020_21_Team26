@@ -4,6 +4,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
@@ -90,7 +91,9 @@ class SharingPageState extends State<SharingPage> {
           showKeyButton,
           addFriendButton,
           refreshButton,
-          Divider(thickness: 3,),
+          Divider(
+            thickness: 3,
+          ),
           friendsList,
         ],
       ),
@@ -169,14 +172,51 @@ class FriendListItem extends StatelessWidget {
                         child: Text('No'),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      // TODO:
                       TextButton(
-                        child: Text('Yes'),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+                          child: Text('Yes'),
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            _sendWellbeingData(context);
+                          }),
                     ],
                   )),
           child: Text("Send"),
         ),
       );
+
+  Future<void> _sendWellbeingData(BuildContext context) async {
+    final friendKey = FriendDB().getKey(friend.identifier);
+
+    final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
+    final List<Map<String, int>> mapped = items
+        .map((e) => {
+              'week': e.id,
+              'score': e.wellbeingScore.truncate(),
+              'steps': e.numSteps
+            })
+        .toList(growable: false);
+    final jsonString = json.encode(mapped);
+
+    final encrypter = Encrypter(RSA(publicKey: await friendKey));
+    final data = encrypter.encrypt(jsonString).base64;
+
+    final prefs = await SharedPreferences.getInstance();
+    final body = {
+      'identifier_from': prefs.getString(USER_IDENTIFIER_KEY),
+      'password': prefs.getString(USER_PASSWORD_KEY),
+      'identifier_to': friend.identifier,
+      'data': data
+    };
+    http
+        .post(BASE_URL + "/user/message/new",
+            headers: {"Content-Type": "application/json"}, body: body)
+        .then((response) {
+      final body = json.decode(response.body);
+      if (body['success'] == false) {
+        print(body);
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text("Failed to send.")));
+      }
+    });
+  }
 }

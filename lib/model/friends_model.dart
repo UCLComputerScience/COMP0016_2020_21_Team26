@@ -82,10 +82,9 @@ class FriendDB {
   Future<String> getLatestData(String identifier) async {
     final db = await database;
     List<Map> friendMaps = await db.query(_tableName,
-      columns: [_columns[4]],
-      where: '${_columns[2]} = ?',
-      whereArgs: [identifier]
-    );
+        columns: [_columns[4]],
+        where: '${_columns[2]} = ?',
+        whereArgs: [identifier]);
     assert(friendMaps.length == 1);
     final out = friendMaps[0][_columns[4]];
 
