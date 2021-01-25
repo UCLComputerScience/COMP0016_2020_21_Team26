@@ -82,6 +82,13 @@ Future scheduleCheckup(int day, Time time) async {
   );
 }
 
+/// cancels old checkup notfification and reschedules with new date and time
+/// [int] day should be retrieved using DateTime's day enumeration
+Future rescheduleCheckup(int day, Time time) async {
+  await flutterLocalNotificationsPlugin.cancel(1);
+  scheduleCheckup(day, time);
+}
+
 /// schedule publish notification that repeats weekly
 /// [int] day should be retrieved using DateTime's day enumeration
 Future schedulePublish(int day, Time time) async {
@@ -99,6 +106,13 @@ Future schedulePublish(int day, Time time) async {
     // schedule recurring notification on matching day & time
     matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
   );
+}
+
+/// cancels old publish notfification and reschedules with new date and time
+/// [int] day should be retrieved using DateTime's day enumeration
+Future reschedulePublish(int day, Time time) async {
+  await flutterLocalNotificationsPlugin.cancel(2);
+  schedulePublish(day, time);
 }
 
 void scheduleNudge() async {

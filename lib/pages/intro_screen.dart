@@ -379,7 +379,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           PageViewModel(
               title: "Share Data Notification",
               image: Center(
-                  child: Image.asset("lib/images/Intro_shareNotification.png",
+                  child: Image.asset("lib/images/IntroShareNotification.png",
                       height: 225.0)),
               bodyWidget: Column(
                 children: [
