@@ -1,3 +1,5 @@
+import 'package:encrypt/encrypt.dart';
+import 'package:pointycastle/pointycastle.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
@@ -46,6 +48,33 @@ class FriendDB {
         .map((friendMap) => Friend.fromMap(friendMap))
         .toList(growable: false);
     return itemList;
+  }
+
+  /// get the public key associated with the [Friend] 'identifier'
+  Future<RSAPublicKey> getKey(String identifier) async {
+    final db = await database;
+    List<Map> friendMaps = await db.query(_tableName,
+        columns: [_columns[3]],
+        where: '${_columns[2]} = ?',
+        whereArgs: [identifier]);
+    assert(friendMaps.length == 1);
+    final String keyString = friendMaps[0][_columns[3]];
+    return RSAKeyParser().parse(keyString) as RSAPublicKey;
+  }
+
+  /// updates the latest data for all the identifiers in messages.
+  /// each message should have an 'identifier_from' and 'data' index
+  /// that points to their respective string values.
+  Future<void> updateData(List<Map<String, String>> messages) async {
+    final db = await database;
+    final batch = db.batch();
+    for (var message in messages) {
+      final sender = message['identifier_from'];
+      final data = message['data'];
+      batch.update(_tableName, {_columns[4]: data},
+          where: '${_columns[2]} = ?', whereArgs: [sender]);
+    }
+    await batch.commit();
   }
 
   void delete() async {

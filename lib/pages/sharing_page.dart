@@ -1,7 +1,13 @@
+import 'dart:convert';
+
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/pages/publish_screen.dart';
+import 'package:pointycastle/pointycastle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class SharingPage extends StatefulWidget {
   @override
@@ -54,12 +60,17 @@ class SharingPageState extends State<SharingPage> {
       },
       child: Text("Add Friend"),
     );
+    final refreshButton = ElevatedButton(
+      onPressed: _getLatest,
+      child: Text("Refresh"),
+    );
     final friendsList = FutureBuilder(
       future: _futureFriends,
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
-          return Column( // prob should change this to ListView eventually
+          return Column(
+            // prob should change this to ListView eventually
             children:
                 friends.map((fr) => Text(fr.name)).toList(growable: false),
           );
@@ -73,11 +84,44 @@ class SharingPageState extends State<SharingPage> {
         children: [
           showKeyButton,
           addFriendButton,
+          refreshButton,
           friendsList,
         ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     );
+  }
+
+  /// get the latest messages for this user
+  Future<void> _getLatest() async {
+    final prefs = await SharedPreferences.getInstance();
+    final body = jsonEncode({
+      "identifier": prefs.getString(USER_IDENTIFIER_KEY),
+      "password": prefs.getString(USER_PASSWORD_KEY),
+    });
+
+    http
+        .post(BASE_URL + "/user/message",
+            headers: {"Content-Type": "application/json"}, body: body)
+        .then((response) {
+      final List messages = jsonDecode(response.body);
+      print("Recieved: $messages");
+
+      final pubKey = RSAKeyParser().parse(prefs.getString(RSA_PUBLIC_PEM_KEY))
+          as RSAPublicKey;
+      final privKey = RSAKeyParser().parse(prefs.getString(RSA_PRIVATE_PEM_KEY))
+          as RSAPrivateKey;
+      final encrypter = Encrypter(RSA(publicKey: pubKey, privateKey: privKey));
+
+      for (var message in messages) {
+        String encrypted = message['data'];
+        String decrypted = encrypter.decrypt64(encrypted);
+        message['data'] = decrypted;
+      }
+      setState(() {
+        FriendDB().updateData(messages);
+      });
+    });
   }
 }
 
