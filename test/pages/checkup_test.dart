@@ -13,7 +13,7 @@ void main() {
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 0});
 
     await tester.pumpWidget(MaterialApp(
-      home: Checkup(MockedDB()),
+      home: WellbeingCheck(MockedDB()),
     ));
 
     final buttonFind = find.byType(ElevatedButton);
@@ -29,7 +29,7 @@ void main() {
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
 
     await tester.pumpWidget(MaterialApp(
-      home: Checkup(mockedDB),
+      home: WellbeingCheck(mockedDB),
     ));
 
     // should be at score of 10 after dragging

@@ -51,11 +51,11 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   TextStyle tutorialTextStyle = TextStyle(
-      //style for tutorial text for large widgets, requires black background
+      //style for tutorial text for large widgets, requires white background
       fontSize: 20,
-      color: Colors.white,
+      color: Colors.black,
       fontStyle: FontStyle.italic,
-      backgroundColor: Colors.black);
+      backgroundColor: Colors.white);
 
   ///function to show the first slide of the tutorial, explaining the wellbeing graph
   void showCoachMarkGraph() {
@@ -72,39 +72,13 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
                 child: Text(
-                    "This is where you can find checkups from past weeks.",
+                    "This is where you can find wellbeing data from past weeks.",
                     style: tutorialTextStyle)),
             Padding(
-                padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
+                padding: EdgeInsets.fromLTRB(30, 10.0, 30, 0),
                 child: Text(
-                    "Wellbeing scores and steps are plotted on the same graph, as a purple bar chart and a blue line graph respectively.",
+                    "Wellbeing scores and steps are plotted on the same graph. Wellbeing are represented by the purple bars and the left axis. Steps are represented by the blue bars and the right axis.",
                     style: tutorialTextStyle)),
-          ])
-        ],
-        duration: null,
-        onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkHealthy());
-        });
-  }
-
-  ///function to show the second slide of the tutorial, explaining the healthy section
-  void showCoachMarkHealthy() {
-    CoachMark coachMarkHealthy = CoachMark();
-    RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
-    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-    markRect = Rect.fromCircle(
-        center: markRect.center, radius: markRect.longestSide * 0.6);
-    coachMarkHealthy.show(
-        targetContext: _wbGraphTutorialKey.currentContext,
-        markRect: markRect,
-        children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Padding(
-                padding: EdgeInsets.fromLTRB(30, 160.0, 30, 0),
-                child: Text(
-                  "The 'healthy' section represents the recommended number of steps per week (close to 70,000).",
-                  style: tutorialTextStyle,
-                )),
           ])
         ],
         duration: null,
@@ -113,7 +87,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  ///function to show the third slide of the tutorial, explaining the share button
+  ///function to show the second slide of the tutorial, explaining the share button
   void showCoachMarkShare() {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();

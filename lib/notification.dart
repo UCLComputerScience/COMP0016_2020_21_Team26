@@ -69,8 +69,8 @@ Future scheduleNotification([tz.TZDateTime scheduledDate]) async {
 Future scheduleCheckup(int day, Time time) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     1,
-    "Weekly Checkup",
-    "Tap to get your weekly checkup.",
+    "Weekly Wellbeing Check",
+    "Tap to report your wellbeing.",
     _nextInstanceOfDayTime(day, time),
     _getSpecifics(),
     androidAllowWhileIdle: true,
@@ -112,6 +112,35 @@ void scheduleNudge() async {
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
     payload: NUDGE_PAYLOAD,
+  );
+}
+
+Future scheduleCheckupOnce(tz.TZDateTime scheduledDate) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    4,
+    "Weekly Wellbeing Check",
+    "Tap to report your wellbeing.",
+    scheduledDate,
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: CHECKUP_PAYLOAD,
+  );
+}
+
+Future schedulePublishOnce(tz.TZDateTime scheduledDate) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    5,
+    "Publish Score",
+    "Tap to review and publish your weekly score anonymously.",
+    scheduledDate,
+    _getSpecifics(),
+    // not important enough, no need to disturb idle mode:
+    androidAllowWhileIdle: false,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: PUBLISH_PAYLOAD,
   );
 }
 
