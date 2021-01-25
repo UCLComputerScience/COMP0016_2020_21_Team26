@@ -32,12 +32,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   double _currentSliderValue = 0;
   bool _currentSwitchValue = false;
-  int _wbCheckNotifDay;
-  int _wbCheckNotifHour;
-  int _wbCheckNotifMinute;
-  int _shareNotifDay;
-  int _shareNotifHour;
-  int _shareNotifMinute;
+  int _wbCheckNotifDay = DateTime.sunday;
+  int _wbCheckNotifHour = 12;
+  int _wbCheckNotifMinute = 0;
+  int _shareNotifDay = DateTime.monday;
+  int _shareNotifHour = 12;
+  int _shareNotifMinute = 0;
 
   void setInitialWellbeing(double _currentSliderValue, String steps,
       String postcode, String suppode) async {
@@ -530,10 +530,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           }
         },
         dotsDecorator: const DotsDecorator(
-            size: Size(4.5, 4.5),
+            size: Size(4, 3),
             color: Color(0xFFBDBDBD),
             activeColor: Color.fromARGB(255, 0, 74, 173),
-            activeSize: Size(8.0, 5.0),
+            activeSize: Size(5.0, 4.0),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
   }
