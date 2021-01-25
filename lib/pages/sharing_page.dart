@@ -8,13 +8,18 @@ class SharingPage extends StatelessWidget {
     final showKeyButton = ElevatedButton(
       onPressed: () => showDialog(
           builder: (context) => AlertDialog(
-                title: Text("Public Key"),
+                title: Text("My Details"),
                 content: FutureBuilder(
-                  future: SharedPreferences.getInstance()
-                      .then((prefs) => prefs.getString(RSA_PUBLIC_PEM_KEY)),
+                  future: SharedPreferences.getInstance(),
                   builder: (context, data) {
                     if (data.hasData) {
-                      return SelectableText(data.data);
+                      final SharedPreferences prefs = data.data;
+                      return ListView(
+                        children: [
+                          Text(prefs.getString(USER_IDENTIFIER_KEY)),
+                          SelectableText(prefs.getString(RSA_PUBLIC_PEM_KEY)),
+                        ],
+                      );
                     }
                     return LinearProgressIndicator();
                   },
@@ -29,13 +34,27 @@ class SharingPage extends StatelessWidget {
           context: context),
       child: Text("Show Key"),
     );
+    final addFriendButton = ElevatedButton(
+      onPressed: () => Navigator.push(
+          context, MaterialPageRoute(builder: (ctx) => AddFriendPage())),
+      child: Text("Add Friend"),
+    );
+
     return Scaffold(
       body: Column(
         children: [
           showKeyButton,
+          addFriendButton,
         ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     );
+  }
+}
+
+class AddFriendPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text("WIP"); // TODO
   }
 }

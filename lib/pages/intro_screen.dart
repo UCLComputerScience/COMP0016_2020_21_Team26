@@ -81,19 +81,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
+    await _finishSetup();
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
-
-    // TODO: add a loading screen.
-    // _finishSetup may take a while so maybe add a loading screen that
-    // awaits for this and then pushes the MainPages().
-    // Maybe just having a pop up dialog with a future builder would
-    // work.
-    _finishSetup();
   }
 
-  void _finishSetup() async {
+  Future<void> _finishSetup() async {
     scheduleCheckup(DateTime.sunday, const Time(12));
     schedulePublish(DateTime.monday, const Time(12));
     SharedPreferences.getInstance()

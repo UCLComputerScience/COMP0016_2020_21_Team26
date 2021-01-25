@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:pointycastle/export.dart';
@@ -25,8 +26,11 @@ const USER_PASSWORD_KEY = 'user_password';
 
 /// generates and stores an RSA key pair for this user
 /// NOTE: may need to use Isolate if this reduces performance
-setupCrypto() async {
-  final keyPair = _generateRSAKeyPair(_getSecureRandom());
+Future<void> setupCrypto() async {
+  // this takes a while so I use multithreading
+  final keyPair = await compute<SecureRandom,
+          AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>>(
+      _generateRSAKeyPair, _getSecureRandom());
   // using fingerprint as identifier:
   final identifier = _getFingerprint(keyPair.publicKey);
   final password = randomAlphaNumeric(20);
