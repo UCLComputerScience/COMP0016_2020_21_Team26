@@ -10,7 +10,7 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Screen that displays to faciliate the user setup.
-/// Also schedules the wbCheck/publish notifications here to ensure that
+/// Also schedules the wbCheck/share notifications here to ensure that
 /// its only done once.
 class IntroScreen extends StatelessWidget {
   @override
