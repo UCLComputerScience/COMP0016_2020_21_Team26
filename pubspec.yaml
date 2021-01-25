@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -71,8 +71,11 @@ flutter:
     - lib/images/IntroLogo.png
     - lib/images/IntroPostcode.png
     - lib/images/IntroSupport.png
-    - lib/images/IntroCheckup.png
+    - lib/images/IntroWBCheck.png
     - lib/images/IntroShare.png
+    - lib/images/IntroWBCheckNotification.png
+    - lib/images/IntroShareNotification.png
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
