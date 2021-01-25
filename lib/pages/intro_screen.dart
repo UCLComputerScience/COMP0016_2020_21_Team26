@@ -530,10 +530,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           }
         },
         dotsDecorator: const DotsDecorator(
-            size: Size(4, 3),
+            size: Size(2, 2.5),
             color: Color(0xFFBDBDBD),
             activeColor: Color.fromARGB(255, 0, 74, 173),
-            activeSize: Size(5.0, 4.0),
+            activeSize: Size(3, 3.5),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
   }
