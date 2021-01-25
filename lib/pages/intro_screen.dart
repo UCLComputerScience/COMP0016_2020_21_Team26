@@ -31,12 +31,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   double _currentSliderValue = 0;
   bool _currentSwitchValue = false;
-  int wbCheckNotifDay;
-  int wbCheckNotifHour;
-  int wbCheckNotifMinute;
-  int shareNotifDay;
-  int shareNotifHour;
-  int shareNotifMinute;
+  int _wbCheckNotifDay;
+  int _wbCheckNotifHour;
+  int _wbCheckNotifMinute;
+  int _shareNotifDay;
+  int _shareNotifHour;
+  int _shareNotifMinute;
   List<String> days = [
     "Monday",
     "Tuesday",
@@ -83,12 +83,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       context,
       double _currentSliderValue,
       bool _currentSwitchValue,
-      wbCheckNotifDay,
-      wbCheckNotifHour,
-      wbCheckNotifMinute,
-      shareNotifDay,
-      shareNotifHour,
-      shareNotifMinute) async {
+      _wbCheckNotifDay,
+      _wbCheckNotifHour,
+      _wbCheckNotifMinute,
+      _shareNotifDay,
+      _shareNotifHour,
+      _shareNotifMinute) async {
     if (!_isInputValid(postcodeController.text, supportCodeController.text,
         stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -110,20 +110,26 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
-    _finishSetup(_currentSwitchValue, wbCheckNotifDay, wbCheckNotifHour,
-        wbCheckNotifMinute, shareNotifDay, shareNotifHour, shareNotifMinute);
+    _finishSetup(
+        _currentSwitchValue,
+        _wbCheckNotifDay,
+        _wbCheckNotifHour,
+        _wbCheckNotifMinute,
+        _shareNotifDay,
+        _shareNotifHour,
+        _shareNotifMinute);
   }
 
   void _finishSetup(
       bool _currentSwitchValue,
-      wbCheckNotifDay,
-      wbCheckNotifHour,
-      wbCheckNotifMinute,
-      shareNotifDay,
-      shareNotifHour,
-      shareNotifMinute) async {
+      _wbCheckNotifDay,
+      _wbCheckNotifHour,
+      _wbCheckNotifMinute,
+      _shareNotifDay,
+      _shareNotifHour,
+      _shareNotifMinute) async {
     scheduleCheckup(
-        wbCheckNotifDay, Time(wbCheckNotifHour, wbCheckNotifMinute));
+        _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
     if (_currentSwitchValue) {
       schedulePublish(DateTime.monday, const Time(12));
     }
@@ -256,7 +262,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   SizedBox(height: 5),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     DropdownButton(
-                      value: wbCheckNotifDay,
+                      value: _wbCheckNotifDay,
                       hint: Text("Day"),
                       icon: Icon(Icons.arrow_downward,
                           color: Theme.of(context).primaryColor),
@@ -270,7 +276,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                       onChanged: (value) {
                         setState(() {
                           if (value != null) {
-                            wbCheckNotifDay = value;
+                            _wbCheckNotifDay = value;
                           }
                         });
                       },
@@ -291,7 +297,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     ),
                     SizedBox(width: 10),
                     DropdownButton(
-                        value: wbCheckNotifHour,
+                        value: _wbCheckNotifHour,
                         hint: Text("Hour"),
                         icon: Icon(Icons.arrow_downward,
                             color: Theme.of(context).primaryColor),
@@ -305,7 +311,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         onChanged: (value) {
                           setState(() {
                             if (value != null) {
-                              wbCheckNotifHour = value;
+                              _wbCheckNotifHour = value;
                             }
                           });
                         },
@@ -317,7 +323,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         }).toList()),
                     SizedBox(width: 5),
                     DropdownButton(
-                        value: wbCheckNotifMinute,
+                        value: _wbCheckNotifMinute,
                         hint: Text("Minutes"),
                         icon: Icon(Icons.arrow_downward,
                             color: Theme.of(context).primaryColor),
@@ -331,7 +337,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         onChanged: (value) {
                           setState(() {
                             if (value != null) {
-                              wbCheckNotifMinute = value;
+                              _wbCheckNotifMinute = value;
                             }
                           });
                         },
@@ -373,7 +379,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           PageViewModel(
               title: "Share Data Notification",
               image: Center(
-                  child: Image.asset("lib/images/IntroShareNotification.png",
+                  child: Image.asset("lib/images/Intro_shareNotification.png",
                       height: 225.0)),
               bodyWidget: Column(
                 children: [
@@ -393,7 +399,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               DropdownButton(
-                                value: shareNotifDay,
+                                value: _shareNotifDay,
                                 hint: Text("Day"),
                                 icon: Icon(Icons.arrow_downward,
                                     color: Theme.of(context).primaryColor),
@@ -407,7 +413,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                                 onChanged: (value) {
                                   setState(() {
                                     if (value != null) {
-                                      shareNotifDay = value;
+                                      _shareNotifDay = value;
                                     }
                                   });
                                 },
@@ -428,7 +434,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                               ),
                               SizedBox(width: 10),
                               DropdownButton(
-                                  value: shareNotifHour,
+                                  value: _shareNotifHour,
                                   hint: Text("Hour"),
                                   icon: Icon(Icons.arrow_downward,
                                       color: Theme.of(context).primaryColor),
@@ -442,7 +448,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                                   onChanged: (value) {
                                     setState(() {
                                       if (value != null) {
-                                        shareNotifHour = value;
+                                        _shareNotifHour = value;
                                       }
                                     });
                                   },
@@ -454,7 +460,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                                   }).toList()),
                               SizedBox(width: 5),
                               DropdownButton(
-                                  value: shareNotifMinute,
+                                  value: _shareNotifMinute,
                                   hint: Text("Minutes"),
                                   icon: Icon(Icons.arrow_downward,
                                       color: Theme.of(context).primaryColor),
@@ -468,7 +474,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                                   onChanged: (value) {
                                     setState(() {
                                       if (value != null) {
-                                        shareNotifMinute = value;
+                                        _shareNotifMinute = value;
                                       }
                                     });
                                   },
@@ -499,12 +505,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             context,
             _currentSliderValue,
             _currentSwitchValue,
-            wbCheckNotifDay,
-            wbCheckNotifHour,
-            wbCheckNotifMinute,
-            shareNotifDay,
-            shareNotifHour,
-            shareNotifMinute),
+            _wbCheckNotifDay,
+            _wbCheckNotifHour,
+            _wbCheckNotifMinute,
+            _shareNotifDay,
+            _shareNotifHour,
+            _shareNotifMinute),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
