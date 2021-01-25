@@ -23,8 +23,9 @@ Future<bool> _isWBTutorialDone() async {
 /// along with a share button
 class WellbeingGraph extends StatefulWidget {
   final bool animate;
+  final bool displayShare;
 
-  WellbeingGraph({this.animate});
+  WellbeingGraph({this.animate, this.displayShare = true});
 
   @override
   _WellbeingGraphState createState() => _WellbeingGraphState();
@@ -180,13 +181,17 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           if (snapshot.hasData) {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
+            final children = [
+              Container(key: _wbGraphTutorialKey, child: graph)
+            ];
+            if (widget.displayShare) {
+              children.add(Container(
+                  key: _wbShareTutorialKey,
+                  child: ShareButton(_printKey, 'wellbeing-score.pdf')));
+            }
+
             return Column(
-              children: [
-                Container(key: _wbGraphTutorialKey, child: graph),
-                Container(
-                    key: _wbShareTutorialKey,
-                    child: ShareButton(_printKey, 'wellbeing-score.pdf'))
-              ],
+              children: children,
             );
           } else if (snapshot.hasError) {
             return Text("Error: ${snapshot.error}");

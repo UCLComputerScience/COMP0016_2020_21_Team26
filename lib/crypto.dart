@@ -71,13 +71,13 @@ String _encodePrivateKeyInPem(RSAPrivateKey key) {
   asn.add(ASN1Integer(key.q.modInverse(key.p))); // coefficient
 
   final base64Data = base64.encode(asn.encode());
-  return '-----BEGIN PRIVATE KEY-----\n$base64Data\n-----END PRIVATE KEY-----';
+  return '-----BEGIN RSA PRIVATE KEY-----\n$base64Data\n-----END RSA PRIVATE KEY-----';
 }
 
 /// encodes RSA public key into PKCS#1 format
 String _encodePublicKeyInPem(RSAPublicKey key) {
   final base64Data = base64.encode(_getPublicKeyBytes(key));
-  return '-----BEGIN PUBLIC KEY-----\n$base64Data\n-----END PUBLIC KEY-----';
+  return '-----BEGIN RSA PUBLIC KEY-----\n$base64Data\n-----END RSA PUBLIC KEY-----';
 }
 
 AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair(

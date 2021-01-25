@@ -77,6 +77,20 @@ class FriendDB {
     await batch.commit();
   }
 
+  /// get the latest data sent by identifier.
+  /// NOTE: may be null
+  Future<String> getLatestData(String identifier) async {
+    final db = await database;
+    List<Map> friendMaps = await db.query(_tableName,
+      columns: [_columns[4]],
+      where: '${_columns[2]} = ?',
+      whereArgs: [identifier]
+    );
+    assert(friendMaps.length == 1);
+
+    return friendMaps[0][_columns[4]];
+  }
+
   void delete() async {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));

@@ -4,7 +4,10 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
+import 'package:nudge_me/shared/friend_graph.dart';
+import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +18,7 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  var _futureFriends = FriendDB().getFriends();
+  Future<List<Friend>> _futureFriends = FriendDB().getFriends();
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +63,7 @@ class SharingPageState extends State<SharingPage> {
       },
       child: Text("Add Friend"),
     );
+    // TODO: use this https://pub.dev/packages/pull_to_refresh
     final refreshButton = ElevatedButton(
       onPressed: _getLatest,
       child: Text("Refresh"),
@@ -69,10 +73,11 @@ class SharingPageState extends State<SharingPage> {
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
-          return Column(
-            // prob should change this to ListView eventually
-            children:
-                friends.map((fr) => Text(fr.name)).toList(growable: false),
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: friends.length,
+            itemBuilder: (ctx, i) => FriendListItem(friends[i]),
           );
         }
         return CircularProgressIndicator();
@@ -113,79 +118,64 @@ class SharingPageState extends State<SharingPage> {
           as RSAPrivateKey;
       final encrypter = Encrypter(RSA(publicKey: pubKey, privateKey: privKey));
 
-      for (var message in messages) {
-        String encrypted = message['data'];
-        String decrypted = encrypter.decrypt64(encrypted);
-        message['data'] = decrypted;
+      if (messages.length > 0) {
+        for (var message in messages) {
+          String encrypted = message['data'];
+          String decrypted = encrypter.decrypt64(encrypted);
+          message['data'] = decrypted;
+        }
+        setState(() {
+          FriendDB().updateData(messages);
+        });
       }
-      setState(() {
-        FriendDB().updateData(messages);
-      });
     });
   }
 }
 
-class AddFriendPage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => AddFriendPageState();
-}
+class FriendListItem extends StatelessWidget {
+  final Friend friend;
 
-class AddFriendPageState extends State<AddFriendPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  String name;
-  String identifier;
-  String publicKey;
+  const FriendListItem(this.friend);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Text("Name"),
-            TextFormField(
-              onSaved: (val) {
-                setState(() {
-                  name = val;
-                });
-              },
-            ),
-            Text("Id"),
-            TextFormField(
-              onSaved: (val) {
-                setState(() {
-                  identifier = val;
-                });
-              },
-            ),
-            Text("Key:"),
-            TextFormField(
-              onSaved: (val) {
-                setState(() {
-                  publicKey = val;
-                });
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _formKey.currentState.save();
-                // TODO: verify that user identifier exists before inserting
-                setState(() {
-                  FriendDB().insertWithData(
-                      name: name,
-                      identifier: identifier,
-                      publicKey: publicKey,
-                      latestData: null);
-                });
-                Navigator.pop(context);
-              },
-              child: Text("Done"),
-            ),
-          ],
+  Widget build(BuildContext context) => ListTile(
+        leading: Icon(Icons.person),
+        title: Text(friend.name),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                    title: Text("Shared Data"),
+                    content: FriendGraph(friend),
+                    actions: [
+                      TextButton(
+                        child: Text('Done'),
+                        onPressed: () => Navigator.of(context).pop(),
+                      )
+                    ],
+                  ));
+        },
+        trailing: ElevatedButton(
+          onPressed: () => showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                    title: Text("Send data?"),
+                    content: WellbeingGraph(
+                      displayShare: false,
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text('No'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      // TODO:
+                      TextButton(
+                        child: Text('Yes'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  )),
+          child: Text("Send"),
         ),
-      ),
-    );
-  }
+      );
 }
