@@ -1,0 +1,128 @@
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/utils/utils.dart';
+
+const _dbName = "friends_db.db";
+const _dbVersion = 1;
+
+const _tableName = "Friends";
+const _columns = ["id", "name", "identifier", "publicKey", "latestData"];
+
+class FriendDB {
+  static final FriendDB _instance = FriendDB._();
+  static Database _database;
+
+  FriendDB._(); // private constructor
+  factory FriendDB() => _instance; // factory so we don't return new instance
+
+  /// inserts a wellbeing record.
+  /// returns the id of the newly inserted record
+  Future<int> insert(Friend item) async {
+    final db = await database;
+    final id = await db.insert(_tableName, item.toMap());
+    return id;
+  }
+
+  /// inserts a [WellbeingItem] constructed with the given data.
+  /// returns the id of the newly inserted record
+  Future<int> insertWithData({
+    name: String,
+    identifier: String,
+    publicKey: String,
+    latestData: String,
+  }) async {
+    return insert(Friend(
+      name: name,
+      identifier: identifier,
+      publicKey: publicKey,
+      latestData: latestData,
+    ));
+  }
+
+  Future<List<Friend>> getFriends() async {
+    final db = await database;
+    List<Map> friendMaps = await db.query(_tableName, columns: _columns);
+    final itemList = friendMaps
+        .map((friendMap) => Friend.fromMap(friendMap))
+        .toList(growable: false);
+    return itemList;
+  }
+
+  void delete() async {
+    final base = await getDatabasesPath();
+    deleteDatabase(join(base, _dbName));
+    _database = null; // will be created next time its needed
+  }
+
+  Future<Database> get database async {
+    if (_database == null) {
+      _database = await _init();
+    }
+    return _database;
+  }
+
+  /// returns `true` if there are 0 rows in the DB
+  Future<bool> get empty async {
+    final db = await database;
+    return firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM $_tableName')) ==
+        0;
+  }
+
+  Future<Database> _init() async {
+    final dir = await getDatabasesPath();
+    final dbPath = join(dir, _dbName);
+    return openDatabase(dbPath, version: _dbVersion, onCreate: _onCreate);
+  }
+
+  void _onCreate(Database db, int version) {
+    db.execute('''
+      CREATE TABLE $_tableName (
+      ${_columns[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+      ${_columns[1]} TEXT NOT NULL,
+      ${_columns[2]} TEXT NOT NULL,
+      ${_columns[3]} TEXT NOT NULL,
+      ${_columns[4]} TEXT
+    )
+      ''');
+  }
+}
+
+/// (Effectively) immutable data item of a friend
+class Friend {
+  int id;
+  String name;
+  String identifier;
+  String publicKey;
+  String latestData; // json encoded string
+
+  Friend({
+    this.id, // this should be left null so SQL will handle it
+    this.name,
+    this.identifier,
+    this.publicKey,
+    this.latestData,
+  });
+
+  Friend.fromMap(Map<String, dynamic> map) {
+    id = map[_columns[0]];
+    name = map[_columns[1]];
+    identifier = map[_columns[2]];
+    publicKey = map[_columns[3]];
+    latestData = map[_columns[4]];
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      // id might be null
+      _columns[1]: name,
+      _columns[2]: identifier,
+      _columns[3]: publicKey,
+      _columns[4]: latestData,
+    };
+    if (id != null) {
+      map[_columns[0]] = id;
+    }
+    return map;
+  }
+}
