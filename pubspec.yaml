@@ -37,6 +37,7 @@ dependencies:
   encrypt: ^4.1.0 # high-level API
   pointycastle: ^2.0.1 # used for keygen
   random_string: ^2.1.0
+  qr_code_scanner: ^0.3.0
 
   # data-related
   provider: ^3.0.0
@@ -50,6 +51,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   highlighter_coachmark:  ^0.0.3
+  qr_flutter: ^3.2.0 # generates a QR code
 
 dev_dependencies:
   flutter_test:

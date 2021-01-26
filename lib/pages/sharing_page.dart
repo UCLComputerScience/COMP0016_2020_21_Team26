@@ -10,6 +10,7 @@ import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,12 +33,15 @@ class SharingPageState extends State<SharingPage> {
                   builder: (context, data) {
                     if (data.hasData) {
                       final SharedPreferences prefs = data.data;
-                      return ListView(
-                        children: [
-                          Text(prefs.getString(USER_IDENTIFIER_KEY)),
-                          SelectableText(prefs.getString(RSA_PUBLIC_PEM_KEY)),
-                        ],
+                      final identifier = prefs.getString(USER_IDENTIFIER_KEY);
+                      final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
+                      return QrImage(
+                        data: "$identifier\n$pubKey",
+                        version: QrVersions.auto,
                       );
+                    } else if (data.hasError) {
+                      print(data.error);
+                      return Text("Couldn't get data.");
                     }
                     return LinearProgressIndicator();
                   },
@@ -113,7 +117,7 @@ class SharingPageState extends State<SharingPage> {
         .post(BASE_URL + "/user/message",
             headers: {"Content-Type": "application/json"}, body: body)
         .then((response) {
-      final List messages = jsonDecode(response.body);
+      final List<dynamic> messages = jsonDecode(response.body);
       print("Recieved: $messages");
 
       final pubKey = RSAKeyParser().parse(prefs.getString(RSA_PUBLIC_PEM_KEY))
@@ -150,7 +154,7 @@ class FriendListItem extends StatelessWidget {
               context: context,
               builder: (ctx) => AlertDialog(
                     title: Text("Shared Data"),
-                    content: FriendGraph(friend),
+                    content: FriendGraph(FriendDB().getLatestData(friend.identifier)),
                     actions: [
                       TextButton(
                         child: Text('Done'),
@@ -201,12 +205,12 @@ class FriendListItem extends StatelessWidget {
     final data = encrypter.encrypt(jsonString).base64;
 
     final prefs = await SharedPreferences.getInstance();
-    final body = {
+    final body = json.encode({
       'identifier_from': prefs.getString(USER_IDENTIFIER_KEY),
       'password': prefs.getString(USER_PASSWORD_KEY),
       'identifier_to': friend.identifier,
       'data': data
-    };
+    });
     http
         .post(BASE_URL + "/user/message/new",
             headers: {"Content-Type": "application/json"}, body: body)

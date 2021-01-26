@@ -2,25 +2,25 @@ import 'dart:convert';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'package:flutter/material.dart';
-import 'package:nudge_me/model/friends_model.dart';
 
 class FriendGraph extends StatelessWidget {
-  final Friend friend;
+  final Future<String> friendData;
   final animate;
 
-  const FriendGraph(this.friend, {this.animate = true});
+  const FriendGraph(this.friendData, {this.animate = true});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: FriendDB().getLatestData(friend.identifier),
+      future: friendData,
       builder: (ctx, dat) {
         if (dat.hasData) {
           String data = dat.data;
           if (data == "") {
             return Text("They haven't sent you anything.");
           }
-          final decoded = jsonDecode(data);
+          List<Map<String, dynamic>> decoded =
+            (jsonDecode(data) as List).map((it) => it as Map<String, dynamic>).toList();
           final seriesList = _getSeriesList(decoded);
 
           return Flexible(
@@ -56,14 +56,15 @@ class FriendGraph extends StatelessWidget {
             ],
           ));
         } else if (dat.hasError) {
-          return Text(dat.error);
+          print(dat.error);
+          return Text("Couldn't load graph.");
         }
         return CircularProgressIndicator();
       },
     );
   }
 
-  List<dynamic> _getSeriesList(List<Map<String, dynamic>> json) {
+  List<charts.Series<Map, String>> _getSeriesList(List<Map<String, dynamic>> json) {
     final scoreSeries = new charts.Series<Map, String>(
       id: 'Wellbeing Score',
       colorFn: (_, __) =>

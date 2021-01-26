@@ -65,7 +65,7 @@ class FriendDB {
   /// updates the latest data for all the identifiers in messages.
   /// each message should have an 'identifier_from' and 'data' index
   /// that points to their respective string values.
-  Future<void> updateData(List<Map<String, String>> messages) async {
+  Future<void> updateData(List<dynamic> messages) async {
     final db = await database;
     final batch = db.batch();
     for (var message in messages) {
