@@ -9,9 +9,12 @@
     <!-- For pedometer -->
     <uses-permission android:name="android.gms.permission.ACTIVITY_RECOGNITION"/>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
-        android:label="nudge_me"
-        android:icon="@mipmap/ic_launcher">
+        android:label="NudgeMe"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
