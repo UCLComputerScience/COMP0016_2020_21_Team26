@@ -9,9 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:nudge_me/pages/settings_page.dart';
 
 /// Screen that displays to faciliate the user setup.
-/// Also schedules the checkup/publish notifications here to ensure that
+/// Also schedules the wbCheck/share notifications here to ensure that
 /// its only done once.
 class IntroScreen extends StatelessWidget {
   @override
@@ -32,6 +33,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   double _currentSliderValue = 0;
   bool _currentSwitchValue = false;
+  int _wbCheckNotifDay = DateTime.sunday;
+  int _wbCheckNotifHour = 12;
+  int _wbCheckNotifMinute = 0;
+  int _shareNotifDay = DateTime.monday;
+  int _shareNotifHour = 12;
+  int _shareNotifMinute = 0;
 
   void setInitialWellbeing(double _currentSliderValue, String steps,
       String postcode, String suppode) async {
@@ -64,7 +71,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   }
 
   void _onIntroEnd(
-      context, double _currentSliderValue, bool _currentSwitchValue) async {
+      context,
+      double _currentSliderValue,
+      bool _currentSwitchValue,
+      _wbCheckNotifDay,
+      _wbCheckNotifHour,
+      _wbCheckNotifMinute,
+      _shareNotifDay,
+      _shareNotifHour,
+      _shareNotifMinute) async {
     if (!_isInputValid(postcodeController.text, supportCodeController.text,
         stepsController.text)) {
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -83,15 +98,30 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
-    await _finishSetup(_currentSwitchValue);
+    await _finishSetup(
+        _currentSwitchValue,
+        _wbCheckNotifDay,
+        _wbCheckNotifHour,
+        _wbCheckNotifMinute,
+        _shareNotifDay,
+        _shareNotifHour,
+        _shareNotifMinute);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
   }
 
-  Future<void> _finishSetup(bool _currentSwitchValue) async {
-    scheduleCheckup(DateTime.sunday, const Time(12));
+  Future<void> _finishSetup(
+      bool _currentSwitchValue,
+      _wbCheckNotifDay,
+      _wbCheckNotifHour,
+      _wbCheckNotifMinute,
+      _shareNotifDay,
+      _shareNotifHour,
+      _shareNotifMinute) async {
+    scheduleCheckup(
+        _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
     if (_currentSwitchValue) {
       schedulePublish(DateTime.monday, const Time(12));
     }
@@ -104,14 +134,254 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     initBackground();
   }
 
+  PageViewModel _getWBCheckNotificationPage(
+      context, TextStyle introTextStyle, PageDecoration pageDecoration) {
+    return PageViewModel(
+        title: "Wellbeing Check Notification",
+        image: Center(
+            child: Image.asset("lib/images/IntroWBCheckNotification.png",
+                height: 225.0)),
+        bodyWidget: Column(
+          children: [
+            Text(
+                "Once a week, NudgeMe will send you a notification asking you to report your wellbeing." +
+                    "Clicking on this notification will take you to a page that allows you to do this.\n",
+                style: introTextStyle,
+                textAlign: TextAlign.center),
+            Text(
+                "When do you want to receive your weekly Wellbeing Check notification?",
+                style: introTextStyle,
+                textAlign: TextAlign.center),
+            SizedBox(height: 5),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              DropdownButton(
+                value: _wbCheckNotifDay,
+                hint: Text("Day"),
+                icon: Icon(Icons.arrow_downward,
+                    color: Theme.of(context).primaryColor),
+                iconSize: 20,
+                elevation: 16,
+                style: introTextStyle,
+                underline: Container(
+                  height: 2,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      _wbCheckNotifDay = value;
+                    }
+                  });
+                },
+                items: <int>[
+                  DateTime.monday,
+                  DateTime.tuesday,
+                  DateTime.wednesday,
+                  DateTime.thursday,
+                  DateTime.friday,
+                  DateTime.saturday,
+                  DateTime.sunday
+                ].map<DropdownMenuItem<int>>((int value) {
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(days[value - 1]),
+                  );
+                }).toList(),
+              ),
+              SizedBox(width: 10),
+              DropdownButton(
+                  value: _wbCheckNotifHour,
+                  hint: Text("Hour"),
+                  icon: Icon(Icons.arrow_downward,
+                      color: Theme.of(context).primaryColor),
+                  iconSize: 20,
+                  elevation: 16,
+                  style: introTextStyle,
+                  underline: Container(
+                    height: 2,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _wbCheckNotifHour = value;
+                      }
+                    });
+                  },
+                  items: hours.map<DropdownMenuItem>((value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList()),
+              SizedBox(width: 5),
+              DropdownButton(
+                  value: _wbCheckNotifMinute,
+                  hint: Text("Minutes"),
+                  icon: Icon(Icons.arrow_downward,
+                      color: Theme.of(context).primaryColor),
+                  iconSize: 20,
+                  elevation: 16,
+                  style: introTextStyle,
+                  underline: Container(
+                    height: 2,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _wbCheckNotifMinute = value;
+                      }
+                    });
+                  },
+                  items: minutes.map<DropdownMenuItem>((value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList())
+            ]),
+          ],
+        ),
+        decoration: pageDecoration);
+  }
+
+  PageViewModel _getShareNotificationPage(
+      context, TextStyle introTextStyle, PageDecoration pageDecoration) {
+    return PageViewModel(
+        title: "Share Data Notification",
+        image: Center(
+            child: Image.asset("lib/images/IntroShareNotification.png",
+                height: 225.0)),
+        bodyWidget: Column(
+          children: [
+            Visibility(
+                visible: _currentSwitchValue,
+                child: Column(children: [
+                  Text(
+                      "Once a week, NudgeMe will send you a notification asking you to share your wellbeing data. " +
+                          "Clicking on this notification will take you to a page that asks you whether you want to share.\n",
+                      style: introTextStyle,
+                      textAlign: TextAlign.center),
+                  Text(
+                      "When do you want to receive your weekly Share Data notification?",
+                      style: introTextStyle,
+                      textAlign: TextAlign.center),
+                  SizedBox(height: 5),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    DropdownButton(
+                      value: _shareNotifDay,
+                      hint: Text("Day"),
+                      icon: Icon(Icons.arrow_downward,
+                          color: Theme.of(context).primaryColor),
+                      iconSize: 20,
+                      elevation: 16,
+                      style: introTextStyle,
+                      underline: Container(
+                        height: 2,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value != null) {
+                            _shareNotifDay = value;
+                          }
+                        });
+                      },
+                      items: <int>[
+                        DateTime.monday,
+                        DateTime.tuesday,
+                        DateTime.wednesday,
+                        DateTime.thursday,
+                        DateTime.friday,
+                        DateTime.saturday,
+                        DateTime.sunday
+                      ].map<DropdownMenuItem<int>>((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(days[value - 1]),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(width: 10),
+                    DropdownButton(
+                        value: _shareNotifHour,
+                        hint: Text("Hour"),
+                        icon: Icon(Icons.arrow_downward,
+                            color: Theme.of(context).primaryColor),
+                        iconSize: 20,
+                        elevation: 16,
+                        style: introTextStyle,
+                        underline: Container(
+                          height: 2,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              _shareNotifHour = value;
+                            }
+                          });
+                        },
+                        items: hours.map<DropdownMenuItem>((value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(value.toString()),
+                          );
+                        }).toList()),
+                    SizedBox(width: 5),
+                    DropdownButton(
+                        value: _shareNotifMinute,
+                        hint: Text("Minutes"),
+                        icon: Icon(Icons.arrow_downward,
+                            color: Theme.of(context).primaryColor),
+                        iconSize: 20,
+                        elevation: 16,
+                        style: introTextStyle,
+                        underline: Container(
+                          height: 2,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              _shareNotifMinute = value;
+                            }
+                          });
+                        },
+                        items: minutes.map<DropdownMenuItem>((value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(value.toString()),
+                          );
+                        }).toList())
+                  ]),
+                ])),
+            Visibility(
+              visible: !_currentSwitchValue,
+              child: Column(
+                children: [
+                  Text(
+                      "You have disabled publishing data so you will not receive a publish notification.",
+                      style: introTextStyle,
+                      textAlign: TextAlign.center)
+                ],
+              ),
+            )
+          ],
+        ),
+        decoration: pageDecoration);
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    TextStyle introTextStyle = TextStyle(fontSize: width * 0.045);
+    TextStyle introTextStyle =
+        TextStyle(fontSize: width * 0.045, color: Colors.black);
 
     const pageDecoration = const PageDecoration(
         titleTextStyle: TextStyle(fontSize: 27.0, fontWeight: FontWeight.w700),
-        descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+        descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
         pageColor: Color.fromARGB(255, 251, 249, 255),
         imagePadding: EdgeInsets.zero);
 
@@ -168,7 +438,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           PageViewModel(
               title: "Wellbeing Check",
               image: Center(
-                  child: Image.asset("lib/images/IntroCheckup.png",
+                  child: Image.asset("lib/images/IntroWBCheck.png",
                       height: 225.0)),
               bodyWidget: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -208,8 +478,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     ),
                   ]),
               decoration: pageDecoration),
+          _getWBCheckNotificationPage(context, introTextStyle, pageDecoration),
           PageViewModel(
-              title: "Sharing",
+              title: "Share Data",
               image: Center(
                   child:
                       Image.asset("lib/images/IntroShare.png", height: 225.0)),
@@ -217,21 +488,38 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                        "Click the toggle to consent to the creation of a map that enables you and other app users to understand the effect of exercise on your wellbeing. By consenting, you will not be sharing personally identifiable data. All data used to create the map will be anonymised to protect your privacy.\n"),
+                        "Click the toggle to consent to the creation of a map that enables you and other app " +
+                            "users to understand the effect of exercise on your wellbeing. " +
+                            "By consenting, you will not be sharing personally identifiable data. " +
+                            "All data used to create the map will be anonymised to protect your privacy.\n",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
                     Text(
-                        "This is not necessary to use the app. The only difference is that you will not be asked to publish your data."),
+                        "This is not necessary to use the app. " +
+                            "The only difference is that you will not be asked to publish your data.",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
                     Switch(
                         value: _currentSwitchValue,
                         onChanged: (value) {
                           setState(() {
                             _currentSwitchValue = value;
                           });
-                        })
+                        }),
                   ]),
               decoration: pageDecoration),
+          _getShareNotificationPage(context, introTextStyle, pageDecoration)
         ],
-        onDone: () =>
-            _onIntroEnd(context, _currentSliderValue, _currentSwitchValue),
+        onDone: () => _onIntroEnd(
+            context,
+            _currentSliderValue,
+            _currentSwitchValue,
+            _wbCheckNotifDay,
+            _wbCheckNotifHour,
+            _wbCheckNotifMinute,
+            _shareNotifDay,
+            _shareNotifHour,
+            _shareNotifMinute),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
@@ -247,10 +535,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
           }
         },
         dotsDecorator: const DotsDecorator(
-            size: Size(8.0, 8.0),
+            size: Size(2, 2.5),
             color: Color(0xFFBDBDBD),
             activeColor: Color.fromARGB(255, 0, 74, 173),
-            activeSize: Size(22.0, 10.0),
+            activeSize: Size(3, 3.5),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
   }

@@ -33,7 +33,7 @@ class _PublishScreenState extends State<PublishScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 25.0),
-          child: Text("Publish Data?",
+          child: Text("Do you want to share this week's data?",
               style: Theme.of(context).textTheme.headline1),
         ),
         FutureBuilder(

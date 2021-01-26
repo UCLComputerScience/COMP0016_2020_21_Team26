@@ -90,9 +90,9 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Rosario'),
             headline2: TextStyle(
-                fontFamily: 'Rosario',
-                fontSize: 25,
-                decoration: TextDecoration.underline),
+              fontFamily: 'Rosario',
+              fontSize: 25,
+            ),
             headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
             subtitle1: TextStyle(
                 fontFamily: 'Rosario',
