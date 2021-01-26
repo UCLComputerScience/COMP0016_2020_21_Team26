@@ -54,7 +54,7 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
 
   void _updatePostcode(String value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('postcode', value);
+    await prefs.setString('postcode', value.toUpperCase());
   }
 
   Widget build(BuildContext context) {
@@ -134,7 +134,7 @@ class _ChangeSupportWidgetState extends State<ChangeSupportWidget> {
 
   void _updateSupportCode(String value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('support_code', value);
+    await prefs.setString('support_code', value.toUpperCase());
   }
 
   Widget build(BuildContext context) {
