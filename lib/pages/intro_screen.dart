@@ -87,7 +87,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       return;
     }
 
-    _saveInput(postcodeController.text, supportCodeController.text,
+    _saveInput(postcodeController.text.toUpperCase(),
+        supportCodeController.text.toUpperCase(),
         _currentSliderValue);
 
     // NOTE: this is the 'proper' way of requesting permissions (instead of
