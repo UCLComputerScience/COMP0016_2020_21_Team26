@@ -56,18 +56,6 @@ class SharingPageState extends State<SharingPage> {
           context: context),
       child: Text("Show Key"),
     );
-    final addFriendButton = ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-                context, MaterialPageRoute(builder: (ctx) => AddFriendPage()))
-            .then((v) => setState(() {
-                  // HACK: this forces the page to rebuild since the user prob
-                  //       just added a new friend
-                  _futureFriends = FriendDB().getFriends();
-                }));
-      },
-      child: Text("Add Friend"),
-    );
     // TODO: use this https://pub.dev/packages/pull_to_refresh
     final refreshButton = ElevatedButton(
       onPressed: _getLatest,
@@ -93,7 +81,6 @@ class SharingPageState extends State<SharingPage> {
       body: Column(
         children: [
           showKeyButton,
-          addFriendButton,
           refreshButton,
           Divider(
             thickness: 3,
@@ -102,6 +89,19 @@ class SharingPageState extends State<SharingPage> {
         ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+                  context, MaterialPageRoute(builder: (ctx) => AddFriendPage()))
+              .then((v) => setState(() {
+                    // HACK: this forces the page to rebuild since the user prob
+                    //       just added a new friend
+                    _futureFriends = FriendDB().getFriends();
+                  }));
+        },
+        label: Text("Add Friend"),
+        icon: Icon(Icons.people),
+      ),
     );
   }
 
@@ -154,7 +154,8 @@ class FriendListItem extends StatelessWidget {
               context: context,
               builder: (ctx) => AlertDialog(
                     title: Text("Shared Data"),
-                    content: FriendGraph(FriendDB().getLatestData(friend.identifier)),
+                    content: FriendGraph(
+                        FriendDB().getLatestData(friend.identifier)),
                     actions: [
                       TextButton(
                         child: Text('Done'),

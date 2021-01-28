@@ -19,8 +19,9 @@ class FriendGraph extends StatelessWidget {
           if (data == "") {
             return Text("They haven't sent you anything.");
           }
-          List<Map<String, dynamic>> decoded =
-            (jsonDecode(data) as List).map((it) => it as Map<String, dynamic>).toList();
+          List<Map<String, dynamic>> decoded = (jsonDecode(data) as List)
+              .map((it) => it as Map<String, dynamic>)
+              .toList();
           final seriesList = _getSeriesList(decoded);
 
           return Flexible(
@@ -64,7 +65,8 @@ class FriendGraph extends StatelessWidget {
     );
   }
 
-  List<charts.Series<Map, String>> _getSeriesList(List<Map<String, dynamic>> json) {
+  List<charts.Series<Map, String>> _getSeriesList(
+      List<Map<String, dynamic>> json) {
     final scoreSeries = new charts.Series<Map, String>(
       id: 'Wellbeing Score',
       colorFn: (_, __) =>

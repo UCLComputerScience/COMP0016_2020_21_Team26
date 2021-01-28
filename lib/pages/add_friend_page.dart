@@ -36,8 +36,15 @@ class AddFriendPageState extends State<AddFriendPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Visibility(child: Text('Scan Friend\'s QR Code'), visible: result == null,),
-              Expanded(child: QRView(key: _qrKey, onQRViewCreated: _onQRViewCreated,),
+              Visibility(
+                child: Text('Scan Friend\'s QR Code'),
+                visible: result == null,
+              ),
+              Expanded(
+                child: QRView(
+                  key: _qrKey,
+                  onQRViewCreated: _onQRViewCreated,
+                ),
                 flex: 3,
               ),
               Text("Name"),
