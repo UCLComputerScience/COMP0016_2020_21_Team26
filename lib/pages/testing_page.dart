@@ -25,14 +25,6 @@ class TestingPage extends StatelessWidget {
             child: Text("Wellbeing Check Notification"),
           ),
           ElevatedButton(
-            onPressed: () {
-              final datetime =
-                  tz.TZDateTime.now(tz.local).add(Duration(milliseconds: 20));
-              schedulePublishOnce(datetime);
-            },
-            child: Text("Publish Notification"),
-          ),
-          ElevatedButton(
             onPressed: () => scheduleNudge(),
             child: Text("Example Nudge"),
           ),

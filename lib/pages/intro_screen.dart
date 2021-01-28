@@ -79,7 +79,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       supportCodeController.text,
     )) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Invalid postcode, support code or steps."),
+        content: Text("Invalid postcode or support code."),
       ));
       return;
     }
@@ -118,7 +118,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     scheduleCheckup(
         _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
     if (_currentSwitchValue) {
-      schedulePublish(DateTime.monday, const Time(12));
+      //schedulePublish(DateTime.monday, const Time(12));
+      //TODO: instead of schedule publish notification, send data to server
     }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
