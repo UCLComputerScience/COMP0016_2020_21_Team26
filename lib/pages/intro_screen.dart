@@ -88,8 +88,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     }
 
     _saveInput(postcodeController.text.toUpperCase(),
-        supportCodeController.text.toUpperCase(),
-        _currentSliderValue);
+        supportCodeController.text.toUpperCase(), _currentSliderValue);
 
     // NOTE: this is the 'proper' way of requesting permissions (instead of
     // just lowering the targetSdkVersion) but it doesn't seem to work and

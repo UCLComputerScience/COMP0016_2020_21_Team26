@@ -160,23 +160,33 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
             // This should force the wellbeing score axis to go up to 10:
-            charts.RangeAnnotation([
-              charts.RangeAnnotationSegment(
-                8,
-                10,
-                charts.RangeAnnotationAxisType.measure,
-                color: charts.MaterialPalette.transparent,
-              ),
-              charts.RangeAnnotationSegment(
-                7000, // min recommended weekly steps
-                70000, // upper bound recommended weekly steps
-                charts.RangeAnnotationAxisType.measure,
-                color: charts.MaterialPalette.cyan.makeShades(10)[8],
-                middleLabel: "Target\nsteps\n(cyan)",
-                startLabel: "7,000",
-                axisId: 'secondaryMeasureAxisId', // for steps axis
-              ),
-            ], defaultLabelPosition: charts.AnnotationLabelPosition.margin),
+            charts.RangeAnnotation(
+              [
+                charts.RangeAnnotationSegment(
+                  8,
+                  10,
+                  charts.RangeAnnotationAxisType.measure,
+                  color: charts.MaterialPalette.transparent,
+                ),
+                charts.RangeAnnotationSegment(
+                  7000, // min recommended weekly steps
+                  70000, // upper bound recommended weekly steps
+                  charts.RangeAnnotationAxisType.measure,
+                  color: charts.MaterialPalette.cyan.makeShades(10)[8],
+                  middleLabel: "Target\nsteps\n",
+                  startLabel: "7,000",
+                  axisId: 'secondaryMeasureAxisId', // for steps axis
+                  labelPosition: charts.AnnotationLabelPosition.margin,
+                ),
+                charts.RangeAnnotationSegment(
+                  0,
+                  7000,
+                  charts.RangeAnnotationAxisType.measure,
+                  color: charts.MaterialPalette.gray.makeShades(20)[9],
+                  axisId: 'secondaryMeasureAxisId', // for steps axis
+                ),
+              ],
+            ),
             // using title as axes label:
             new charts.ChartTitle('Week Number',
                 behaviorPosition: charts.BehaviorPosition.bottom,
