@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
-import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -26,14 +25,6 @@ class TestingPage extends StatelessWidget {
             child: Text("Wellbeing Check Notification"),
           ),
           ElevatedButton(
-            onPressed: () {
-              final datetime =
-                  tz.TZDateTime.now(tz.local).add(Duration(milliseconds: 20));
-              schedulePublishOnce(datetime);
-            },
-            child: Text("Publish Notification"),
-          ),
-          ElevatedButton(
             onPressed: () => scheduleNudge(),
             child: Text("Example Nudge"),
           ),
@@ -43,10 +34,6 @@ class TestingPage extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => WellbeingCheck(UserWellbeingDB()))),
               child: Text("Wellbeing Check Screen")),
-          ElevatedButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => PublishScreen())),
-              child: Text("Publish Screen")),
           ElevatedButton(
             onPressed: () async {
               final prefs = await SharedPreferences.getInstance();

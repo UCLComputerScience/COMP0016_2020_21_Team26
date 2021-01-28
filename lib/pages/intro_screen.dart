@@ -29,7 +29,6 @@ class IntroScreenWidgets extends StatefulWidget {
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   final postcodeController = TextEditingController();
   final supportCodeController = TextEditingController();
-  final stepsController = TextEditingController();
 
   double _currentSliderValue = 0;
   bool _currentSwitchValue = false;
@@ -40,15 +39,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _shareNotifHour = 12;
   int _shareNotifMinute = 0;
 
-  void setInitialWellbeing(double _currentSliderValue, String steps,
-      String postcode, String suppode) async {
+  void setInitialWellbeing(
+      double _currentSliderValue, String postcode, String suppode) async {
     final dateString = DateTime.now().toIso8601String().substring(0, 10);
     WellbeingItem weeklyWellbeingItem = new WellbeingItem(
         id: null,
         date: dateString,
         postcode: postcode,
         wellbeingScore: _currentSliderValue,
-        numSteps: int.parse(steps),
+        numSteps: 0,
         supportCode: suppode);
     await UserWellbeingDB().insert(weeklyWellbeingItem);
   }
@@ -59,15 +58,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
 
-    setInitialWellbeing(
-        _currentSliderValue, stepsController.text, postcode, suppcode);
+    setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
 
-  bool _isInputValid(String postcode, String suppCode, String steps) {
-    return 2 <= postcode.length &&
-        postcode.length <= 4 &&
-        suppCode.length > 0 &&
-        int.tryParse(steps) != null;
+  bool _isInputValid(String postcode, String suppCode) {
+    return 2 <= postcode.length && postcode.length <= 4 && suppCode.length > 0;
   }
 
   void _onIntroEnd(
@@ -80,16 +75,18 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       _shareNotifDay,
       _shareNotifHour,
       _shareNotifMinute) async {
-    if (!_isInputValid(postcodeController.text, supportCodeController.text,
-        stepsController.text)) {
+    if (!_isInputValid(
+      postcodeController.text,
+      supportCodeController.text,
+    )) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Invalid postcode, support code or steps."),
+        content: Text("Invalid postcode or support code."),
       ));
       return;
     }
 
-    _saveInput(postcodeController.text, supportCodeController.text,
-        _currentSliderValue);
+    _saveInput(postcodeController.text.toUpperCase(),
+        supportCodeController.text.toUpperCase(), _currentSliderValue);
 
     // NOTE: this is the 'proper' way of requesting permissions (instead of
     // just lowering the targetSdkVersion) but it doesn't seem to work and
@@ -123,7 +120,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     scheduleCheckup(
         _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
     if (_currentSwitchValue) {
-      schedulePublish(DateTime.monday, const Time(12));
+      //schedulePublish(DateTime.monday, const Time(12));
+      //TODO: instead of schedule publish notification, send data to server
     }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
@@ -143,11 +141,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 height: 225.0)),
         bodyWidget: Column(
           children: [
-            Text(
-                "Once a week, NudgeMe will send you a notification asking you to report your wellbeing." +
-                    "Clicking on this notification will take you to a page that allows you to do this.\n",
-                style: introTextStyle,
-                textAlign: TextAlign.center),
             Text(
                 "When do you want to receive your weekly Wellbeing Check notification?",
                 style: introTextStyle,
@@ -246,138 +239,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         decoration: pageDecoration);
   }
 
-  PageViewModel _getShareNotificationPage(
-      context, TextStyle introTextStyle, PageDecoration pageDecoration) {
-    return PageViewModel(
-        title: "Share Data Notification",
-        image: Center(
-            child: Image.asset("lib/images/IntroShareNotification.png",
-                height: 225.0)),
-        bodyWidget: Column(
-          children: [
-            Visibility(
-                visible: _currentSwitchValue,
-                child: Column(children: [
-                  Text(
-                      "Once a week, NudgeMe will send you a notification asking you to share your wellbeing data. " +
-                          "Clicking on this notification will take you to a page that asks you whether you want to share.\n",
-                      style: introTextStyle,
-                      textAlign: TextAlign.center),
-                  Text(
-                      "When do you want to receive your weekly Share Data notification?",
-                      style: introTextStyle,
-                      textAlign: TextAlign.center),
-                  SizedBox(height: 5),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    DropdownButton(
-                      value: _shareNotifDay,
-                      hint: Text("Day"),
-                      icon: Icon(Icons.arrow_downward,
-                          color: Theme.of(context).primaryColor),
-                      iconSize: 20,
-                      elevation: 16,
-                      style: introTextStyle,
-                      underline: Container(
-                        height: 2,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          if (value != null) {
-                            _shareNotifDay = value;
-                          }
-                        });
-                      },
-                      items: <int>[
-                        DateTime.monday,
-                        DateTime.tuesday,
-                        DateTime.wednesday,
-                        DateTime.thursday,
-                        DateTime.friday,
-                        DateTime.saturday,
-                        DateTime.sunday
-                      ].map<DropdownMenuItem<int>>((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text(days[value - 1]),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(width: 10),
-                    DropdownButton(
-                        value: _shareNotifHour,
-                        hint: Text("Hour"),
-                        icon: Icon(Icons.arrow_downward,
-                            color: Theme.of(context).primaryColor),
-                        iconSize: 20,
-                        elevation: 16,
-                        style: introTextStyle,
-                        underline: Container(
-                          height: 2,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _shareNotifHour = value;
-                            }
-                          });
-                        },
-                        items: hours.map<DropdownMenuItem>((value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value.toString()),
-                          );
-                        }).toList()),
-                    SizedBox(width: 5),
-                    DropdownButton(
-                        value: _shareNotifMinute,
-                        hint: Text("Minutes"),
-                        icon: Icon(Icons.arrow_downward,
-                            color: Theme.of(context).primaryColor),
-                        iconSize: 20,
-                        elevation: 16,
-                        style: introTextStyle,
-                        underline: Container(
-                          height: 2,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _shareNotifMinute = value;
-                            }
-                          });
-                        },
-                        items: minutes.map<DropdownMenuItem>((value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value.toString()),
-                          );
-                        }).toList())
-                  ]),
-                ])),
-            Visibility(
-              visible: !_currentSwitchValue,
-              child: Column(
-                children: [
-                  Text(
-                      "You have disabled publishing data so you will not receive a publish notification.",
-                      style: introTextStyle,
-                      textAlign: TextAlign.center)
-                ],
-              ),
-            )
-          ],
-        ),
-        decoration: pageDecoration);
-  }
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     TextStyle introTextStyle =
         TextStyle(fontSize: width * 0.045, color: Colors.black);
+    TextStyle introHintStyle =
+        TextStyle(fontSize: width * 0.045, color: Colors.grey);
 
     const pageDecoration = const PageDecoration(
         titleTextStyle: TextStyle(fontSize: 27.0, fontWeight: FontWeight.w700),
@@ -391,49 +259,20 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "Welcome",
               image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
               bodyWidget: Text(
-                  "This app has been designed to encourage you to take care of yourself. \n \n Swipe to set up.",
+                  "Someone from the NHS will have recommended this app to you. \n\n " +
+                      "This app has been designed to encourage you to take care of yourself. \n \n" +
+                      "Swipe left to learn more",
                   style: introTextStyle,
                   textAlign: TextAlign.center),
               decoration: pageDecoration),
           PageViewModel(
-              title: "Postcode",
-              image: Center(
-                  child: Image.asset("lib/images/IntroPostcode.png",
-                      height: 225.0)),
-              bodyWidget: (Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("What is the first half of your postcode?",
-                        style: introTextStyle, textAlign: TextAlign.center),
-                    TextField(
-                      controller: postcodeController,
-                      textAlign: TextAlign.center,
-                      // https://github.com/flutter/flutter/issues/67236
-                      maxLength: 4, // length of a postcode prefix
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Enter postcode here",
-                          hintStyle: introTextStyle),
-                    ),
-                  ])),
-              decoration: pageDecoration),
-          PageViewModel(
-              title: "Support",
-              image: Center(
-                  child: Image.asset("lib/images/IntroSupport.png",
-                      height: 225.0)),
-              bodyWidget: (Column(children: <Widget>[
-                Text("What is your support code?",
-                    style: introTextStyle, textAlign: TextAlign.center),
-                TextField(
-                  controller: supportCodeController,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Enter support code here",
-                      hintStyle: introTextStyle),
-                ),
-              ])),
+              title: "How?",
+              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              bodyWidget: Text(
+                  "It does this by sending weekly notifications asking you how you feel, and show how walking more can improve your wellbeing. \n\n" +
+                      "Occasionally, it will nudge you to share your wellbeing with people you know. \n \n ",
+                  style: introTextStyle,
+                  textAlign: TextAlign.center),
               decoration: pageDecoration),
           PageViewModel(
               title: "Wellbeing Check",
@@ -444,7 +283,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                        "Move the blue circle left or right on the scale to rate your wellbeing: ",
+                        "This is your first wellbeing check. NudgeMe will allow you to keep a weekly record of your wellbeing and allow you to understand the importance of movement in your life.",
+                        style: introTextStyle,
+                        textAlign: TextAlign.center),
+                    Text(
+                        "\n Over the past 7 days, rate how well you have felt out of 10. ",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                     Container(
@@ -463,19 +306,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           },
                         ),
                         width: 300.0),
-                    SizedBox(height: 15),
                     Text(
-                        "Approximately, how many steps have you done in the past week?",
+                        "Move the blue circle up or down the scale to log how you feel." +
+                            " (On the scale, 0 is the lowest score and 10 is the highest score)",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
-                    TextField(
-                      controller: stepsController,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Enter approximate steps here",
-                          hintStyle: introTextStyle),
-                    ),
+                    SizedBox(height: 15),
                   ]),
               decoration: pageDecoration),
           _getWBCheckNotificationPage(context, introTextStyle, pageDecoration),
@@ -487,6 +323,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               bodyWidget: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Switch(
+                        value: _currentSwitchValue,
+                        onChanged: (value) {
+                          setState(() {
+                            _currentSwitchValue = value;
+                          });
+                        }),
                     Text(
                         "Click the toggle to consent to the creation of a map that enables you and other app " +
                             "users to understand the effect of exercise on your wellbeing. " +
@@ -499,16 +342,46 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                             "The only difference is that you will not be asked to publish your data.",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
-                    Switch(
-                        value: _currentSwitchValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _currentSwitchValue = value;
-                          });
-                        }),
                   ]),
               decoration: pageDecoration),
-          _getShareNotificationPage(context, introTextStyle, pageDecoration)
+          PageViewModel(
+              title: "Postcode and Support Code",
+              image: Center(
+                  child: Image.asset("lib/images/IntroPostcode.png",
+                      height: 225.0)),
+              bodyWidget: (Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("What is your support code?",
+                        style: introTextStyle, textAlign: TextAlign.center),
+                    TextField(
+                      controller: supportCodeController,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter support code here",
+                          hintStyle: introHintStyle),
+                    ),
+                    Text(
+                        "(This is the code given to you by the person who recommended you this app.)",
+                        style: Theme.of(context).textTheme.caption,
+                        textAlign: TextAlign.center),
+                    SizedBox(height: 20),
+                    Text("What is the first half of your postcode?",
+                        style: introTextStyle, textAlign: TextAlign.center),
+                    TextField(
+                      controller: postcodeController,
+                      textAlign: TextAlign.center,
+                      // https://github.com/flutter/flutter/issues/67236
+                      maxLength: 4, // length of a postcode prefix
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Enter postcode here",
+                          hintStyle: introHintStyle),
+                    ),
+                    SizedBox(height: 10),
+                  ])),
+              decoration: pageDecoration),
         ],
         onDone: () => _onIntroEnd(
             context,
