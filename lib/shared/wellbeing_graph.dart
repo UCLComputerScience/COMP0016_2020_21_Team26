@@ -172,18 +172,11 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                   7000, // min recommended weekly steps
                   70000, // upper bound recommended weekly steps
                   charts.RangeAnnotationAxisType.measure,
-                  color: charts.MaterialPalette.cyan.makeShades(10)[8],
+                  color: charts.MaterialPalette.green.makeShades(10)[7],
                   middleLabel: "Target\nsteps\n",
                   startLabel: "7,000",
                   axisId: 'secondaryMeasureAxisId', // for steps axis
                   labelPosition: charts.AnnotationLabelPosition.margin,
-                ),
-                charts.RangeAnnotationSegment(
-                  0,
-                  7000,
-                  charts.RangeAnnotationAxisType.measure,
-                  color: charts.MaterialPalette.gray.makeShades(20)[9],
-                  axisId: 'secondaryMeasureAxisId', // for steps axis
                 ),
               ],
             ),
