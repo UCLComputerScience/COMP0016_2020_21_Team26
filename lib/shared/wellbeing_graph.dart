@@ -140,6 +140,14 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           // feedback from UCL recommended to use bar chart
           seriesList,
           animate: animate,
+          layoutConfig: charts.LayoutConfig(
+            // defining these so we can fit label in margin
+            leftMarginSpec: charts.MarginSpec.fixedPixel(25),
+            topMarginSpec: charts.MarginSpec.fixedPixel(20),
+            rightMarginSpec: charts.MarginSpec.fixedPixel(60),
+            bottomMarginSpec: charts.MarginSpec.fixedPixel(50),
+          ),
+
           barGroupingType: charts.BarGroupingType.grouped,
           // 'tick counts' used to match grid lines
           primaryMeasureAxis: charts.NumericAxisSpec(
@@ -147,7 +155,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                   charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
           secondaryMeasureAxis: charts.NumericAxisSpec(
             tickProviderSpec:
-                charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
+                charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
           ),
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
@@ -158,8 +166,17 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                 10,
                 charts.RangeAnnotationAxisType.measure,
                 color: charts.MaterialPalette.transparent,
-              )
-            ]),
+              ),
+              charts.RangeAnnotationSegment(
+                7000, // min recommended weekly steps
+                70000, // upper bound recommended weekly steps
+                charts.RangeAnnotationAxisType.measure,
+                color: charts.MaterialPalette.cyan.makeShades(10)[8],
+                middleLabel: "Target\nsteps\n(cyan)",
+                startLabel: "7,000",
+                axisId: 'secondaryMeasureAxisId', // for steps axis
+              ),
+            ], defaultLabelPosition: charts.AnnotationLabelPosition.margin),
             // using title as axes label:
             new charts.ChartTitle('Week Number',
                 behaviorPosition: charts.BehaviorPosition.bottom,
