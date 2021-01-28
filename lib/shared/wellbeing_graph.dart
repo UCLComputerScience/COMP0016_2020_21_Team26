@@ -161,7 +161,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
               )
             ]),
             // using title as axes label:
-            new charts.ChartTitle('Week Number',
+            new charts.ChartTitle('Past weeks',
                 behaviorPosition: charts.BehaviorPosition.bottom,
                 titleOutsideJustification:
                     charts.OutsideJustification.middleDrawArea),
