@@ -28,7 +28,7 @@ class SharingPageState extends State<SharingPage> {
     final showKeyButton = ElevatedButton(
       onPressed: () => showDialog(
           builder: (context) => AlertDialog(
-                title: Text("My Details"),
+                title: Text("Identity - QR Code"),
                 content: FutureBuilder(
                   future: SharedPreferences.getInstance(),
                   builder: (context, data) {
@@ -55,7 +55,7 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ),
           context: context),
-      child: Text("Show Key"),
+      child: Text('My Identity'),
     );
     final friendsList = FutureBuilder(
       future: _futureFriends,
@@ -92,7 +92,9 @@ class SharingPageState extends State<SharingPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
-                  context, MaterialPageRoute(builder: (ctx) => AddFriendPage()))
+                  context,
+                  MaterialPageRoute(
+                      builder: (ctx) => AddFriendPage(Scaffold.of(context))))
               .then((v) => setState(() {
                     // HACK: this forces the page to rebuild since the user prob
                     //       just added a new friend
