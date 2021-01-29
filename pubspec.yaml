@@ -35,6 +35,7 @@ dependencies:
   clock: ^1.0.1 # useful for testing
   permission_handler: ^5.0.1+1
   cron: ^0.2.4
+  sentry_flutter: ^4.0.4 # error monitoring
 
   # data-related
   provider: ^3.0.0
