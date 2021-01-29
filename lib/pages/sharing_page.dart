@@ -64,6 +64,8 @@ class SharingPageState extends State<SharingPage> {
           final List<Friend> friends = data.data;
           return LiquidPullToRefresh(
             onRefresh: _getLatest,
+            // Exception being thrown when pulling down. It seems related to
+            // this widget. Visually looks fine.
             child: Expanded(
                 child: ListView.builder(
               scrollDirection: Axis.vertical,

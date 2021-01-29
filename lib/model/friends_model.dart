@@ -91,6 +91,14 @@ class FriendDB {
     return out == null ? "" : out;
   }
 
+  Future<bool> isIdentifierPresent(String identifier) async {
+    final db = await database;
+    final query = 'SELECT COUNT(*) FROM $_tableName WHERE ${_columns[2]} = ?';
+    final count = firstIntValue(await db.rawQuery(query, [identifier]));
+
+    return count > 0;
+  }
+
   void delete() async {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));
