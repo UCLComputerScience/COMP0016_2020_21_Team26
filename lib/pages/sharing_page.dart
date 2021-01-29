@@ -37,7 +37,9 @@ class SharingPageState extends State<SharingPage> {
             version: QrVersions.auto,
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         ShareButton(_printKey, 'identity_qr.pdf'),
       ],
     );
