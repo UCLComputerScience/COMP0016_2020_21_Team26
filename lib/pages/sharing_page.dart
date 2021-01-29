@@ -13,6 +13,7 @@ import 'package:pointycastle/pointycastle.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class SharingPage extends StatefulWidget {
   @override
@@ -56,21 +57,19 @@ class SharingPageState extends State<SharingPage> {
           context: context),
       child: Text("Show Key"),
     );
-    // TODO: use this https://pub.dev/packages/pull_to_refresh
-    final refreshButton = ElevatedButton(
-      onPressed: _getLatest,
-      child: Text("Refresh"),
-    );
     final friendsList = FutureBuilder(
       future: _futureFriends,
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: friends.length,
-            itemBuilder: (ctx, i) => FriendListItem(friends[i]),
+          return LiquidPullToRefresh(
+            onRefresh: _getLatest,
+            child: Expanded(
+                child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: friends.length,
+              itemBuilder: (ctx, i) => FriendListItem(friends[i]),
+            )),
           );
         }
         return CircularProgressIndicator();
@@ -81,7 +80,6 @@ class SharingPageState extends State<SharingPage> {
       body: Column(
         children: [
           showKeyButton,
-          refreshButton,
           Divider(
             thickness: 3,
           ),
@@ -113,7 +111,7 @@ class SharingPageState extends State<SharingPage> {
       "password": prefs.getString(USER_PASSWORD_KEY),
     });
 
-    http
+    await http
         .post(BASE_URL + "/user/message",
             headers: {"Content-Type": "application/json"}, body: body)
         .then((response) {

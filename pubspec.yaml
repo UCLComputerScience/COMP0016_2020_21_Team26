@@ -52,6 +52,7 @@ dependencies:
   cupertino_icons: ^1.0.0
   highlighter_coachmark:  ^0.0.3
   qr_flutter: ^3.2.0 # generates a QR code
+  liquid_pull_to_refresh: ^2.0.0
 
 dev_dependencies:
   flutter_test:
