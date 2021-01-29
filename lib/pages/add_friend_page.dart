@@ -26,9 +26,8 @@ class AddFriendPageState extends State<AddFriendPage> {
 
   int _currentStep = 0;
 
-  StepState _getQRState() => _result == null
-      ? StepState.editing
-      : StepState.complete;
+  StepState _getQRState() =>
+      _result == null ? StepState.editing : StepState.complete;
 
   @override
   void reassemble() {
@@ -55,8 +54,7 @@ class AddFriendPageState extends State<AddFriendPage> {
               onQRViewCreated: _onQRViewCreated,
             ),
           ),
-          state: _getQRState()
-      ),
+          state: _getQRState()),
       Step(
           title: Text("Enter their name"),
           content: Form(

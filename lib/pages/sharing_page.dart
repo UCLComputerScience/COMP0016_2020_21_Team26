@@ -8,6 +8,7 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
+import 'package:nudge_me/shared/share_button.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -21,7 +22,26 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
+  final _printKey = GlobalKey();
+
   Future<List<Friend>> _futureFriends = FriendDB().getFriends();
+
+  Widget _getSharableQR(String identifier, String pubKey) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RepaintBoundary(
+          key: _printKey,
+          child: QrImage(
+            data: "$identifier\n$pubKey",
+            version: QrVersions.auto,
+          ),
+        ),
+        SizedBox(height: 10,),
+        ShareButton(_printKey, 'identity_qr.pdf'),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +56,7 @@ class SharingPageState extends State<SharingPage> {
                       final SharedPreferences prefs = data.data;
                       final identifier = prefs.getString(USER_IDENTIFIER_KEY);
                       final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
-                      return QrImage(
-                        data: "$identifier\n$pubKey",
-                        version: QrVersions.auto,
-                      );
+                      return _getSharableQR(identifier, pubKey);
                     } else if (data.hasError) {
                       print(data.error);
                       return Text("Couldn't get data.");
