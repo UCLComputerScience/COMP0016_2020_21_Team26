@@ -4,12 +4,13 @@ import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/nudge_screen.dart';
-import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
 
 import 'main.dart';
+
+const BASE_URL = "https://comp0016.cyberchris.xyz";
 
 class MainPages extends StatefulWidget {
   final pages = [
@@ -63,13 +64,6 @@ class _MainPagesState extends State<MainPages> {
       case CHECKUP_PAYLOAD:
         await navigatorKey.currentState.push(MaterialPageRoute(
             builder: (context) => WellbeingCheck(UserWellbeingDB())));
-        break;
-      case PUBLISH_PAYLOAD:
-        if (!await UserWellbeingDB().empty) {
-          // asks to publish if there is at least one wellbeing item saved
-          await navigatorKey.currentState
-              .push(MaterialPageRoute(builder: (context) => PublishScreen()));
-        }
         break;
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState

@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:nudge_me/background.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
+import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
@@ -118,13 +124,66 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     scheduleCheckup(
         _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
     if (_currentSwitchValue) {
-      //schedulePublish(DateTime.monday, const Time(12));
-      //TODO: instead of schedule publish notification, send data to server
+      schedulePublish(DateTime.monday, 12, 0);
     }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
     // only start tracking steps after user has done setup
     initBackground();
+  }
+
+  void schedulePublish(int day, int hour, int minute) {
+    // This may help: https://crontab.guru/
+    Cron().schedule(Schedule.parse("$minute $hour * * $day"), () async {
+      if (!await UserWellbeingDB().empty) {
+        // publish if there is at least one wellbeing item saved
+        _publishData();
+      }
+    });
+  }
+
+  /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
+  /// time since there's a chance it could just pick the true score anyway
+  int anonymizeScore(double score) {
+    final random = Random();
+    return (random.nextInt(100) > 69) ? random.nextInt(11) : score.truncate();
+  }
+
+  void _publishData() async {
+    final items = await UserWellbeingDB().getLastNWeeks(1);
+    final item = items[0];
+    final int anonScore = anonymizeScore(item.wellbeingScore);
+    // int1/int2 is a double in dart
+    final double normalizedSteps =
+        (item.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0;
+    final double errorRate = (normalizedSteps > anonScore)
+        ? normalizedSteps - anonScore
+        : anonScore - normalizedSteps;
+
+    final body = jsonEncode({
+      "postCode": item.postcode,
+      "wellbeingScore": anonScore,
+      "weeklySteps": item.numSteps,
+      // TODO: Maybe change error rate to double
+      //       & confirm the units.
+      "errorRate": errorRate.truncate(),
+      "supportCode": item.supportCode,
+      "date_sent": item.date,
+    });
+
+    print("Sending body $body");
+    http
+        .post(BASE_URL + "/add-wellbeing-record",
+            headers: {"Content-Type": "application/json"}, body: body)
+        .then((response) {
+      print("Reponse status: ${response.statusCode}");
+      print("Reponse body: ${response.body}");
+      final asJson = jsonDecode(response.body);
+      // could be null:
+      if (asJson['success'] != true) {
+        print("Something went wrong.");
+      }
+    });
   }
 
   PageViewModel _getWBCheckNotificationPage(

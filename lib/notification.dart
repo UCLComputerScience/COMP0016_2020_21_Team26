@@ -95,32 +95,6 @@ Future rescheduleCheckup(int day, Time time) async {
   scheduleCheckup(day, time);
 }
 
-/// schedule publish notification that repeats weekly
-/// [int] day should be retrieved using DateTime's day enumeration
-Future schedulePublish(int day, Time time) async {
-  await flutterLocalNotificationsPlugin.zonedSchedule(
-    notifications.publish.index,
-    "Publish Score",
-    "Tap to review and publish your weekly score anonymously.",
-    _nextInstanceOfDayTime(day, time),
-    _getSpecifics(),
-    // not important enough, no need to disturb idle mode:
-    androidAllowWhileIdle: false,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-    payload: PUBLISH_PAYLOAD,
-    // schedule recurring notification on matching day & time
-    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-  );
-}
-
-/// cancels old publish notfification and reschedules with new date and time
-/// [int] day should be retrieved using DateTime's day enumeration
-Future reschedulePublish(int day, Time time) async {
-  await flutterLocalNotificationsPlugin.cancel(notifications.publish.index);
-  schedulePublish(day, time);
-}
-
 void scheduleNudge() async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     notifications.nudge.index,
@@ -146,21 +120,6 @@ Future scheduleCheckupOnce(tz.TZDateTime scheduledDate) async {
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
     payload: CHECKUP_PAYLOAD,
-  );
-}
-
-Future schedulePublishOnce(tz.TZDateTime scheduledDate) async {
-  await flutterLocalNotificationsPlugin.zonedSchedule(
-    5,
-    "Publish Score",
-    "Tap to review and publish your weekly score anonymously.",
-    scheduledDate,
-    _getSpecifics(),
-    // not important enough, no need to disturb idle mode:
-    androidAllowWhileIdle: false,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-    payload: PUBLISH_PAYLOAD,
   );
 }
 
