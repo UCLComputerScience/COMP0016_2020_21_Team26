@@ -35,7 +35,7 @@ class FriendGraph extends StatelessWidget {
                     charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
             secondaryMeasureAxis: charts.NumericAxisSpec(
               tickProviderSpec:
-                  charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
+                  charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
             ),
             behaviors: [
               new charts.SeriesLegend(), // adds labels to colors
@@ -46,7 +46,14 @@ class FriendGraph extends StatelessWidget {
                   10,
                   charts.RangeAnnotationAxisType.measure,
                   color: charts.MaterialPalette.transparent,
-                )
+                ),
+                charts.RangeAnnotationSegment(
+                  7000, // min recommended weekly steps
+                  70000, // upper bound recommended weekly steps
+                  charts.RangeAnnotationAxisType.measure,
+                  color: charts.MaterialPalette.green.makeShades(10)[7],
+                  axisId: 'secondaryMeasureAxisId', // for steps axis
+                ),
               ]),
               // using title as axes label:
               new charts.ChartTitle('Week Number',

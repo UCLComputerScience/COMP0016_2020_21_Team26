@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
@@ -25,6 +26,15 @@ class SharingPageState extends State<SharingPage> {
   final _printKey = GlobalKey();
 
   Future<List<Friend>> _futureFriends = FriendDB().getFriends();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getLatest();
+    // refresh every 2 minutes (while app is open)
+    Timer.periodic(Duration(minutes: 2), (timer) => _getLatest());
+  }
 
   Widget _getSharableQR(String identifier, String pubKey) {
     return Column(
