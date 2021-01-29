@@ -16,16 +16,14 @@ void main() {
   }
 
   testWidgets('Current Postcode does not exist', (WidgetTester tester) async {
-    await tester.pumpWidget(
-        buildScaffoldWidget(ChangePostcodeWidget(UserWellbeingDB())));
+    await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
     final loadingCircleFinder = find.byType(CircularProgressIndicator);
     expect(loadingCircleFinder, findsOneWidget);
   });
 
   testWidgets('Current Support Code does not exist',
       (WidgetTester tester) async {
-    await tester.pumpWidget(
-        buildScaffoldWidget(ChangeSupportWidget(UserWellbeingDB())));
+    await tester.pumpWidget(buildScaffoldWidget(ChangeSupportWidget()));
     final loadingCircleFinder = find.byType(CircularProgressIndicator);
     expect(loadingCircleFinder, findsOneWidget);
   });
@@ -33,8 +31,7 @@ void main() {
   testWidgets('Current Postcode does exist', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {"postcode": "nw1", "support_code": "343"});
-    await tester
-        .pumpWidget(buildScaffoldWidget(ChangePostcodeWidget(MockedDB())));
+    await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
     final currentPostcodeFinder = find.text("nw1");
     expect(currentPostcodeFinder, findsOneWidget);
   });
@@ -42,12 +39,9 @@ void main() {
   testWidgets('Current Support Code exists', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {"postcode": "nw1", "support_code": "343"});
-    await tester
-        .pumpWidget(buildScaffoldWidget(ChangeSupportWidget(MockedDB())));
+    await tester.pumpWidget(buildScaffoldWidget(ChangeSupportWidget()));
     // debugDumpApp();
     final currentSuppCodeFinder = find.text("343");
     expect(currentSuppCodeFinder, findsOneWidget);
   });
 }
-
-class MockedDB extends Mock implements UserWellbeingDB {}

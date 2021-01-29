@@ -3,8 +3,7 @@ import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
-  final UserWellbeingDB _userWellbeingDB;
-  const SettingsPage(this._userWellbeingDB, {Key key}) : super(key: key);
+  const SettingsPage();
 
   @override
   Widget build(BuildContext context) {
@@ -15,17 +14,16 @@ class SettingsPage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headline1),
           SizedBox(height: 30),
-          ChangePostcodeWidget(_userWellbeingDB),
+          ChangePostcodeWidget(),
           SizedBox(height: 75),
-          ChangeSupportWidget(_userWellbeingDB)
+          ChangeSupportWidget()
         ])),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
 class ChangePostcodeWidget extends StatefulWidget {
-  final UserWellbeingDB _userWellbeingDB;
-  ChangePostcodeWidget(this._userWellbeingDB, {Key key}) : super(key: key);
+  ChangePostcodeWidget();
 
   @override
   _ChangePostcodeWidgetState createState() => _ChangePostcodeWidgetState();
@@ -109,8 +107,7 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
 }
 
 class ChangeSupportWidget extends StatefulWidget {
-  final UserWellbeingDB _userWellbeingDB;
-  ChangeSupportWidget(this._userWellbeingDB, {Key key}) : super(key: key);
+  ChangeSupportWidget();
 
   @override
   _ChangeSupportWidgetState createState() => _ChangeSupportWidgetState();

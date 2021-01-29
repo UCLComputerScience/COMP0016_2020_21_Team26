@@ -15,7 +15,7 @@ class MainPages extends StatefulWidget {
   final pages = [
     WellbeingPage(),
     HomePage(),
-    SettingsPage(UserWellbeingDB()),
+    SettingsPage(),
     TestingPage(),
   ];
 
