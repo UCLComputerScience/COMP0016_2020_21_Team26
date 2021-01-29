@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
