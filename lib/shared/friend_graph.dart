@@ -68,7 +68,7 @@ class FriendGraph extends StatelessWidget {
   List<charts.Series<Map, String>> _getSeriesList(
       List<Map<String, dynamic>> json) {
     final scoreSeries = new charts.Series<Map, String>(
-      id: 'Wellbeing Score',
+      id: 'Score',
       colorFn: (_, __) =>
           charts.ColorUtil.fromDartColor(Color.fromARGB(255, 182, 125, 226)),
       domainFn: (Map item, _) => item['week'].toString(),
