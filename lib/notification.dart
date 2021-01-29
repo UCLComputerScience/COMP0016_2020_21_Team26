@@ -100,7 +100,7 @@ void scheduleNudge() async {
     notifications.nudge.index,
     "Nudge",
     "Hey, your score or steps are low, want to share with a friend?",
-    tz.TZDateTime.now(tz.local).add(Duration(seconds: 2)),
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
     _getSpecifics(),
     androidAllowWhileIdle: true,
     uiLocalNotificationDateInterpretation:

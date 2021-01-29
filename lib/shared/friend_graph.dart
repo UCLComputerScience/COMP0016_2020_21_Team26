@@ -24,8 +24,7 @@ class FriendGraph extends StatelessWidget {
               .toList();
           final seriesList = _getSeriesList(decoded);
 
-          return Flexible(
-              child: charts.BarChart(
+          return charts.BarChart(
             seriesList,
             animate: animate,
             barGroupingType: charts.BarGroupingType.grouped,
@@ -62,7 +61,7 @@ class FriendGraph extends StatelessWidget {
                       charts.OutsideJustification.middleDrawArea),
               new charts.PanAndZoomBehavior(),
             ],
-          ));
+          );
         } else if (dat.hasError) {
           print(dat.error);
           return Text("Couldn't load graph.");

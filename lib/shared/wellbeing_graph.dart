@@ -23,9 +23,15 @@ Future<bool> _isWBTutorialDone() async {
 /// along with a share button
 class WellbeingGraph extends StatefulWidget {
   final bool animate;
-  final bool displayShare;
 
-  WellbeingGraph({this.animate, this.displayShare = true});
+  /// true if it should display the share button:
+  final bool displayShare;
+  final bool shouldShowTutorial;
+
+  WellbeingGraph(
+      {this.animate = true,
+      this.displayShare = true,
+      this.shouldShowTutorial = true});
 
   @override
   _WellbeingGraphState createState() => _WellbeingGraphState();
@@ -46,7 +52,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   void showTutorial() async {
-    if (!(await _isWBTutorialDone())) {
+    if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
       Timer(Duration(seconds: 1), () => showCoachMarkGraph());
     }
   }
