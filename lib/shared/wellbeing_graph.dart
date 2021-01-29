@@ -122,7 +122,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
 
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
     final scoreSeries = new charts.Series<WellbeingItem, String>(
-      id: 'Wellbeing Score',
+      id: 'Wellbeing',
       colorFn: (_, __) =>
           charts.ColorUtil.fromDartColor(Color.fromARGB(255, 182, 125, 226)),
       domainFn: (WellbeingItem item, _) => item.id.toString(),

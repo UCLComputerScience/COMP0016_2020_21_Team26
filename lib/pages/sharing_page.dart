@@ -57,7 +57,7 @@ class SharingPageState extends State<SharingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final showKeyButton = ElevatedButton(
+    final showKeyButton = OutlinedButton(
       onPressed: () => showDialog(
           builder: (context) => AlertDialog(
                 title: Text("Identity - QR Code"),
@@ -162,12 +162,11 @@ class SharingPageState extends State<SharingPage> {
           String decrypted = encrypter.decrypt64(encrypted);
           message['data'] = decrypted;
         }
-        if (mounted) {
-          setState(() => FriendDB().updateData(messages));
-        } else {
-          // app may not be on screen
-          FriendDB().updateData(messages);
-        }
+        FriendDB().updateData(messages).then((_) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
       }
     });
   }
@@ -179,49 +178,62 @@ class FriendListItem extends StatelessWidget {
   const FriendListItem(this.friend);
 
   @override
-  Widget build(BuildContext context) => ListTile(
-        leading: Icon(Icons.person),
-        title: Text(friend.name),
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                    title: Text("Shared Data"),
-                    content: FriendGraph(
-                        FriendDB().getLatestData(friend.identifier)),
-                    actions: [
-                      TextButton(
-                        child: Text('Done'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      )
-                    ],
-                  ));
-        },
-        trailing: ElevatedButton(
-          onPressed: () => showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                    title: Text("Send data?"),
-                    content: WellbeingGraph(
-                      displayShare: false,
-                      shouldShowTutorial: false,
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text('No'),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      TextButton(
-                          child: Text('Yes'),
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            _sendWellbeingData(context);
-                          }),
-                    ],
-                  )),
-          child: Text("Send"),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final sendButton = ElevatedButton(
+      onPressed: () => showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: Text("Send data?"),
+                content: WellbeingGraph(
+                  displayShare: false,
+                  shouldShowTutorial: false,
+                ),
+                actions: [
+                  TextButton(
+                    child: Text('No'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  TextButton(
+                      child: Text('Yes'),
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        _sendWellbeingData(context);
+                      }),
+                ],
+              )),
+      child: Text("Send"),
+    );
+    final onView = () => showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text("Shared Data"),
+              content: FriendGraph(FriendDB().getLatestData(friend.identifier)),
+              actions: [
+                TextButton(
+                  child: Text('Done'),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              ],
+            ));
+    return ListTile(
+      leading: Icon(Icons.person),
+      title: Text(friend.name),
+      onTap: onView,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          OutlinedButton(
+            child: Text("View"),
+            onPressed: onView,
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          sendButton,
+        ],
+      ),
+    );
+  }
 
   Future<void> _sendWellbeingData(BuildContext context) async {
     final friendKey = FriendDB().getKey(friend.identifier);
