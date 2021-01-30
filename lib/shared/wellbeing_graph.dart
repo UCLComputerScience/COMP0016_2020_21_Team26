@@ -117,7 +117,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     final scoreSeries = new charts.Series<WellbeingItem, String>(
       id: 'Wellbeing Score',
       colorFn: (_, __) =>
-          charts.ColorUtil.fromDartColor(Color.fromARGB(255, 182, 125, 226)),
+          charts.ColorUtil.fromDartColor(Theme.of(context).accentColor),
       domainFn: (WellbeingItem item, _) => item.id.toString(),
       measureFn: (WellbeingItem item, _) => item.wellbeingScore,
       data: items,
@@ -125,7 +125,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     final stepSeries = new charts.Series<WellbeingItem, String>(
       id: 'Steps',
       colorFn: (_, __) =>
-          charts.ColorUtil.fromDartColor(Color.fromARGB(255, 0, 74, 173)),
+          charts.ColorUtil.fromDartColor(Theme.of(context).primaryColor),
       domainFn: (WellbeingItem a, _) => a.id.toString(),
       measureFn: (WellbeingItem a, _) => a.numSteps,
       data: items,
