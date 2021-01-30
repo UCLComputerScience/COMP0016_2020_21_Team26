@@ -26,6 +26,7 @@ class SharingPageState extends State<SharingPage> {
   final _printKey = GlobalKey();
 
   Future<List<Friend>> _futureFriends = FriendDB().getFriends();
+
   /// map to check if user has seen the latest data from a user
   final Map<String, bool> _friendUnreadData = {};
 
@@ -88,24 +89,26 @@ class SharingPageState extends State<SharingPage> {
           context: context),
       child: Text('My Identity'),
     );
-    final noFriendsWidget = Text("Add friends to share wellbeing data with them.");
+    final noFriendsWidget =
+        Text("Add friends to share wellbeing data with them.");
     final friendsList = FutureBuilder(
       future: _futureFriends,
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
           return friends.length == 0
-          ? noFriendsWidget
-          : Expanded(
-            child: LiquidPullToRefresh(
-              onRefresh: _getLatest,
-              child: ListView.builder(
-                padding: kMaterialListPadding,
-                itemCount: friends.length,
-                itemBuilder: (ctx, i) => FriendListItem(friends[i], _friendUnreadData),
-              ),
-            ),
-          );
+              ? noFriendsWidget
+              : Expanded(
+                  child: LiquidPullToRefresh(
+                    onRefresh: _getLatest,
+                    child: ListView.builder(
+                      padding: kMaterialListPadding,
+                      itemCount: friends.length,
+                      itemBuilder: (ctx, i) =>
+                          FriendListItem(friends[i], _friendUnreadData),
+                    ),
+                  ),
+                );
         }
         return CircularProgressIndicator();
       },
@@ -225,17 +228,18 @@ class FriendListItemState extends State<FriendListItem> {
         widget.unreadData[widget.friend.identifier] = false;
       });
       return showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: Text("Shared Data"),
-              content: FriendGraph(FriendDB().getLatestData(widget.friend.identifier)),
-              actions: [
-                TextButton(
-                  child: Text('Done'),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              ],
-            ));
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: Text("Shared Data"),
+                content: FriendGraph(
+                    FriendDB().getLatestData(widget.friend.identifier)),
+                actions: [
+                  TextButton(
+                    child: Text('Done'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+              ));
     };
     final unread = widget.unreadData[widget.friend.identifier] == true;
     return ListTile(
@@ -287,12 +291,11 @@ class FriendListItemState extends State<FriendListItem> {
             headers: {"Content-Type": "application/json"}, body: body)
         .then((response) {
       final body = json.decode(response.body);
-      if (body['success'] == false) {
-        print(body);
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text("Failed to send.")));
-      }
-      // TODO: indicate successfully sent
+      print(body);
+      Scaffold.of(context).showSnackBar(SnackBar(
+          content: body['success'] == false
+              ? Text("Failed to send.")
+              : Text("Sent data to ${widget.friend.identifier}.")));
     });
   }
 }
