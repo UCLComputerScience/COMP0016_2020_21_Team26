@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- For pedometer -->
-   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.gms.permission.ACTIVITY_RECOGNITION"/>
 
     <application android:usesCleartextTraffic="true" />
 

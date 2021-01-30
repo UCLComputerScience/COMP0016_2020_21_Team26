@@ -5,9 +5,16 @@ class WellbeingPage extends StatelessWidget {
   // TODO
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: WellbeingGraph(
-      animate: true,
-    ));
+    return Scaffold(
+        body: SafeArea(
+            child: Center(
+                child: Column(children: [
+          Text("Wellbeing Diary", style: Theme.of(context).textTheme.headline1),
+          Flexible(
+              child: WellbeingGraph(
+            animate: true,
+          ))
+        ]))),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }

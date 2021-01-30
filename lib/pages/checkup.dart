@@ -6,23 +6,39 @@ import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clock/clock.dart';
 
-class Checkup extends StatelessWidget {
+class WellbeingCheck extends StatelessWidget {
+  final UserWellbeingDB _userWellbeingDB;
+
+  const WellbeingCheck(this._userWellbeingDB, {Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Checkup")), body: CheckupWidgets());
+        body: SafeArea(
+            child: Center(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+              Text("Wellbeing Check",
+                  style: Theme.of(context).textTheme.headline1),
+              SizedBox(height: 30),
+              WellbeingCheckWidgets(_userWellbeingDB),
+            ]))),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
-class CheckupWidgets extends StatefulWidget {
-  CheckupWidgets({Key key}) : super(key: key);
+class WellbeingCheckWidgets extends StatefulWidget {
+  final UserWellbeingDB _userWellbeingDB;
+  WellbeingCheckWidgets(this._userWellbeingDB, {Key key}) : super(key: key);
 
   @override
-  _CheckupWidgetsState createState() => _CheckupWidgetsState();
+  _WellbeingCheckWidgetsState createState() => _WellbeingCheckWidgetsState();
 }
 
-class _CheckupWidgetsState extends State<CheckupWidgets> {
+class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
   double _currentSliderValue = 0;
 
   StreamSubscription<StepCount> _subscription;
@@ -31,7 +47,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   // the actual step count for the week.
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
-  int _currentTotalSteps;
+  int _currentTotalSteps = 0;
 
   @override
   void initState() {
@@ -94,7 +110,7 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
   void _checkWellbeing(final int n) async {
     assert(n >= 1);
     final List<WellbeingItem> items =
-        await UserWellbeingDB().getLastNWeeks(n + 1);
+        await widget._userWellbeingDB.getLastNWeeks(n + 1);
     if (items.length == n + 1 &&
         _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
@@ -104,21 +120,9 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text("How did you feel this week?"),
-      Slider(
-        value: _currentSliderValue,
-        min: 0,
-        max: 10,
-        divisions: 10,
-        label: _currentSliderValue.toString(),
-        onChanged: (double value) {
-          setState(() {
-            _currentSliderValue = value;
-          });
-        },
-      ),
-      Text("Your steps this week:"),
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Text("Your steps this week:",
+          style: Theme.of(context).textTheme.bodyText1),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
@@ -127,34 +131,65 @@ class _CheckupWidgetsState extends State<CheckupWidgets> {
             final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
                 ? _currentTotalSteps
                 : _currentTotalSteps - lastTotalSteps;
-            return Text(thisWeeksSteps.toString());
+            return Text(thisWeeksSteps.toString(),
+                style: TextStyle(
+                    fontFamily: 'Rosario',
+                    fontSize: 25,
+                    color: Theme.of(context).accentColor));
           } else if (snapshot.hasError) {
             print(snapshot.error);
-            return Text("Something went wrong...");
+            return Text("Something went wrong...",
+                style: TextStyle(
+                    fontFamily: 'Rosario',
+                    fontSize: 25,
+                    color: Theme.of(context).accentColor));
           }
-          return Text("Loading");
+          return CircularProgressIndicator();
         },
-      ), //steps
-      RaisedButton(
+      ),
+      SizedBox(height: 40),
+      Text("How did you feel this week?",
+          style: Theme.of(context).textTheme.bodyText1),
+      Container(
+          child: Slider(
+            value: _currentSliderValue,
+            min: 0,
+            max: 10,
+            divisions: 10,
+            label: _currentSliderValue.round().toString(),
+            activeColor: Theme.of(context).primaryColor,
+            inactiveColor: Color.fromARGB(189, 189, 189, 255),
+            onChanged: (double value) {
+              setState(() {
+                _currentSliderValue = value;
+              });
+            },
+          ),
+          width: 300.0),
+      SizedBox(height: 10),
+      ElevatedButton(
           onPressed: () async {
             final lastTotalSteps = await _lastTotalStepsFuture;
-            final dateString =
-                DateTime.now().toIso8601String().substring(0, 10);
-            WellbeingItem weeklyWellbeingItem = new WellbeingItem(
-                id: null,
+            final dateString = // get date with fakeable clock
+                clock.now().toIso8601String().substring(0, 10);
+
+            await widget._userWellbeingDB.insertWithData(
                 date: dateString,
                 postcode: await _getPostcode(),
                 wellbeingScore: _currentSliderValue,
                 numSteps: _currentTotalSteps - lastTotalSteps,
                 supportCode: await _getSupportCode());
-            await UserWellbeingDB().insert(weeklyWellbeingItem);
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
+
             Navigator.pop(context);
 
             _checkWellbeing(2); // nudges if scores dropped twice
           },
-          child: const Text('Done'))
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Theme.of(context).primaryColor)),
+          child: const Text('Done', style: TextStyle(fontFamily: 'Rosario')))
     ]);
   }
 }
