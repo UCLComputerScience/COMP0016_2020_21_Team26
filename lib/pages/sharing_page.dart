@@ -295,7 +295,7 @@ class FriendListItemState extends State<FriendListItem> {
       Scaffold.of(context).showSnackBar(SnackBar(
           content: body['success'] == false
               ? Text("Failed to send.")
-              : Text("Sent data to ${widget.friend.identifier}.")));
+              : Text("Sent data to ${widget.friend.name}.")));
     });
   }
 }
