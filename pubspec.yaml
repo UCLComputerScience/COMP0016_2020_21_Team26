@@ -39,6 +39,7 @@ dependencies:
   random_string: ^2.1.0
   qr_code_scanner: ^0.3.0
   cron: ^0.2.4
+  sentry_flutter: ^4.0.4 # error monitoring
 
   # data-related
   provider: ^3.0.0
