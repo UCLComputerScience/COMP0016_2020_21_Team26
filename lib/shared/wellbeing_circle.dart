@@ -10,9 +10,9 @@ class WellbeingCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double greenFraction = (_score == null ? 10.0 : _score) / 10.0;
-    final double redStartPoint =
-        greenFraction + 0.15 <= 1 ? greenFraction + 0.15 : 1;
+    final double purpleFraction = (_score == null ? 10.0 : _score - 2) / 10.0;
+    final double blueStartPoint =
+        purpleFraction + 0.4 <= 1 ? purpleFraction + 0.4 : 1;
 
     final bgCircle = Container(
       width: 160.0,
@@ -21,15 +21,15 @@ class WellbeingCircle extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: const [Colors.greenAccent, Colors.redAccent],
+            colors: const [Colors.purpleAccent, Colors.blueAccent],
             // cumulative points to switch color:
-            stops: [greenFraction, redStartPoint]),
+            stops: [purpleFraction, blueStartPoint]),
         shape: BoxShape.circle,
         boxShadow: [
           // shadow effect around the circle
           BoxShadow(
             color: Colors.grey.withOpacity(0.6),
-            spreadRadius: 4,
+            spreadRadius: 0,
             blurRadius: 7,
           ),
         ],
@@ -40,11 +40,9 @@ class WellbeingCircle extends StatelessWidget {
       alignment: Alignment.center, // aligns all to center by default
       children: [
         bgCircle,
-        Text(
-          _score == null ? "N/A" : _score.toString(),
-          style: TextStyle(color: Colors.white, fontSize: 75),
-          textDirection: TextDirection.ltr,
-        ),
+        Text(_score == null ? "N/A" : _score.toString(),
+            style: TextStyle(color: Colors.white, fontSize: 75),
+            textDirection: TextDirection.ltr),
       ],
     );
   }
