@@ -26,6 +26,8 @@ class SharingPageState extends State<SharingPage> {
   final _printKey = GlobalKey();
 
   Future<List<Friend>> _futureFriends = FriendDB().getFriends();
+  /// map to check if user has seen the latest data from a user
+  final Map<String, bool> _friendUnreadData = {};
 
   @override
   void initState() {
@@ -86,18 +88,21 @@ class SharingPageState extends State<SharingPage> {
           context: context),
       child: Text('My Identity'),
     );
+    final noFriendsWidget = Text("Add friends to share wellbeing data with them.");
     final friendsList = FutureBuilder(
       future: _futureFriends,
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
-          return Expanded(
+          return friends.length == 0
+          ? noFriendsWidget
+          : Expanded(
             child: LiquidPullToRefresh(
               onRefresh: _getLatest,
               child: ListView.builder(
                 padding: kMaterialListPadding,
                 itemCount: friends.length,
-                itemBuilder: (ctx, i) => FriendListItem(friends[i]),
+                itemBuilder: (ctx, i) => FriendListItem(friends[i], _friendUnreadData),
               ),
             ),
           );
@@ -147,8 +152,11 @@ class SharingPageState extends State<SharingPage> {
         .post(BASE_URL + "/user/message",
             headers: {"Content-Type": "application/json"}, body: body)
         .then((response) {
+      print("Recieved: ${response.body}");
+      // this typecast may cause an error if the password doesn't match, but
+      // that shouldn't happen (and if it does I want it to be reported
+      // anway). So I'm not doing any special error-handling.
       final List<dynamic> messages = jsonDecode(response.body);
-      print("Recieved: $messages");
 
       final pubKey = RSAKeyParser().parse(prefs.getString(RSA_PUBLIC_PEM_KEY))
           as RSAPublicKey;
@@ -161,6 +169,7 @@ class SharingPageState extends State<SharingPage> {
           String encrypted = message['data'];
           String decrypted = encrypter.decrypt64(encrypted);
           message['data'] = decrypted;
+          _friendUnreadData[message['identifier_from']] = true;
         }
         FriendDB().updateData(messages).then((_) {
           if (mounted) {
@@ -172,11 +181,19 @@ class SharingPageState extends State<SharingPage> {
   }
 }
 
-class FriendListItem extends StatelessWidget {
+class FriendListItem extends StatefulWidget {
   final Friend friend;
 
-  const FriendListItem(this.friend);
+  // this is the stateful part, but its based on 'outside' state
+  final Map<String, bool> unreadData;
 
+  const FriendListItem(this.friend, this.unreadData);
+
+  @override
+  State<StatefulWidget> createState() => FriendListItemState();
+}
+
+class FriendListItemState extends State<FriendListItem> {
   @override
   Widget build(BuildContext context) {
     final sendButton = ElevatedButton(
@@ -203,11 +220,15 @@ class FriendListItem extends StatelessWidget {
               )),
       child: Text("Send"),
     );
-    final onView = () => showDialog(
+    final onView = () {
+      setState(() {
+        widget.unreadData[widget.friend.identifier] = false;
+      });
+      return showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
               title: Text("Shared Data"),
-              content: FriendGraph(FriendDB().getLatestData(friend.identifier)),
+              content: FriendGraph(FriendDB().getLatestData(widget.friend.identifier)),
               actions: [
                 TextButton(
                   child: Text('Done'),
@@ -215,9 +236,12 @@ class FriendListItem extends StatelessWidget {
                 )
               ],
             ));
+    };
+    final unread = widget.unreadData[widget.friend.identifier] == true;
     return ListTile(
-      leading: Icon(Icons.person),
-      title: Text(friend.name),
+      leading: unread ? Icon(Icons.message) : Icon(Icons.person),
+      selected: unread,
+      title: Text(widget.friend.name),
       onTap: onView,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -236,7 +260,7 @@ class FriendListItem extends StatelessWidget {
   }
 
   Future<void> _sendWellbeingData(BuildContext context) async {
-    final friendKey = FriendDB().getKey(friend.identifier);
+    final friendKey = FriendDB().getKey(widget.friend.identifier);
 
     final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
     final List<Map<String, int>> mapped = items
@@ -255,7 +279,7 @@ class FriendListItem extends StatelessWidget {
     final body = json.encode({
       'identifier_from': prefs.getString(USER_IDENTIFIER_KEY),
       'password': prefs.getString(USER_PASSWORD_KEY),
-      'identifier_to': friend.identifier,
+      'identifier_to': widget.friend.identifier,
       'data': data
     });
     http
