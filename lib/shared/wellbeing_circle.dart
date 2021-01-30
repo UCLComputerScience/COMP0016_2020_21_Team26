@@ -10,6 +10,7 @@ class WellbeingCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //substracted 2 from score to allow space for larger gradient
     final double purpleFraction = (_score == null ? 10.0 : _score - 2) / 10.0;
     final double blueStartPoint =
         purpleFraction + 0.4 <= 1 ? purpleFraction + 0.4 : 1;
@@ -29,8 +30,8 @@ class WellbeingCircle extends StatelessWidget {
           // shadow effect around the circle
           BoxShadow(
             color: Colors.grey.withOpacity(0.6),
-            spreadRadius: 0,
-            blurRadius: 7,
+            spreadRadius: 1,
+            blurRadius: 3,
           ),
         ],
       ),
