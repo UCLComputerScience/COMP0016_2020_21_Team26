@@ -292,6 +292,7 @@ class FriendListItemState extends State<FriendListItem> {
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text("Failed to send.")));
       }
+      // TODO: indicate successfully sent
     });
   }
 }
