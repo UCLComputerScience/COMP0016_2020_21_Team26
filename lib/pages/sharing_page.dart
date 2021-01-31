@@ -45,9 +45,14 @@ class SharingPageState extends State<SharingPage> {
       children: [
         RepaintBoundary(
           key: _printKey,
-          child: QrImage(
-            data: "$identifier\n$pubKey",
-            version: QrVersions.auto,
+          child: Container(
+            // HACK: Using a container should fix the LayoutBuilder exception.
+            //       Not ideal though.
+            height: 275,
+            child: QrImage(
+              data: "$identifier\n$pubKey",
+              version: QrVersions.auto,
+            ),
           ),
         ),
         SizedBox(
