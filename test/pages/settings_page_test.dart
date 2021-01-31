@@ -17,15 +17,6 @@ void main() {
     expect(pref.getString('support_code'), '123');
   });
 
-  // testWidgets("Postcode found", (WidgetTester tester) async {
-  //   SharedPreferences.setMockInitialValues(
-  //       {'postcode': 'ha5', 'support_code': '123'});
-  //   SharedPreferences pref = await SharedPreferences.getInstance();
-  //   await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
-  //   final textfinder = find.text("ha5");
-  //   expect(textfinder, findsOneWidget);
-  // });
-
   testWidgets('Current Postcode test', (WidgetTester tester) async {
     await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
     final loadingCircleFinder = find.byType(CircularProgressIndicator);
@@ -38,11 +29,21 @@ void main() {
     expect(loadingCircleFinder, findsOneWidget);
   });
 
-  testWidgets('Change button', (WidgetTester tester) async {
+  testWidgets('Change Postcode button', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'postcode': 'ha5'});
+    SharedPreferences pref = await SharedPreferences.getInstance();
     await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
-    await tester.enterText(find.byType(TextFormField), "");
+    await tester.enterText(find.byType(TextFormField), "ab");
     await tester.tap(find.byType(ElevatedButton));
-    final errorMessageFinder = find.text("You must enter a postcode prefix");
-    expect(errorMessageFinder, findsOneWidget);
+    expect(pref.get('postcode'), "ab");
+  });
+
+  testWidgets('Change Support Code button', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'support_code': '123'});
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await tester.pumpWidget(buildScaffoldWidget(ChangeSupportWidget()));
+    await tester.enterText(find.byType(TextFormField), "567");
+    await tester.tap(find.byType(ElevatedButton));
+    expect(pref.get('support_code'), "567");
   });
 }
