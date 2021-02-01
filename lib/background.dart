@@ -4,14 +4,19 @@ import 'package:nudge_me/notification.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
+import 'package:nudge_me/pages/sharing_page.dart';
 
 const PEDOMETER_CHECK_KEY = "pedometer_check";
+const REFRESH_FRIEND_KEY = "refresh_friend_data";
 
 /// inits the [Workmanager] and registers a background task to track steps
 void initBackground() {
   Workmanager.initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+
   Workmanager.registerPeriodicTask("pedometer_check_task", PEDOMETER_CHECK_KEY,
       frequency: Duration(minutes: 15));
+  Workmanager.registerPeriodicTask("refresh_friend_task", REFRESH_FRIEND_KEY,
+      frequency: Duration(minutes: 15), initialDelay: Duration(seconds: 10));
 }
 
 void callbackDispatcher() {
@@ -38,6 +43,13 @@ void callbackDispatcher() {
           scheduleNudge();
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
               [currTotal.toString(), DateTime.now().toIso8601String()]);
+        }
+        break;
+      case REFRESH_FRIEND_KEY:
+        final bool newData = await getLatest();
+        print(newData);
+        if (newData) {
+          scheduleNewFriendData();
         }
         break;
     }

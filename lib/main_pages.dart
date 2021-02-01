@@ -4,6 +4,7 @@ import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/nudge_screen.dart';
+import 'package:nudge_me/pages/sharing_page.dart';
 import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
@@ -16,6 +17,7 @@ class MainPages extends StatefulWidget {
   final pages = [
     WellbeingPage(),
     HomePage(),
+    SharingPage(),
     SettingsPage(),
     TestingPage(),
   ];
@@ -23,6 +25,7 @@ class MainPages extends StatefulWidget {
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+    BottomNavigationBarItem(icon: Icon(Icons.people), label: "Friends"),
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
     BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Testing"),
   ];
@@ -68,6 +71,11 @@ class _MainPagesState extends State<MainPages> {
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState
             .push(MaterialPageRoute(builder: (context) => NudgeScreen()));
+        break;
+      case FRIEND_DATA_PAYLOAD:
+        setState(() {
+          _selectedIndex = 2; // switch to friend tab
+        });
         break;
       default:
         print("If this isn't a test, something went wrong.");

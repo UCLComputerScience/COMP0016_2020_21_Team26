@@ -19,7 +19,7 @@ class TestingPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               final datetime =
-                  tz.TZDateTime.now(tz.local).add(Duration(milliseconds: 20));
+                  tz.TZDateTime.now(tz.local).add(Duration(milliseconds: 50));
               scheduleCheckupOnce(datetime);
             },
             child: Text("Wellbeing Check Notification"),

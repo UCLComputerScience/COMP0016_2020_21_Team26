@@ -24,7 +24,14 @@ Future<bool> _isWBTutorialDone() async {
 class WellbeingGraph extends StatefulWidget {
   final bool animate;
 
-  WellbeingGraph({this.animate});
+  /// true if it should display the share button:
+  final bool displayShare;
+  final bool shouldShowTutorial;
+
+  WellbeingGraph(
+      {this.animate = true,
+      this.displayShare = true,
+      this.shouldShowTutorial = true});
 
   @override
   _WellbeingGraphState createState() => _WellbeingGraphState();
@@ -45,7 +52,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   void showTutorial() async {
-    if (!(await _isWBTutorialDone())) {
+    if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
       Timer(Duration(seconds: 1), () => showCoachMarkGraph());
     }
   }
@@ -115,7 +122,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
 
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
     final scoreSeries = new charts.Series<WellbeingItem, String>(
-      id: 'Wellbeing Score',
+      id: 'Wellbeing',
       colorFn: (_, __) =>
           charts.ColorUtil.fromDartColor(Theme.of(context).accentColor),
       domainFn: (WellbeingItem item, _) => item.id.toString(),
@@ -200,13 +207,17 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           if (snapshot.hasData) {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
+            final children = [
+              Container(key: _wbGraphTutorialKey, child: graph)
+            ];
+            if (widget.displayShare) {
+              children.add(Container(
+                  key: _wbShareTutorialKey,
+                  child: ShareButton(_printKey, 'wellbeing-score.pdf')));
+            }
+
             return Column(
-              children: [
-                Container(key: _wbGraphTutorialKey, child: graph),
-                Container(
-                    key: _wbShareTutorialKey,
-                    child: ShareButton(_printKey, 'wellbeing-score.pdf'))
-              ],
+              children: children,
             );
           } else if (snapshot.hasError) {
             return Text("Error: ${snapshot.error}");
