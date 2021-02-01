@@ -66,7 +66,7 @@ class FriendGraph extends StatelessWidget {
           print(dat.error);
           return Text("Couldn't load graph.");
         }
-        return CircularProgressIndicator();
+        return LinearProgressIndicator();
       },
     );
   }

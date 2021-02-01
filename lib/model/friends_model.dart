@@ -8,7 +8,14 @@ const _dbName = "friends_db.db";
 const _dbVersion = 1;
 
 const _tableName = "Friends";
-const _columns = ["id", "name", "identifier", "publicKey", "latestData"];
+const _columns = [
+  "id",
+  "name",
+  "identifier",
+  "publicKey",
+  "latestData",
+  "read"
+];
 
 class FriendDB {
   static final FriendDB _instance = FriendDB._();
@@ -32,12 +39,14 @@ class FriendDB {
     identifier: String,
     publicKey: String,
     latestData: String,
+    read: int,
   }) async {
     return insert(Friend(
       name: name,
       identifier: identifier,
       publicKey: publicKey,
       latestData: latestData,
+      read: read,
     ));
   }
 
@@ -71,7 +80,8 @@ class FriendDB {
     for (var message in messages) {
       final sender = message['identifier_from'];
       final data = message['data'];
-      batch.update(_tableName, {_columns[4]: data},
+      // update the row with the new data and mark it unread
+      batch.update(_tableName, {_columns[4]: data, _columns[5]: 0},
           where: '${_columns[2]} = ?', whereArgs: [sender]);
     }
     await batch.commit();
@@ -97,6 +107,12 @@ class FriendDB {
     final count = firstIntValue(await db.rawQuery(query, [identifier]));
 
     return count > 0;
+  }
+
+  Future<void> setRead(String identifier) async {
+    final db = await database;
+    db.update(_tableName, {_columns[5]: 1},
+        where: '${_columns[2]} = ?', whereArgs: [identifier]);
   }
 
   void delete() async {
@@ -133,7 +149,8 @@ class FriendDB {
       ${_columns[1]} TEXT NOT NULL,
       ${_columns[2]} TEXT NOT NULL,
       ${_columns[3]} TEXT NOT NULL,
-      ${_columns[4]} TEXT
+      ${_columns[4]} TEXT,
+      ${_columns[5]} INTEGER
     )
       ''');
   }
@@ -146,6 +163,7 @@ class Friend {
   String identifier;
   String publicKey;
   String latestData; // json encoded string
+  int read;
 
   Friend({
     this.id, // this should be left null so SQL will handle it
@@ -153,6 +171,7 @@ class Friend {
     this.identifier,
     this.publicKey,
     this.latestData,
+    this.read,
   });
 
   Friend.fromMap(Map<String, dynamic> map) {
@@ -161,6 +180,7 @@ class Friend {
     identifier = map[_columns[2]];
     publicKey = map[_columns[3]];
     latestData = map[_columns[4]];
+    read = map[_columns[5]];
   }
 
   Map<String, dynamic> toMap() {
@@ -170,6 +190,7 @@ class Friend {
       _columns[2]: identifier,
       _columns[3]: publicKey,
       _columns[4]: latestData,
+      _columns[5]: read,
     };
     if (id != null) {
       map[_columns[0]] = id;

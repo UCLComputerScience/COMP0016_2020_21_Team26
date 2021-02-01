@@ -86,10 +86,12 @@ class AddFriendPageState extends State<AddFriendPage> {
                     if (!await FriendDB().isIdentifierPresent(identifier)) {
                       setState(() {
                         FriendDB().insertWithData(
-                            name: _name,
-                            identifier: identifier,
-                            publicKey: publicKey,
-                            latestData: null);
+                          name: _name,
+                          identifier: identifier,
+                          publicKey: publicKey,
+                          latestData: null,
+                          read: null,
+                        );
                       });
                     } else {
                       widget._scaffoldState.showSnackBar(SnackBar(

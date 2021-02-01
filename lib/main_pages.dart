@@ -72,6 +72,11 @@ class _MainPagesState extends State<MainPages> {
         await navigatorKey.currentState
             .push(MaterialPageRoute(builder: (context) => NudgeScreen()));
         break;
+      case FRIEND_DATA_PAYLOAD:
+        setState(() {
+          _selectedIndex = 2; // switch to friend tab
+        });
+        break;
       default:
         print("If this isn't a test, something went wrong.");
     }
