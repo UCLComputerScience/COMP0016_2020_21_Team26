@@ -74,27 +74,26 @@ class SharingPageState extends State<SharingPage> {
   }
 
   Widget _getSharableQR(String identifier, String pubKey) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         RepaintBoundary(
-          key: _printKey,
-          child: Container(
-            // HACK: Using a container should fix the LayoutBuilder exception.
-            //       Not ideal though.
-            height: 275,
-            child: QrImage(
-              data: "$identifier\n$pubKey",
-              version: QrVersions.auto,
-            ),
-          ),
-        ),
+            key: _printKey,
+            child: Container(
+              width: 200,
+              height: 200,
+              child: QrImage(
+                data: "$identifier\n$pubKey",
+                version: QrVersions.auto,
+              ),
+            )),
         SizedBox(
           height: 10,
         ),
         ShareButton(_printKey, 'identity_qr.pdf'),
       ],
-    );
+    ));
   }
 
   @override
