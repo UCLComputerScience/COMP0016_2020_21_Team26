@@ -9,6 +9,7 @@ void main() {
     return MaterialApp(home: Scaffold(body: widget));
   }
 
+  //tests setting and getting shared pref values
   testWidgets("Shared preferences test", (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {'postcode': 'ha5', 'support_code': '123'});
@@ -17,18 +18,27 @@ void main() {
     expect(pref.getString('support_code'), '123');
   });
 
+  //loading circle for postcode widget
   testWidgets('Current Postcode test', (WidgetTester tester) async {
     await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
     final loadingCircleFinder = find.byType(CircularProgressIndicator);
     expect(loadingCircleFinder, findsOneWidget);
   });
 
+  //loading circle for support code widget
   testWidgets('Current Support Code test', (WidgetTester tester) async {
     await tester.pumpWidget(buildScaffoldWidget(ChangeSupportWidget()));
     final loadingCircleFinder = find.byType(CircularProgressIndicator);
     expect(loadingCircleFinder, findsOneWidget);
   });
 
+  testWidgets('Current Postcode test', (WidgetTester tester) async {
+      await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
+      final loadingCircleFinder = find.byType(CircularProgressIndicator);
+      expect(loadingCircleFinder, findsOneWidget);
+    });
+    
+  //changing postcode using textformfield and change button
   testWidgets('Change Postcode button', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({'postcode': 'ha5'});
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -38,6 +48,7 @@ void main() {
     expect(pref.get('postcode'), "ab");
   });
 
+  //change support code using textformfield and change button
   testWidgets('Change Support Code button', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({'support_code': '123'});
     SharedPreferences pref = await SharedPreferences.getInstance();
