@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
-import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
