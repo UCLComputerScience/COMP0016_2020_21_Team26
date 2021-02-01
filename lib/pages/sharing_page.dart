@@ -30,7 +30,7 @@ Future<bool> getLatest() async {
   await http
       .post(BASE_URL + "/user/message",
           headers: {"Content-Type": "application/json"}, body: body)
-      .then((response) {
+      .then((response) async {
     print("Recieved: ${response.body}");
     // this typecast may cause an error if the password doesn't match, but
     // that shouldn't happen (and if it does I want it to be reported
@@ -49,7 +49,7 @@ Future<bool> getLatest() async {
         String decrypted = encrypter.decrypt64(encrypted);
         message['data'] = decrypted;
       }
-      FriendDB().updateData(messages);
+      await FriendDB().updateData(messages);
     }
     hasNewData = messages.length > 0;
   });
