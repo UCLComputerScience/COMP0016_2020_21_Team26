@@ -118,6 +118,11 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
     }
   }
 
+  /// gets the actual steps taken, accounting for the fact that the user may
+  /// have reset their device
+  int _getActualSteps(int total, int prevTotal) =>
+      prevTotal > total ? total : total - prevTotal;
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -128,9 +133,8 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final int lastTotalSteps = snapshot.data;
-            final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
-                ? _currentTotalSteps
-                : _currentTotalSteps - lastTotalSteps;
+            final thisWeeksSteps =
+                _getActualSteps(_currentTotalSteps, lastTotalSteps);
             return Text(thisWeeksSteps.toString(),
                 style: TextStyle(
                     fontFamily: 'Rosario',
@@ -177,7 +181,7 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
                 date: dateString,
                 postcode: await _getPostcode(),
                 wellbeingScore: _currentSliderValue,
-                numSteps: _currentTotalSteps - lastTotalSteps,
+                numSteps: _getActualSteps(_currentTotalSteps, lastTotalSteps),
                 supportCode: await _getSupportCode());
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
