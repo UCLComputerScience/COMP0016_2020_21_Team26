@@ -46,7 +46,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
 
   void showTutorial() async {
     if (!(await _isWBTutorialDone())) {
-      Timer(Duration(milliseconds: 10), () => showCoachMarkGraph());
+      Timer(Duration(milliseconds: 100), () => showCoachMarkGraph());
     }
   }
 
@@ -83,7 +83,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         ],
         duration: Duration(seconds: 5),
         onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkShare());
+          Timer(Duration(milliseconds: 100), () => showCoachMarkShare());
         });
   }
 
