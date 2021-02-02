@@ -15,10 +15,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.1.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -34,6 +34,12 @@ dependencies:
   printing: ^3.7.2
   clock: ^1.0.1 # useful for testing
   permission_handler: ^5.0.1+1
+  encrypt: ^4.1.0 # high-level API
+  pointycastle: ^2.0.1 # used for keygen
+  random_string: ^2.1.0
+  qr_code_scanner: ^0.3.0
+  cron: ^0.2.4
+  sentry_flutter: ^4.0.4 # error monitoring
 
   # data-related
   provider: ^3.0.0
@@ -47,6 +53,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   highlighter_coachmark:  ^0.0.3
+  qr_flutter: ^3.2.0 # generates a QR code
+  liquid_pull_to_refresh: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -71,8 +79,11 @@ flutter:
     - lib/images/IntroLogo.png
     - lib/images/IntroPostcode.png
     - lib/images/IntroSupport.png
-    - lib/images/IntroCheckup.png
+    - lib/images/IntroWBCheck.png
     - lib/images/IntroShare.png
+    - lib/images/IntroWBCheckNotification.png
+    - lib/images/IntroShareNotification.png
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

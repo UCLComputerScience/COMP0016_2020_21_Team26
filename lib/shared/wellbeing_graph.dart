@@ -24,7 +24,14 @@ Future<bool> _isWBTutorialDone() async {
 class WellbeingGraph extends StatefulWidget {
   final bool animate;
 
-  WellbeingGraph({this.animate});
+  /// true if it should display the share button:
+  final bool displayShare;
+  final bool shouldShowTutorial;
+
+  WellbeingGraph(
+      {this.animate = true,
+      this.displayShare = true,
+      this.shouldShowTutorial = true});
 
   @override
   _WellbeingGraphState createState() => _WellbeingGraphState();
@@ -45,8 +52,9 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   }
 
   void showTutorial() async {
-    if (!(await _isWBTutorialDone())) {
-      Timer(Duration(seconds: 1), () => showCoachMarkGraph());
+    if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
+      Timer(Duration(milliseconds: 100), () => showCoachMarkGraph());
+
     }
   }
 
@@ -81,9 +89,9 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: tutorialTextStyle)),
           ])
         ],
-        duration: null,
+        duration: Duration(seconds: 5),
         onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkShare());
+          Timer(Duration(milliseconds: 100), () => showCoachMarkShare());
         });
   }
 
@@ -106,7 +114,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],
-        duration: null,
+        duration: Duration(seconds: 3),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
@@ -115,9 +123,9 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
 
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
     final scoreSeries = new charts.Series<WellbeingItem, String>(
-      id: 'Wellbeing Score',
+      id: 'Wellbeing',
       colorFn: (_, __) =>
-          charts.ColorUtil.fromDartColor(Color.fromARGB(255, 182, 125, 226)),
+          charts.ColorUtil.fromDartColor(Theme.of(context).accentColor),
       domainFn: (WellbeingItem item, _) => item.id.toString(),
       measureFn: (WellbeingItem item, _) => item.wellbeingScore,
       data: items,
@@ -125,7 +133,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     final stepSeries = new charts.Series<WellbeingItem, String>(
       id: 'Steps',
       colorFn: (_, __) =>
-          charts.ColorUtil.fromDartColor(Color.fromARGB(255, 0, 74, 173)),
+          charts.ColorUtil.fromDartColor(Theme.of(context).primaryColor),
       domainFn: (WellbeingItem a, _) => a.id.toString(),
       measureFn: (WellbeingItem a, _) => a.numSteps,
       data: items,
@@ -140,6 +148,14 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           // feedback from UCL recommended to use bar chart
           seriesList,
           animate: animate,
+          layoutConfig: charts.LayoutConfig(
+            // defining these so we can fit label in margin
+            leftMarginSpec: charts.MarginSpec.fixedPixel(25),
+            topMarginSpec: charts.MarginSpec.fixedPixel(20),
+            rightMarginSpec: charts.MarginSpec.fixedPixel(60),
+            bottomMarginSpec: charts.MarginSpec.fixedPixel(50),
+          ),
+
           barGroupingType: charts.BarGroupingType.grouped,
           // 'tick counts' used to match grid lines
           primaryMeasureAxis: charts.NumericAxisSpec(
@@ -147,21 +163,33 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                   charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
           secondaryMeasureAxis: charts.NumericAxisSpec(
             tickProviderSpec:
-                charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
+                charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
           ),
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
             // This should force the wellbeing score axis to go up to 10:
-            charts.RangeAnnotation([
-              charts.RangeAnnotationSegment(
-                8,
-                10,
-                charts.RangeAnnotationAxisType.measure,
-                color: charts.MaterialPalette.transparent,
-              )
-            ]),
+            charts.RangeAnnotation(
+              [
+                charts.RangeAnnotationSegment(
+                  8,
+                  10,
+                  charts.RangeAnnotationAxisType.measure,
+                  color: charts.MaterialPalette.transparent,
+                ),
+                charts.RangeAnnotationSegment(
+                  7000, // min recommended weekly steps
+                  70000, // upper bound recommended weekly steps
+                  charts.RangeAnnotationAxisType.measure,
+                  color: charts.MaterialPalette.green.makeShades(10)[7],
+                  middleLabel: "Target\nsteps\n",
+                  startLabel: "7,000",
+                  axisId: 'secondaryMeasureAxisId', // for steps axis
+                  labelPosition: charts.AnnotationLabelPosition.margin,
+                ),
+              ],
+            ),
             // using title as axes label:
-            new charts.ChartTitle('Week Number',
+            new charts.ChartTitle('Past weeks',
                 behaviorPosition: charts.BehaviorPosition.bottom,
                 titleOutsideJustification:
                     charts.OutsideJustification.middleDrawArea),
@@ -180,13 +208,17 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           if (snapshot.hasData) {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
+            final children = [
+              Container(key: _wbGraphTutorialKey, child: graph)
+            ];
+            if (widget.displayShare) {
+              children.add(Container(
+                  key: _wbShareTutorialKey,
+                  child: ShareButton(_printKey, 'wellbeing-score.pdf')));
+            }
+
             return Column(
-              children: [
-                Container(key: _wbGraphTutorialKey, child: graph),
-                Container(
-                    key: _wbShareTutorialKey,
-                    child: ShareButton(_printKey, 'wellbeing-score.pdf'))
-              ],
+              children: children,
             );
           } else if (snapshot.hasError) {
             return Text("Error: ${snapshot.error}");
