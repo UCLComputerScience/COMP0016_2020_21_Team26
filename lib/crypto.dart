@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:nudge_me/pages/publish_screen.dart';
+import 'package:nudge_me/main_pages.dart';
 import 'package:pointycastle/export.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:random_string/random_string.dart';

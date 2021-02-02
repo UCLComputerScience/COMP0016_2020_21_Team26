@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/crypto.dart';
+import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
-import 'package:nudge_me/pages/publish_screen.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/share_button.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
@@ -31,7 +31,7 @@ Future<bool> getLatest() async {
       .post(BASE_URL + "/user/message",
           headers: {"Content-Type": "application/json"}, body: body)
       .then((response) async {
-    print("Recieved: ${response.body}");
+    print("Data Recieved: ${response.body}");
     // this typecast may cause an error if the password doesn't match, but
     // that shouldn't happen (and if it does I want it to be reported
     // anway). So I'm not doing any special error-handling.
@@ -81,6 +81,7 @@ class SharingPageState extends State<SharingPage> {
         RepaintBoundary(
             key: _printKey,
             child: Container(
+              // REVIEW: seems a little small on my screen.
               width: 200,
               height: 200,
               child: QrImage(

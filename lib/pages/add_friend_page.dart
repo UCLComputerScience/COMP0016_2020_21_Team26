@@ -118,6 +118,9 @@ class AddFriendPageState extends State<AddFriendPage> {
       body: SafeArea(
         child: stepper,
       ),
+      appBar: AppBar(
+        title: Text("Add Friend"),
+      ),
     );
   }
 
