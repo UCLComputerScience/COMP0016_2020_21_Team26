@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                       "This is where you can view \n last week's score.",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 3),
+        duration: Duration(seconds: 5),
         onClose: () {
           Timer(Duration(milliseconds: 100), () => showCoachMarkSteps());
         });

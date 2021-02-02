@@ -47,8 +47,6 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   void showTutorial() async {
     if (!(await _isWBTutorialDone())) {
       Timer(Duration(milliseconds: 10), () => showCoachMarkGraph());
-    } else {
-      Timer(Duration(milliseconds: 10), () => showCoachMarkGraph());
     }
   }
 
@@ -83,7 +81,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: tutorialTextStyle)),
           ])
         ],
-        duration: null,
+        duration: Duration(seconds: 5),
         onClose: () {
           Timer(Duration(seconds: 1), () => showCoachMarkShare());
         });
@@ -108,7 +106,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],
-        duration: null,
+        duration: Duration(seconds: 3),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
