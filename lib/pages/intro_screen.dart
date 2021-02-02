@@ -319,9 +319,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "Welcome",
               image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
               bodyWidget: Text(
-                  "Someone from the NHS will have recommended this app to you. \n\n " +
-                      "This app has been designed to encourage you to take care of yourself. \n \n" +
-                      "Swipe left to learn more",
+                  "It is recognised that people often forget to look after themselves. \n\n " +
+                      "This app has been designed to encourage you to do this. \n \n",
                   style: introTextStyle,
                   textAlign: TextAlign.center),
               decoration: pageDecoration),
@@ -329,8 +328,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "How?",
               image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
               bodyWidget: Text(
-                  "It does this by sending weekly notifications asking you how you feel, and show how walking more can improve your wellbeing. \n\n" +
-                      "Occasionally, it will nudge you to share your wellbeing with people you know. \n \n ",
+                  "It does this by sending weekly notifications asing how you feel. \n \n" +
+                      "Occasionally, it will nudge you to keep in contact with people you like to speak to. " +
+                      "It will also make you aware of opportunities to share your wellbeing with this group.  \n\n" +
+                      "If you consent to this, swipe left to set up",
                   style: introTextStyle,
                   textAlign: TextAlign.center),
               decoration: pageDecoration),
@@ -349,6 +350,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     Text(
                         "\n Over the past 7 days, rate how well you have felt out of 10. ",
                         style: introTextStyle,
+                        textAlign: TextAlign.center),
+                    Text("Confused? Find additional instructions below.",
+                        style: Theme.of(context).textTheme.caption,
                         textAlign: TextAlign.center),
                     Container(
                         child: Slider(
@@ -399,7 +403,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         textAlign: TextAlign.center),
                     Text(
                         "This is not necessary to use the app. " +
-                            "The only difference is that you will not be asked to publish your data.",
+                            "The only difference is that your data will not be sent automatically on a weekly basis.",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                   ]),
