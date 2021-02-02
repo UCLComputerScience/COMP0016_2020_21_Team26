@@ -11,6 +11,7 @@ const NUDGE_PAYLOAD = "nudge";
 const FRIEND_DATA_PAYLOAD = "friend";
 
 enum notifications { test, wbCheck, publish, nudge, newFriendData }
+enum nudges { wb_decreasing, no_steps }
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -84,14 +85,22 @@ Future rescheduleCheckup(int day, Time time) async {
   scheduleCheckup(day, time);
 }
 
-void scheduleNudge() async {
+void scheduleNudge(int type) async {
+  String keyParameter;
+  if (nudges.values[type] == nudges.no_steps) {
+    keyParameter = "steps are";
+  }
+  if (nudges.values[type] == nudges.wb_decreasing) {
+    keyParameter = "score is";
+  }
+
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
     notifications.nudge.index,
     "Nudge",
-    "Hey, your score or steps are low, want to share with a friend?",
+    "Hey, your $keyParameter low, want to share with a friend?",
     tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
     _getSpecifics(),
     androidAllowWhileIdle: true,

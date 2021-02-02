@@ -40,7 +40,7 @@ void callbackDispatcher() {
             DateTime.now().difference(prevDateTime) >= Duration(days: 2)) {
           // if step count hasn't changed in 2 days
           await initNotification(); // needs to be done since outside app
-          scheduleNudge();
+          scheduleNudge(nudges.wb_decreasing.index);
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
               [currTotal.toString(), DateTime.now().toIso8601String()]);
         }
