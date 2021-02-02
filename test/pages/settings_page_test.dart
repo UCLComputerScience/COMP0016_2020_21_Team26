@@ -63,9 +63,9 @@ void main() {
     SharedPreferences.setMockInitialValues({'postcode': 'ha5'});
     SharedPreferences pref = await SharedPreferences.getInstance();
     await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
-    await tester.enterText(find.byType(TextFormField), "ab");
+    await tester.enterText(find.byType(TextFormField), "AB");
     await tester.tap(find.byType(ElevatedButton));
-    expect(pref.get('postcode'), "ab");
+    expect(pref.get('postcode'), "AB");
   });
 
   //change support code using textformfield and change button
