@@ -28,6 +28,7 @@ void main() {
     expect(find.text('ha5'), findsOneWidget);
   });
 
+  //current support code
   testWidgets("Current Support Code", (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {'postcode': 'ha5', 'support_code': '123'});
