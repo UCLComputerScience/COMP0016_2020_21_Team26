@@ -100,7 +100,7 @@ void scheduleNudge(int type) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     notifications.nudge.index,
     "Nudge",
-    "Hey, your $keyParameter low, want to share with a friend?",
+    "Hey, your $keyParameter low, want to share with your care network?",
     tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
     _getSpecifics(),
     androidAllowWhileIdle: true,
@@ -132,7 +132,7 @@ Future scheduleNewFriendData() async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     notifications.newFriendData.index,
     "Shared Data",
-    "Hey, a friend shared their wellbeing data with you.",
+    "Hey, your care network shared their wellbeing data with you.",
     tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
     _getSpecifics(),
     androidAllowWhileIdle: true,
