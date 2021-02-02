@@ -11,6 +11,9 @@ import 'package:nudge_me/pages/settings_page.dart';
 
 import 'main.dart';
 
+/// URL of the server running back-end code. This should be changed
+/// if the domain has changed.
+/// Also ensure 'https' is used since we want to securely send data.
 const BASE_URL = "https://comp0016.cyberchris.xyz";
 
 class MainPages extends StatefulWidget {
