@@ -18,6 +18,25 @@ void main() {
     expect(pref.getString('support_code'), '123');
   });
 
+  // current postcode
+  testWidgets("Current Postcode", (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(
+        {'postcode': 'ha5', 'support_code': '123'});
+    await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ha5'), findsOneWidget);
+  });
+
+  testWidgets("Current Support Code", (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(
+        {'postcode': 'ha5', 'support_code': '123'});
+    await tester.pumpWidget(buildScaffoldWidget(ChangeSupportWidget()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('123'), findsOneWidget);
+  });
+
   //loading circle for postcode widget
   testWidgets('Current Postcode test', (WidgetTester tester) async {
     await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
@@ -33,11 +52,11 @@ void main() {
   });
 
   testWidgets('Current Postcode test', (WidgetTester tester) async {
-      await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
-      final loadingCircleFinder = find.byType(CircularProgressIndicator);
-      expect(loadingCircleFinder, findsOneWidget);
-    });
-    
+    await tester.pumpWidget(buildScaffoldWidget(ChangePostcodeWidget()));
+    final loadingCircleFinder = find.byType(CircularProgressIndicator);
+    expect(loadingCircleFinder, findsOneWidget);
+  });
+
   //changing postcode using textformfield and change button
   testWidgets('Change Postcode button', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({'postcode': 'ha5'});
