@@ -48,6 +48,36 @@ void main() {
         numSteps: 0,
         supportCode: '12345'));
   });
+
+  testWidgets('Works when steps reset', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(
+        {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 6666});
+    final mockedDB = MockedDB();
+    when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
+
+    await tester.pumpWidget(MaterialApp(
+      home: WellbeingCheck(mockedDB),
+    ));
+
+    // should be at score of 10 after dragging
+    await tester.drag(find.byType(Slider), Offset(500.0, 0.0));
+    await tester.pumpAndSettle();
+    await withClock(
+        // this should use the fake clock when requesting date
+        Clock.fixed(DateTime(2021)),
+        () async => await tester.tap(find.byType(ElevatedButton)));
+
+    verify(mockedDB.getLastNWeeks(3));
+    verify(mockedDB.insertWithData(
+        date: "2021-01-01",
+        postcode: 'N6',
+        wellbeingScore: 10.0,
+        numSteps: 0,
+        supportCode: '12345'));
+    final newPrev = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
+    assert(newPrev == 0);
+  });
 }
 
 class MockedDB extends Mock implements UserWellbeingDB {}

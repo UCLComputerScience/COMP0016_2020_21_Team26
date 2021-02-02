@@ -8,6 +8,9 @@ import 'package:timezone/timezone.dart' as tz;
 const CHECKUP_PAYLOAD = "checkup";
 const PUBLISH_PAYLOAD = "publish";
 const NUDGE_PAYLOAD = "nudge";
+const FRIEND_DATA_PAYLOAD = "friend";
+
+enum notifications { test, wbCheck, publish, nudge, newFriendData }
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -56,19 +59,11 @@ NotificationDetails _getSpecifics() {
   );
 }
 
-Future scheduleNotification([tz.TZDateTime scheduledDate]) async {
-  await flutterLocalNotificationsPlugin.zonedSchedule(0, "NudgeMe",
-      'Test notification for debugging.', scheduledDate, _getSpecifics(),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime);
-}
-
 /// schedule checkup notification that repeats weekly.
 /// [int] day should be retrieved using DateTime's day enumeration
 Future scheduleCheckup(int day, Time time) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
-    1,
+    notifications.wbCheck.index,
     "Weekly Wellbeing Check",
     "Tap to report your wellbeing.",
     _nextInstanceOfDayTime(day, time),
@@ -82,36 +77,59 @@ Future scheduleCheckup(int day, Time time) async {
   );
 }
 
-/// schedule publish notification that repeats weekly
+/// cancels old checkup notfification and reschedules with new date and time
 /// [int] day should be retrieved using DateTime's day enumeration
-Future schedulePublish(int day, Time time) async {
-  await flutterLocalNotificationsPlugin.zonedSchedule(
-    2,
-    "Publish Score",
-    "Tap to review and publish your weekly score anonymously.",
-    _nextInstanceOfDayTime(day, time),
-    _getSpecifics(),
-    // not important enough, no need to disturb idle mode:
-    androidAllowWhileIdle: false,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-    payload: PUBLISH_PAYLOAD,
-    // schedule recurring notification on matching day & time
-    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-  );
+Future rescheduleCheckup(int day, Time time) async {
+  await flutterLocalNotificationsPlugin.cancel(notifications.wbCheck.index);
+  scheduleCheckup(day, time);
 }
 
 void scheduleNudge() async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
   await flutterLocalNotificationsPlugin.zonedSchedule(
-    3,
+    notifications.nudge.index,
     "Nudge",
     "Hey, your score or steps are low, want to share with a friend?",
-    tz.TZDateTime.now(tz.local).add(Duration(seconds: 2)),
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
     _getSpecifics(),
     androidAllowWhileIdle: true,
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
     payload: NUDGE_PAYLOAD,
+  );
+}
+
+Future scheduleCheckupOnce(tz.TZDateTime scheduledDate) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notifications.test.index,
+    "Weekly Wellbeing Check",
+    "Tap to report your wellbeing.",
+    scheduledDate,
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: CHECKUP_PAYLOAD,
+  );
+}
+
+Future scheduleNewFriendData() async {
+  // this is probably executed outside main app, so need to init this
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notifications.newFriendData.index,
+    "Shared Data",
+    "Hey, a friend shared their wellbeing data with you.",
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: FRIEND_DATA_PAYLOAD,
   );
 }
 

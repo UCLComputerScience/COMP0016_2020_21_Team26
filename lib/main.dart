@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
@@ -6,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'main_pages.dart';
 
@@ -21,12 +24,55 @@ const PREV_PEDOMETER_PAIR_KEY = "prev_pedometer_pair";
 /// used to push without context
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
 
+/// sentry client used for logging errors in prod
+final _sentry = SentryClient(SentryOptions(
+    dsn:
+        'https://b3c6b387b20d47be829e679b3290f99a@o513354.ingest.sentry.io/5615069'));
+
 void main() {
   // needs to be done synchronously
   WidgetsFlutterBinding.ensureInitialized();
   _appInit();
 
-  runApp(MyApp());
+  // captures platform/native errors
+  FlutterError.onError = (FlutterErrorDetails details) {
+    if (isInDebugMode) {
+      FlutterError.dumpErrorToConsole(details);
+    } else {
+      Zone.current.handleUncaughtError(details.exception, details.stack);
+    }
+  };
+
+  // run app in a special environment to capture errors
+  runZonedGuarded(() async {
+    runApp(MyApp());
+  }, (Object err, StackTrace sTrace) {
+    _reportError(err, sTrace);
+  });
+}
+
+bool get isInDebugMode {
+  bool inDebugMode = false;
+
+  // this won't execute if we're in production
+  assert(inDebugMode = true);
+
+  return inDebugMode;
+}
+
+Future<void> _reportError(dynamic error, dynamic stackTrace) async {
+  // Print the exception to the console.
+  print('Caught error: $error');
+  if (isInDebugMode) {
+    // Print the full stacktrace in debug mode.
+    print(stackTrace);
+  } else {
+    // Send the Exception and Stacktrace to Sentry in Production mode.
+    _sentry.captureException(
+      error,
+      stackTrace: stackTrace,
+    );
+  }
 }
 
 /// returns `true` if setup is not completed
@@ -90,9 +136,9 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Rosario'),
             headline2: TextStyle(
-                fontFamily: 'Rosario',
-                fontSize: 25,
-                decoration: TextDecoration.underline),
+              fontFamily: 'Rosario',
+              fontSize: 25,
+            ),
             headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
             subtitle1: TextStyle(
                 fontFamily: 'Rosario',

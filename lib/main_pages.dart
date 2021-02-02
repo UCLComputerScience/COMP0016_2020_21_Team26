@@ -4,17 +4,23 @@ import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/nudge_screen.dart';
-import 'package:nudge_me/pages/publish_screen.dart';
+import 'package:nudge_me/pages/sharing_page.dart';
 import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
 
 import 'main.dart';
 
+/// URL of the server running back-end code. This should be changed
+/// if the domain has changed.
+/// Also ensure 'https' is used since we want to securely send data.
+const BASE_URL = "https://comp0016.cyberchris.xyz";
+
 class MainPages extends StatefulWidget {
   final pages = [
     WellbeingPage(),
     HomePage(),
+    SharingPage(),
     SettingsPage(),
     TestingPage(),
   ];
@@ -22,6 +28,7 @@ class MainPages extends StatefulWidget {
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+    BottomNavigationBarItem(icon: Icon(Icons.people), label: "Friends"),
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
     BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Testing"),
   ];
@@ -64,16 +71,14 @@ class _MainPagesState extends State<MainPages> {
         await navigatorKey.currentState.push(MaterialPageRoute(
             builder: (context) => WellbeingCheck(UserWellbeingDB())));
         break;
-      case PUBLISH_PAYLOAD:
-        if (!await UserWellbeingDB().empty) {
-          // asks to publish if there is at least one wellbeing item saved
-          await navigatorKey.currentState
-              .push(MaterialPageRoute(builder: (context) => PublishScreen()));
-        }
-        break;
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState
             .push(MaterialPageRoute(builder: (context) => NudgeScreen()));
+        break;
+      case FRIEND_DATA_PAYLOAD:
+        setState(() {
+          _selectedIndex = 2; // switch to friend tab
+        });
         break;
       default:
         print("If this isn't a test, something went wrong.");
