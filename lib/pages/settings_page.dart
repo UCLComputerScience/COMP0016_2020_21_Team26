@@ -17,8 +17,6 @@ final hours = [for (var i = 1; i < 25; i += 1) i];
 final minutes = [for (var i = 00; i < 60; i += 1) i];
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,8 +37,6 @@ class SettingsPage extends StatelessWidget {
 }
 
 class ChangePostcodeWidget extends StatefulWidget {
-  ChangePostcodeWidget();
-
   @override
   _ChangePostcodeWidgetState createState() => _ChangePostcodeWidgetState();
 }
@@ -121,8 +117,6 @@ class _ChangePostcodeWidgetState extends State<ChangePostcodeWidget> {
 }
 
 class ChangeSupportWidget extends StatefulWidget {
-  ChangeSupportWidget();
-
   @override
   _ChangeSupportWidgetState createState() => _ChangeSupportWidgetState();
 }
