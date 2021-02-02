@@ -39,7 +39,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.ucl.nudge_me"
-        minSdkVersion 18
+        minSdkVersion 20 // 20 needed for QR scanner
         // targeting version 28 gives us the permissions needed for step count automatically
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()

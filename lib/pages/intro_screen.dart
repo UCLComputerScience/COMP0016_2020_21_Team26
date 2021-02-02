@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:nudge_me/background.dart';
+import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
@@ -100,10 +101,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => MainPages()),
-    );
-    _finishSetup(
+    await _finishSetup(
         _currentSwitchValue,
         _wbCheckNotifDay,
         _wbCheckNotifHour,
@@ -111,9 +109,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         _shareNotifDay,
         _shareNotifHour,
         _shareNotifMinute);
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => MainPages()),
+    );
   }
 
-  void _finishSetup(
+  Future<void> _finishSetup(
       bool _currentSwitchValue,
       _wbCheckNotifDay,
       _wbCheckNotifHour,
@@ -128,6 +130,10 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+
+    // slight performance hit to await but ensures crypto is properly set up:
+    await setupCrypto();
+
     // only start tracking steps after user has done setup
     initBackground();
   }
