@@ -106,7 +106,7 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
 
   /// returns 'true' if last int in list is less than 70
   bool _hasLowSteps(List<dynamic> items) {
-    if (items[-1] < 70) {
+    if (items[items.length - 1] < 70) {
       return true;
     }
     return false;
