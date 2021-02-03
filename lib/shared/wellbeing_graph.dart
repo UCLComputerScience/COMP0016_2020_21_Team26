@@ -54,7 +54,6 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   void showTutorial() async {
     if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
       Timer(Duration(milliseconds: 100), () => showCoachMarkGraph());
-
     }
   }
 
@@ -110,7 +109,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 30, 180.0),
                 child: Text(
-                    "The share button at the bottom allows you to save or share your graph with friends!",
+                    "The share button at the bottom allows you to save or share your graph with your care network!",
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],

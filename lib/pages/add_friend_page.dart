@@ -95,7 +95,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                       });
                     } else {
                       widget._scaffoldState.showSnackBar(SnackBar(
-                        content: Text("Friend already added."),
+                        content: Text("This person has already been added."),
                       ));
                     }
 
@@ -119,7 +119,7 @@ class AddFriendPageState extends State<AddFriendPage> {
         child: stepper,
       ),
       appBar: AppBar(
-        title: Text("Add Friend"),
+        title: Text("Add to Network"),
       ),
     );
   }
