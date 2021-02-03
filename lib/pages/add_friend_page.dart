@@ -119,7 +119,7 @@ class AddFriendPageState extends State<AddFriendPage> {
         child: stepper,
       ),
       appBar: AppBar(
-        title: Text("Add Person"),
+        title: Text("Add to Network"),
       ),
     );
   }
