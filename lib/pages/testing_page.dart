@@ -25,7 +25,7 @@ class TestingPage extends StatelessWidget {
             child: Text("Wellbeing Check Notification"),
           ),
           ElevatedButton(
-            onPressed: () => scheduleNudge(nudges.wb_decreasing.index),
+            onPressed: () => scheduleNudge(),
             child: Text("Example Nudge"),
           ),
           ElevatedButton(

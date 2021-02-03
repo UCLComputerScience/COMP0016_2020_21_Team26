@@ -122,11 +122,11 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
     if (items.length == n + 1 &&
         _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
-      scheduleNudge(nudges.wb_decreasing.index);
+      scheduleNudge();
     }
     if (_hasLowSteps(items.map((item) => item.wellbeingScore).toList())) {
       //if they have moved less than 70 steps in a week
-      scheduleNudge(nudges.no_steps.index);
+      scheduleNudge();
     }
   }
 
