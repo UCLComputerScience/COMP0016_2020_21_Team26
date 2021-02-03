@@ -104,14 +104,6 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
     return true;
   }
 
-  /// returns 'true' if last int in list is less than 70
-  bool _hasLowSteps(List<dynamic> items) {
-    if (items[items.length - 1] < 70) {
-      return true;
-    }
-    return false;
-  }
-
   /// nudges user if score drops n times in the last n+1 weeks.
   /// For example if n == 2 and we have these 3 weeks/scores 8 7 6, the user
   /// will be nudged.
@@ -122,10 +114,6 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
     if (items.length == n + 1 &&
         _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
-      scheduleNudge();
-    }
-    if (_hasLowSteps(items.map((item) => item.wellbeingScore).toList())) {
-      //if they have moved less than 70 steps in a week
       scheduleNudge();
     }
   }
