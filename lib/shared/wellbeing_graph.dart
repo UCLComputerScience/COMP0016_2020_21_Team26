@@ -86,7 +86,10 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 10.0, 30, 0),
                 child: Text(
-                    "Wellbeing scores and steps are plotted on the same graph. Wellbeing are represented by the purple bars and the left axis. Steps are represented by the blue bars and the right axis.",
+                    "Wellbeing scores and steps are plotted on the same graph. "
+                    "Wellbeing are represented by the purple bars and the "
+                    "left axis. Steps are represented by the blue bars and "
+                    "the right axis.",
                     style: tutorialTextStyle)),
           ])
         ],
@@ -185,13 +188,17 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                 behaviorPosition: charts.BehaviorPosition.bottom,
                 titleOutsideJustification:
                     charts.OutsideJustification.middleDrawArea),
-            new charts.ChartTitle('Wellbeing Scale',
+            new charts.ChartTitle(
+              'Wellbeing Scale',
               behaviorPosition: charts.BehaviorPosition.start,
-              titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
+              titleOutsideJustification:
+                  charts.OutsideJustification.middleDrawArea,
             ),
-            new charts.ChartTitle('Steps Scale',
+            new charts.ChartTitle(
+              'Steps Scale',
               behaviorPosition: charts.BehaviorPosition.end,
-              titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
+              titleOutsideJustification:
+                  charts.OutsideJustification.middleDrawArea,
             ),
             new charts.PanAndZoomBehavior(),
           ],
