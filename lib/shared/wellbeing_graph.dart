@@ -21,6 +21,8 @@ Future<bool> _isWBTutorialDone() async {
 
 /// a [StatefulWidget] that displays the last wellbeing items in a graph,
 /// along with a share button
+///
+/// REVIEW: maybe switch to this if have time: https://pub.dev/packages/fl_chart
 class WellbeingGraph extends StatefulWidget {
   final bool animate;
 
@@ -147,14 +149,6 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           // feedback from UCL recommended to use bar chart
           seriesList,
           animate: animate,
-          layoutConfig: charts.LayoutConfig(
-            // defining these so we can fit label in margin
-            leftMarginSpec: charts.MarginSpec.fixedPixel(25),
-            topMarginSpec: charts.MarginSpec.fixedPixel(20),
-            rightMarginSpec: charts.MarginSpec.fixedPixel(60),
-            bottomMarginSpec: charts.MarginSpec.fixedPixel(50),
-          ),
-          // TODO: add "Wellbeing scale" to left margin
           barGroupingType: charts.BarGroupingType.grouped,
           // 'tick counts' used to match grid lines
           primaryMeasureAxis: charts.NumericAxisSpec(
@@ -180,7 +174,6 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                   70000, // upper bound recommended weekly steps
                   charts.RangeAnnotationAxisType.measure,
                   color: charts.MaterialPalette.green.makeShades(10)[7],
-                  middleLabel: "Steps\nscale\n",
                   startLabel: "7,000",
                   axisId: 'secondaryMeasureAxisId', // for steps axis
                   labelPosition: charts.AnnotationLabelPosition.margin,
@@ -192,6 +185,14 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                 behaviorPosition: charts.BehaviorPosition.bottom,
                 titleOutsideJustification:
                     charts.OutsideJustification.middleDrawArea),
+            new charts.ChartTitle('Wellbeing Scale',
+              behaviorPosition: charts.BehaviorPosition.start,
+              titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
+            ),
+            new charts.ChartTitle('Steps Scale',
+              behaviorPosition: charts.BehaviorPosition.end,
+              titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
+            ),
             new charts.PanAndZoomBehavior(),
           ],
         ),
