@@ -57,13 +57,15 @@ class AddFriendPageState extends State<AddFriendPage> {
           title: Text("Scan their QR code"),
           subtitle: Text('Ask them to tap "My Identity"' +
               ' and point the camera at their identity code.'),
-          content: Container(
-            height: 400,
-            child: QRView(
-              key: _qrKey,
-              onQRViewCreated: _onQRViewCreated,
-            ),
-          ),
+          content: widget.identifier == null
+              ? Container(
+                  height: 400,
+                  child: QRView(
+                    key: _qrKey,
+                    onQRViewCreated: _onQRViewCreated,
+                  ),
+                )
+              : Text("QR not needed."),
           state: _getQRState()),
       Step(
           title: Text("Enter their name"),
@@ -94,6 +96,13 @@ class AddFriendPageState extends State<AddFriendPage> {
                     String publicKey = widget.pubKey == null
                         ? scanned.substring(mysplit + 1)
                         : widget.pubKey;
+
+                    if (identifier.length == 0 || publicKey.length == 0) {
+                      widget._scaffoldState.showSnackBar(SnackBar(
+                        content: Text("Invalid QR code or URL."),
+                      ));
+                      return;
+                    }
 
                     // TODO: maybe verify that user identifier exists before inserting
                     //       although this is mostly for if we allow string input

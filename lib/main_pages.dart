@@ -44,6 +44,7 @@ class MainPages extends StatefulWidget {
 class _MainPagesState extends State<MainPages> {
   int _selectedIndex = 1;
   StreamSubscription _linksSub;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   @override
   void initState() {
@@ -67,13 +68,14 @@ class _MainPagesState extends State<MainPages> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (_) => AddFriendPage(
-                Scaffold.of(context), params['identifier'], params['pubKey'])));
+            builder: (_) => AddFriendPage(_scaffoldKey.currentState,
+                params['identifier'], params['pubKey'])));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(child: widget.pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         items: widget.navBarItems,

@@ -69,7 +69,6 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-
   Future<List<Friend>> _futureFriends = FriendDB().getFriends();
 
   @override
@@ -85,13 +84,15 @@ class SharingPageState extends State<SharingPage> {
     // sends user to our website, which should redirect them to the
     // nudgeme://... custom scheme (since many apps don't recognise them as
     // links by default, we redirect them manually).
-    final url = "$BASE_URL?"
+    final url = "$BASE_URL/add-friend?"
         "identifier=${Uri.encodeComponent(identifier)}"
         "&pubKey=${Uri.encodeComponent(pubKey)}";
     final shareButton = OutlinedButton(
-        onPressed: () => Share.share(
-            "Add me on NudgeMe:\n$url"),
-        child: Icon(Icons.share, size: 40,));
+        onPressed: () => Share.share("Add me on NudgeMe:\n$url"),
+        child: Icon(
+          Icons.share,
+          size: 40,
+        ));
 
     return SingleChildScrollView(
         child: Column(
