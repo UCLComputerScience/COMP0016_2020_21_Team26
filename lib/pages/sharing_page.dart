@@ -18,7 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 /// get the latest messages for this user
-/// returns true if there are new messages
+/// returns true if there are new messages from a friend
 Future<bool> getLatest() async {
   final prefs = await SharedPreferences.getInstance();
   final body = jsonEncode({
@@ -51,7 +51,14 @@ Future<bool> getLatest() async {
       }
       await FriendDB().updateData(messages);
     }
-    hasNewData = messages.length > 0;
+
+    // If any of the messages are from a friend, there is new data:
+    for (var message in messages) {
+      if (await FriendDB().isIdentifierPresent(message['identifier_from'])) {
+        hasNewData = true;
+        break;
+      }
+    }
   });
   return hasNewData;
 }

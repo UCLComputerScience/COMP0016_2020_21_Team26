@@ -47,8 +47,9 @@ void callbackDispatcher() {
         break;
       case REFRESH_FRIEND_KEY:
         final bool newData = await getLatest();
-        print(newData);
+
         if (newData) {
+          await initNotification();
           scheduleNewFriendData();
         }
         break;
