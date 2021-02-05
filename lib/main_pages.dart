@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/nudge_screen.dart';
@@ -8,6 +11,7 @@ import 'package:nudge_me/pages/sharing_page.dart';
 import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'main.dart';
 
@@ -39,11 +43,32 @@ class MainPages extends StatefulWidget {
 
 class _MainPagesState extends State<MainPages> {
   int _selectedIndex = 1;
+  StreamSubscription _linksSub;
 
   @override
   void initState() {
     super.initState();
     notificationStreamController.stream.listen(_handleNotification);
+
+    // We handle deep links here (and not the Intro Screen or main.dart) since
+    // we want the user to have set up the app first.
+    if (initialUri != null) {
+      _handleAddFriendDeeplink(initialUri);
+    }
+    _linksSub =
+        getUriLinksStream().listen(_handleAddFriendDeeplink, onError: (err) {
+      // warn user, maybe create a snackbar?
+      print(err);
+    });
+  }
+
+  void _handleAddFriendDeeplink(Uri uri) {
+    final params = uri.queryParameters;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => AddFriendPage(
+                Scaffold.of(context), params['identifier'], params['pubKey'])));
   }
 
   @override
@@ -61,6 +86,7 @@ class _MainPagesState extends State<MainPages> {
   @override
   void dispose() {
     notificationStreamController.close(); // frees up resources
+    _linksSub.cancel();
     super.dispose();
   }
 

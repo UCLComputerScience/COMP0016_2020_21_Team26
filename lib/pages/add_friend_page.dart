@@ -7,8 +7,10 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
   final ScaffoldState _scaffoldState;
+  final String identifier;
+  final String pubKey;
 
-  const AddFriendPage(this._scaffoldState);
+  const AddFriendPage(this._scaffoldState, [this.identifier, this.pubKey]);
 
   @override
   State<StatefulWidget> createState() => AddFriendPageState();
@@ -24,10 +26,18 @@ class AddFriendPageState extends State<AddFriendPage> {
   final _formKey = GlobalKey<FormState>();
   String _name;
 
-  int _currentStep = 0;
+  int _currentStep;
 
-  StepState _getQRState() =>
-      _result == null ? StepState.editing : StepState.complete;
+  @override
+  initState() {
+    super.initState();
+    // if identifier/pubKey is already provided, we skip the first step:
+    _currentStep = widget.identifier == null ? 0 : 1;
+  }
+
+  StepState _getQRState() => _result == null && widget.identifier == null
+      ? StepState.editing
+      : StepState.complete;
 
   @override
   void reassemble() {
@@ -78,8 +88,12 @@ class AddFriendPageState extends State<AddFriendPage> {
 
                     final String scanned = _result.code;
                     final mysplit = scanned.indexOf('\n');
-                    String identifier = scanned.substring(0, mysplit);
-                    String publicKey = scanned.substring(mysplit + 1);
+                    String identifier = widget.identifier == null
+                        ? scanned.substring(0, mysplit)
+                        : widget.identifier;
+                    String publicKey = widget.pubKey == null
+                        ? scanned.substring(mysplit + 1)
+                        : widget.pubKey;
 
                     // TODO: maybe verify that user identifier exists before inserting
                     //       although this is mostly for if we allow string input

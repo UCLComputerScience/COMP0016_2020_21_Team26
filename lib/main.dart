@@ -9,6 +9,7 @@ import 'package:nudge_me/notification.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'main_pages.dart';
 
@@ -30,7 +31,6 @@ final _sentry = SentryClient(SentryOptions(
         'https://b3c6b387b20d47be829e679b3290f99a@o513354.ingest.sentry.io/5615069'));
 
 void main() {
-  // needs to be done synchronously
   WidgetsFlutterBinding.ensureInitialized();
   _appInit();
 
@@ -60,6 +60,7 @@ bool get isInDebugMode {
   return inDebugMode;
 }
 
+/// either prints or sends the error to Sentry depending on debug/release mode
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
   // Print the exception to the console.
   print('Caught error: $error');
@@ -83,9 +84,23 @@ Future<bool> _isFirstTime() async {
 }
 
 void _appInit() async {
-  await initNotification();
+  await initUniLinks();
+  initNotification();
+
   if (await _isFirstTime()) {
     _setupStepCountTotal();
+  }
+}
+
+/// The deeplink that opened this app if any. Could be null.
+Uri initialUri;
+
+Future<Null> initUniLinks() async {
+  try {
+    // in case platform fails
+    initialUri = await getInitialUri();
+  } on FormatException {
+    // maybe warn the user here?
   }
 }
 
