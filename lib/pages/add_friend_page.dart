@@ -7,10 +7,12 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
   final ScaffoldState _scaffoldState;
+  final FriendDB _friendDB;
   final String identifier;
   final String pubKey;
 
-  const AddFriendPage(this._scaffoldState, [this.identifier, this.pubKey]);
+  const AddFriendPage(this._scaffoldState, this._friendDB,
+      [this.identifier, this.pubKey]);
 
   @override
   State<StatefulWidget> createState() => AddFriendPageState();
@@ -108,9 +110,10 @@ class AddFriendPageState extends State<AddFriendPage> {
 
                     // TODO: maybe verify that user identifier exists before inserting
                     //       although this is mostly for if we allow string input
-                    if (!await FriendDB().isIdentifierPresent(identifier)) {
+                    if (!await widget._friendDB
+                        .isIdentifierPresent(identifier)) {
                       setState(() {
-                        FriendDB().insertWithData(
+                        widget._friendDB.insertWithData(
                           name: _name,
                           identifier: identifier,
                           publicKey: publicKey,

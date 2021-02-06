@@ -192,7 +192,8 @@ class SharingPageState extends State<SharingPage> {
                   context,
                   MaterialPageRoute(
                       // NOTE: not using the new context 'ctx'
-                      builder: (ctx) => AddFriendPage(Scaffold.of(context))))
+                      builder: (ctx) =>
+                          AddFriendPage(Scaffold.of(context), FriendDB())))
               .then((v) => setState(() {
                     // HACK: this forces the page to rebuild since the user prob
                     //       just added a new friend

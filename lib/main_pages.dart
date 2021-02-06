@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
@@ -78,6 +79,7 @@ class _MainPagesState extends State<MainPages> {
         MaterialPageRoute(
             builder: (_) => AddFriendPage(
                 _scaffoldKey.currentState,
+                FriendDB(),
                 params['identifier'],
                 params['pubKey']))).then((_) => setState(() {
           _selectedIndex = NavBarIndex.network.index;
