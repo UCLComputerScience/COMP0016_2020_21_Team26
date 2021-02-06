@@ -129,7 +129,9 @@ class SharingPageState extends State<SharingPage> {
       child: Text('My Identity'),
     );
     final noFriendsWidget = Text(
-        "Add people to your care network to share wellbeing data with them.");
+        "Set up your primary care network on this page. This will allow you to share your wellbeing with them.",
+        style: Theme.of(context).textTheme.bodyText1,
+        textAlign: TextAlign.center);
     final friendsList = FutureBuilder(
       future: _futureFriends,
       builder: (ctx, data) {
