@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                       "This is where you can view \n last week's score.",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 5),
+        duration: Duration(seconds: 10),
         onClose: () {
           Timer(Duration(milliseconds: 100), () => showCoachMarkSteps());
         });
@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                       "This is where you can view your steps so far (we start counting now)",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 5),
+        duration: Duration(seconds: 10),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(HOME_TUTORIAL_DONE_KEY, true));

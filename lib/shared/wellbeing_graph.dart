@@ -88,7 +88,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: tutorialTextStyle)),
           ])
         ],
-        duration: Duration(seconds: 5),
+        duration: Duration(seconds: 10),
         onClose: () {
           Timer(Duration(milliseconds: 100), () => showCoachMarkShare());
         });
@@ -113,7 +113,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],
-        duration: Duration(seconds: 3),
+        duration: Duration(seconds: 10),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
