@@ -46,9 +46,9 @@ class AddFriendPageState extends State<AddFriendPage> {
     super.reassemble();
     // used to fix Flutter's hot reload:
     if (Platform.isAndroid) {
-      _controller.pauseCamera();
+      _controller?.pauseCamera();
     } else if (Platform.isIOS) {
-      _controller.resumeCamera();
+      _controller?.resumeCamera();
     }
   }
 
