@@ -20,6 +20,8 @@ import 'main.dart';
 /// Also ensure 'https' is used since we want to securely send data.
 const BASE_URL = "https://comp0016.cyberchris.xyz";
 
+enum NavBarIndex { wellbeing, home, network, settings, testing }
+
 class MainPages extends StatefulWidget {
   final pages = [
     WellbeingPage(),
@@ -29,6 +31,7 @@ class MainPages extends StatefulWidget {
     TestingPage(),
   ];
 
+  // NOTE: SHOULD change [NavBarIndex] if changing this order
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
@@ -42,7 +45,7 @@ class MainPages extends StatefulWidget {
 }
 
 class _MainPagesState extends State<MainPages> {
-  int _selectedIndex = 1;
+  int _selectedIndex = NavBarIndex.home.index;
   StreamSubscription _linksSub;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -53,9 +56,14 @@ class _MainPagesState extends State<MainPages> {
 
     // We handle deep links here (and not the Intro Screen or main.dart) since
     // we want the user to have set up the app first.
-    if (initialUri != null) {
-      _handleAddFriendDeeplink(initialUri);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // This runs once the screen's layout is complete. There would be an error
+      // otherwise.
+      if (initialUri != null) {
+        _handleAddFriendDeeplink(initialUri);
+        initialUri = null;
+      }
+    });
     _linksSub =
         getUriLinksStream().listen(_handleAddFriendDeeplink, onError: (err) {
       // warn user, maybe create a snackbar?
@@ -68,8 +76,12 @@ class _MainPagesState extends State<MainPages> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (_) => AddFriendPage(_scaffoldKey.currentState,
-                params['identifier'], params['pubKey'])));
+            builder: (_) => AddFriendPage(
+                _scaffoldKey.currentState,
+                params['identifier'],
+                params['pubKey']))).then((_) => setState(() {
+          _selectedIndex = NavBarIndex.network.index;
+        }));
   }
 
   @override
@@ -105,7 +117,7 @@ class _MainPagesState extends State<MainPages> {
         break;
       case FRIEND_DATA_PAYLOAD:
         setState(() {
-          _selectedIndex = 2; // switch to friend tab
+          _selectedIndex = NavBarIndex.network.index; // switch to friend tab
         });
         break;
       default:
