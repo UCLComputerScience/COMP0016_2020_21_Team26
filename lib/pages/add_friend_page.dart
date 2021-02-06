@@ -88,14 +88,16 @@ class AddFriendPageState extends State<AddFriendPage> {
                     }
                     _formKey.currentState.save();
 
-                    final String scanned = _result.code;
-                    final mysplit = scanned.indexOf('\n');
-                    String identifier = widget.identifier == null
-                        ? scanned.substring(0, mysplit)
-                        : widget.identifier;
-                    String publicKey = widget.pubKey == null
-                        ? scanned.substring(mysplit + 1)
-                        : widget.pubKey;
+                    String identifier, publicKey;
+                    if (_result == null) {
+                      identifier = widget.identifier;
+                      publicKey = widget.pubKey;
+                    } else {
+                      final String scanned = _result.code;
+                      final mysplit = scanned.indexOf('\n');
+                      identifier = scanned.substring(0, mysplit);
+                      publicKey = scanned.substring(mysplit + 1);
+                    }
 
                     if (identifier.length == 0 || publicKey.length == 0) {
                       widget._scaffoldState.showSnackBar(SnackBar(
