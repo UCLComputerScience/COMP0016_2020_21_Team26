@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets('Displays titles', (WidgetTester tester) async {
@@ -38,6 +40,9 @@ void main() {
     final pubKey = "exampleKey";
     final name = "exampleName";
     final mockedDB = MockedFriendDB();
+    // need to set this initial prefs to empty, otherwise it somehow fails the
+    // test. (It appears like it cannot retrieve the prefs during execution.)
+    SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(MaterialApp(
       home: AddFriendPage(MockedScaffoldState(), mockedDB, identifier, pubKey),
@@ -61,6 +66,31 @@ void main() {
     final pubKey = "exampleKey";
     final name = "exampleName";
     final mockedDB = MockedFriendDB();
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(MaterialApp(
+      home: AddFriendPage(MockedScaffoldState(), mockedDB, identifier, pubKey),
+    ));
+    // enter name and press done:
+    await tester.enterText(find.byType(TextFormField), name);
+    await tester.tap(find.byType(ElevatedButton));
+
+    verifyNever(mockedDB.insertWithData(
+      name: name,
+      identifier: identifier,
+      publicKey: pubKey,
+      latestData: null,
+      read: null,
+    ));
+  });
+
+  testWidgets('Given own identifier, and key, does not insert',
+      (WidgetTester tester) async {
+    final identifier = "myID";
+    final pubKey = "exampleKey";
+    final name = "exampleName";
+    final mockedDB = MockedFriendDB();
+    SharedPreferences.setMockInitialValues({USER_IDENTIFIER_KEY: identifier});
 
     await tester.pumpWidget(MaterialApp(
       home: AddFriendPage(MockedScaffoldState(), mockedDB, identifier, pubKey),

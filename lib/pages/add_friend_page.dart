@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
@@ -108,10 +110,21 @@ class AddFriendPageState extends State<AddFriendPage> {
                       return;
                     }
 
-                    // TODO: maybe verify that user identifier exists before inserting
-                    //       although this is mostly for if we allow string input
-                    if (!await widget._friendDB
+                    // TODO: maybe verify that user identifier exists on server
+                    //       before inserting, although this is mostly for if we
+                    //       allow direct string input
+                    if (await widget._friendDB
                         .isIdentifierPresent(identifier)) {
+                      widget._scaffoldState.showSnackBar(SnackBar(
+                        content: Text("This person has already been added."),
+                      ));
+                    } else if (identifier ==
+                        await SharedPreferences.getInstance().then(
+                            (value) => value.getString(USER_IDENTIFIER_KEY))) {
+                      widget._scaffoldState.showSnackBar(SnackBar(
+                        content: Text("You cannot add yourself."),
+                      ));
+                    } else {
                       setState(() {
                         widget._friendDB.insertWithData(
                           name: _name,
@@ -121,10 +134,6 @@ class AddFriendPageState extends State<AddFriendPage> {
                           read: null,
                         );
                       });
-                    } else {
-                      widget._scaffoldState.showSnackBar(SnackBar(
-                        content: Text("This person has already been added."),
-                      ));
                     }
 
                     Navigator.pop(context);
