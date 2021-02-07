@@ -71,14 +71,25 @@ class SharingPage extends StatefulWidget {
 class SharingPageState extends State<SharingPage> {
   final _printKey = GlobalKey();
 
-  Future<List<Friend>> _futureFriends = FriendDB().getFriends();
+  Future<List<Friend>> _futureFriends;
 
   @override
   void initState() {
     super.initState();
 
+    _futureFriends = _getOrderedFriendsList();
     getLatest();
   }
+
+  Future<List<Friend>> _getOrderedFriendsList() =>
+      FriendDB().getFriends().then((friends) {
+        friends.sort(_compareFriends);
+        return friends;
+      });
+
+  /// Comparator used to define an ordering on friends. Currently just brings
+  /// unread messages to the top.
+  int _compareFriends(Friend f1, Friend f2) => f1.read.compareTo(f2.read);
 
   Widget _getSharableQR(String identifier, String pubKey) {
     return SingleChildScrollView(
@@ -149,7 +160,7 @@ class SharingPageState extends State<SharingPage> {
                     onRefresh: () async => getLatest().then((hasNew) {
                       if (hasNew) {
                         setState(() {
-                          _futureFriends = FriendDB().getFriends();
+                          _futureFriends = _getOrderedFriendsList();
                         });
                       }
                     }),
@@ -185,7 +196,7 @@ class SharingPageState extends State<SharingPage> {
               .then((v) => setState(() {
                     // HACK: this forces the page to rebuild since the user prob
                     //       just added a new friend
-                    _futureFriends = FriendDB().getFriends();
+                    _futureFriends = _getOrderedFriendsList();
                   }));
         },
         label: Text("Add to care network"),
@@ -221,7 +232,7 @@ class SharingPageState extends State<SharingPage> {
     );
     final onView = () {
       FriendDB().setRead(friend.identifier).then((_) => setState(() {
-            _futureFriends = FriendDB().getFriends();
+            _futureFriends = _getOrderedFriendsList();
           }));
       return showDialog(
           context: context,
