@@ -17,14 +17,6 @@ import 'main.dart';
 const BASE_URL = "https://comp0016.cyberchris.xyz";
 
 class MainPages extends StatefulWidget {
-  final pages = [
-    WellbeingPage(),
-    HomePage(),
-    SharingPage(),
-    SettingsPage(),
-    TestingPage(),
-  ];
-
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
@@ -48,8 +40,16 @@ class _MainPagesState extends State<MainPages> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      WellbeingPage(),
+      HomePage(UserWellbeingDB().getLastNWeeks(1)),
+      SharingPage(),
+      SettingsPage(),
+      TestingPage(),
+    ];
+
     return Scaffold(
-      body: SafeArea(child: widget.pages[_selectedIndex]),
+      body: SafeArea(child: pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         items: widget.navBarItems,
         currentIndex: _selectedIndex,
@@ -68,8 +68,10 @@ class _MainPagesState extends State<MainPages> {
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
-        await navigatorKey.currentState.push(MaterialPageRoute(
-            builder: (context) => WellbeingCheck(UserWellbeingDB())));
+        await navigatorKey.currentState
+            .push(MaterialPageRoute(
+                builder: (context) => WellbeingCheck(UserWellbeingDB())))
+            .whenComplete(() => setState(() {}));
         break;
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState
