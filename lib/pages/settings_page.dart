@@ -209,31 +209,23 @@ class RescheduleWBCheckNotif extends StatefulWidget {
 }
 
 class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
+  DateTime _wbCheckNotifTime;
   int _wbCheckNotifDay;
   int _wbCheckNotifHour;
   int _wbCheckNotifMinute;
 
-  void _setWbCheckNotifDay() async {
+  void _getWbCheckNotifTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _wbCheckNotifDay = prefs.getInt('wb_notif_day');
-  }
-
-  void _setWbCheckNotifHour() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _wbCheckNotifHour = prefs.getInt('wb_notif_hour');
-  }
-
-  void _setWbCheckNotifMinute() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _wbCheckNotifMinute = prefs.getInt('wb_notif_minute');
+    _wbCheckNotifTime = DateTime.parse(prefs.getString('wb_notif_time'));
+    _wbCheckNotifDay = _wbCheckNotifTime.day;
+    _wbCheckNotifHour = _wbCheckNotifTime.hour;
+    _wbCheckNotifMinute = _wbCheckNotifTime.minute;
   }
 
   @override
   void initState() {
     super.initState();
-    _setWbCheckNotifDay();
-    _setWbCheckNotifHour();
-    _setWbCheckNotifMinute();
+    _getWbCheckNotifTime();
   }
 
   @override

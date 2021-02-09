@@ -41,6 +41,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _wbCheckNotifDay = DateTime.sunday;
   int _wbCheckNotifHour = 12;
   int _wbCheckNotifMinute = 0;
+  DateTime _wbCheckNotifTime;
 
   void setInitialWellbeing(
       double _currentSliderValue, String postcode, String suppode) async {
@@ -56,13 +57,12 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   }
 
   void _saveInput(String postcode, String suppcode, double _currentSliderValue,
-      _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute) async {
+      _wbCheckNotifTime) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
-    prefs.setInt('wb_notif_day', _wbCheckNotifDay);
-    prefs.setInt('wb_notif_hour', _wbCheckNotifHour);
-    prefs.setInt('wb_notif_minute', _wbCheckNotifMinute);
+    prefs.setString('wb_notif_time', _wbCheckNotifTime.toIso8601String);
+
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
 
@@ -87,13 +87,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       return;
     }
 
+    _wbCheckNotifTime = DateTime(
+        2020, 1, DateTime.monday, _wbCheckNotifDay, _wbCheckNotifMinute);
+
     _saveInput(
         postcodeController.text.toUpperCase(),
         supportCodeController.text.toUpperCase(),
         _currentSliderValue,
-        _wbCheckNotifDay,
-        _wbCheckNotifHour,
-        _wbCheckNotifMinute);
+        _wbCheckNotifTime);
 
     // NOTE: this is the 'proper' way of requesting permissions (instead of
     // just lowering the targetSdkVersion) but it doesn't seem to work and
@@ -102,18 +103,17 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
-    await _finishSetup(_currentSwitchValue, _wbCheckNotifDay, _wbCheckNotifHour,
-        _wbCheckNotifMinute);
+    await _finishSetup(_currentSwitchValue, _wbCheckNotifTime);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
   }
 
-  Future<void> _finishSetup(bool _currentSwitchValue, _wbCheckNotifDay,
-      _wbCheckNotifHour, _wbCheckNotifMinute) async {
-    scheduleCheckup(
-        _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
+  Future<void> _finishSetup(
+      bool _currentSwitchValue, DateTime _wbCheckNotifTime) async {
+    scheduleCheckup(_wbCheckNotifTime.day,
+        Time(_wbCheckNotifTime.hour, _wbCheckNotifTime.minute));
     if (_currentSwitchValue) {
       schedulePublish(DateTime.monday, 12, 0);
     }
