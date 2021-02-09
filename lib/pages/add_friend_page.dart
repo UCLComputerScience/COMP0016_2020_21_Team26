@@ -125,15 +125,13 @@ class AddFriendPageState extends State<AddFriendPage> {
                         content: Text("You cannot add yourself."),
                       ));
                     } else {
-                      setState(() {
-                        widget._friendDB.insertWithData(
-                          name: _name,
-                          identifier: identifier,
-                          publicKey: publicKey,
-                          latestData: null,
-                          read: null,
-                        );
-                      });
+                      widget._friendDB.insertWithData(
+                        name: _name,
+                        identifier: identifier,
+                        publicKey: publicKey,
+                        latestData: null,
+                        read: null,
+                      );
                     }
 
                     Navigator.pop(context);

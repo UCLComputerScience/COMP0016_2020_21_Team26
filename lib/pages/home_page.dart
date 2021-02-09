@@ -4,6 +4,7 @@ import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
@@ -12,11 +13,6 @@ import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
 class HomePage extends StatefulWidget {
-  /// most recent wellbeing record
-  final Future<List<WellbeingItem>> _lastItemListFuture;
-
-  const HomePage(this._lastItemListFuture);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -121,7 +117,7 @@ class _HomePageState extends State<HomePage> {
           ),
           FutureBuilder(
               key: _lastWeekWBTutorialKey,
-              future: widget._lastItemListFuture,
+              future: Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final List<WellbeingItem> lastItemList = snapshot.data;

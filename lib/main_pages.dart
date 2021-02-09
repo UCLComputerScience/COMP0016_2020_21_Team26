@@ -13,6 +13,7 @@ import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:provider/provider.dart';
 
 import 'main.dart';
 
@@ -82,7 +83,7 @@ class _MainPagesState extends State<MainPages> {
   Widget build(BuildContext context) {
     final pages = [
       WellbeingPage(),
-      HomePage(UserWellbeingDB().getLastNWeeks(1)),
+      HomePage(),
       SharingPage(),
       SettingsPage(),
       TestingPage(),
@@ -90,7 +91,14 @@ class _MainPagesState extends State<MainPages> {
 
     return Scaffold(
       key: _scaffoldKey,
-      body: SafeArea(child: pages[_selectedIndex]),
+      body: MultiProvider(providers: [
+        ChangeNotifierProvider(
+          create: (context) => UserWellbeingDB(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FriendDB(),
+        ),
+      ], child: SafeArea(child: pages[_selectedIndex])),
       bottomNavigationBar: BottomNavigationBar(
         items: widget.navBarItems,
         currentIndex: _selectedIndex,
@@ -110,10 +118,8 @@ class _MainPagesState extends State<MainPages> {
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
-        await navigatorKey.currentState
-            .push(MaterialPageRoute(
-                builder: (context) => WellbeingCheck(UserWellbeingDB())))
-            .whenComplete(() => setState(() {}));
+        await navigatorKey.currentState.push(MaterialPageRoute(
+            builder: (context) => WellbeingCheck(UserWellbeingDB())));
         break;
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState

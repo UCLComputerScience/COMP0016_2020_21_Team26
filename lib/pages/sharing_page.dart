@@ -11,6 +11,7 @@ import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +20,8 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 /// get the latest messages for this user
 /// returns true if there are new messages from a friend
-Future<bool> getLatest() async {
+Future<bool> getLatest([BuildContext ctx]) async {
+  final friendDB = ctx == null ? FriendDB() : Provider.of<FriendDB>(ctx);
   final prefs = await SharedPreferences.getInstance();
   final body = jsonEncode({
     "identifier": prefs.getString(USER_IDENTIFIER_KEY),
@@ -49,12 +51,12 @@ Future<bool> getLatest() async {
         String decrypted = encrypter.decrypt64(encrypted);
         message['data'] = decrypted;
       }
-      await FriendDB().updateData(messages);
+      await friendDB.updateData(messages);
     }
 
     // If any of the messages are from a friend, there is new data:
     for (var message in messages) {
-      if (await FriendDB().isIdentifierPresent(message['identifier_from'])) {
+      if (await friendDB.isIdentifierPresent(message['identifier_from'])) {
         hasNewData = true;
         break;
       }
@@ -75,12 +77,11 @@ class SharingPageState extends State<SharingPage> {
   void initState() {
     super.initState();
 
-    _futureFriends = _getOrderedFriendsList();
     getLatest();
   }
 
-  Future<List<Friend>> _getOrderedFriendsList() =>
-      FriendDB().getFriends().then((friends) {
+  Future<List<Friend>> _getOrderedFriendsList(BuildContext context) =>
+      Provider.of<FriendDB>(context).getFriends().then((friends) {
         friends.sort(_compareFriends);
         return friends;
       });
@@ -157,7 +158,7 @@ class SharingPageState extends State<SharingPage> {
     final noFriendsWidget = Text(
         "Add people to your care network to share wellbeing data with them.");
     final friendsList = FutureBuilder(
-      future: _futureFriends,
+      future: _getOrderedFriendsList(context),
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
@@ -165,13 +166,7 @@ class SharingPageState extends State<SharingPage> {
               ? noFriendsWidget
               : Expanded(
                   child: LiquidPullToRefresh(
-                    onRefresh: () async => getLatest().then((hasNew) {
-                      if (hasNew) {
-                        setState(() {
-                          _futureFriends = _getOrderedFriendsList();
-                        });
-                      }
-                    }),
+                    onRefresh: () async => getLatest(),
                     child: ListView.builder(
                       padding: kMaterialListPadding,
                       itemCount: friends.length,
@@ -198,16 +193,11 @@ class SharingPageState extends State<SharingPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      // NOTE: not using the new context 'ctx'
-                      builder: (ctx) =>
-                          AddFriendPage(Scaffold.of(context), FriendDB())))
-              .then((v) => setState(() {
-                    // HACK: this forces the page to rebuild since the user prob
-                    //       just added a new friend
-                    _futureFriends = _getOrderedFriendsList();
-                  }));
+              context,
+              MaterialPageRoute(
+                  // NOTE: not using the new context 'ctx'
+                  builder: (ctx) =>
+                      AddFriendPage(Scaffold.of(context), FriendDB())));
         },
         label: Text("Add to care network"),
         icon: Icon(Icons.people),
@@ -241,15 +231,13 @@ class SharingPageState extends State<SharingPage> {
       child: Text("Send"),
     );
     final onView = () {
-      FriendDB().setRead(friend.identifier).then((_) => setState(() {
-            _futureFriends = _getOrderedFriendsList();
-          }));
+      Provider.of<FriendDB>(context, listen: false).setRead(friend.identifier);
       return showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
                 title: Text("Shared Data"),
-                content:
-                    FriendGraph(FriendDB().getLatestData(friend.identifier)),
+                content: FriendGraph(Provider.of<FriendDB>(context)
+                    .getLatestData(friend.identifier)),
                 actions: [
                   TextButton(
                     child: Text('Done'),
@@ -282,7 +270,7 @@ class SharingPageState extends State<SharingPage> {
   }
 
   Future<void> _sendWellbeingData(BuildContext context, Friend friend) async {
-    final friendKey = FriendDB().getKey(friend.identifier);
+    final friendKey = Provider.of<FriendDB>(context).getKey(friend.identifier);
 
     final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
     final List<Map<String, int>> mapped = items
