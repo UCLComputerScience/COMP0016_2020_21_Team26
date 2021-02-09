@@ -209,17 +209,20 @@ class RescheduleWBCheckNotif extends StatefulWidget {
 }
 
 class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
-  DateTime _wbCheckNotifTime;
   int _wbCheckNotifDay;
   int _wbCheckNotifHour;
   int _wbCheckNotifMinute;
 
   void _getWbCheckNotifTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _wbCheckNotifTime = DateTime.parse(prefs.getString('wb_notif_time'));
-    _wbCheckNotifDay = _wbCheckNotifTime.day;
-    _wbCheckNotifHour = _wbCheckNotifTime.hour;
-    _wbCheckNotifMinute = _wbCheckNotifTime.minute;
+    DateTime _wbCheckNotifTime =
+        DateTime.parse(prefs.getString('wb_notif_time'));
+
+    setState(() {
+      _wbCheckNotifDay = _wbCheckNotifTime.day;
+      _wbCheckNotifHour = _wbCheckNotifTime.hour;
+      _wbCheckNotifMinute = _wbCheckNotifTime.minute;
+    });
   }
 
   @override
@@ -319,7 +322,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
                 value: value,
                 child: Text(value.toString()),
               );
-            }).toList())
+            }).toList()),
       ]),
       ElevatedButton(
           style: ButtonStyle(
