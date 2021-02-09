@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
 
   void showTutorial() async {
     if (!(await _isHomeTutorialDone())) {
-      Timer(Duration(milliseconds: 100), () => showCoachMarkWB());
+      Timer(Duration(milliseconds: 500), () => showCoachMarkWB());
     }
   }
 
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                       "This is where you can view \n last week's score.",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 10),
+        duration: Duration(seconds: 8),
         onClose: () {
           Timer(Duration(milliseconds: 100), () => showCoachMarkSteps());
         });
