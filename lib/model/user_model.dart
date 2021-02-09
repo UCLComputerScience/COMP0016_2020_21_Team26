@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
@@ -15,8 +16,9 @@ const _columns = [
   "support_code"
 ];
 
-/// Singleton class to read/write to DB
-class UserWellbeingDB {
+/// Singleton [ChangeNotifier] to read/write to DB.
+/// Stores the user's wellbeing scores and steps.
+class UserWellbeingDB extends ChangeNotifier {
   static final UserWellbeingDB _instance = UserWellbeingDB._();
   static Database _database;
 
@@ -29,6 +31,7 @@ class UserWellbeingDB {
   Future<int> insert(WellbeingItem item) async {
     final db = await database;
     final id = await db.insert(_tableName, item.toMap());
+    notifyListeners();
     return id;
   }
 
@@ -67,6 +70,7 @@ class UserWellbeingDB {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));
     _database = null; // will be created next time its needed
+    notifyListeners();
   }
 
   Future<Database> get database async {

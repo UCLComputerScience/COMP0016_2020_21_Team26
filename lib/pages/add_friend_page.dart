@@ -84,15 +84,13 @@ class AddFriendPageState extends State<AddFriendPage> {
                     // TODO: maybe verify that user identifier exists before inserting
                     //       although this is mostly for if we allow string input
                     if (!await FriendDB().isIdentifierPresent(identifier)) {
-                      setState(() {
-                        FriendDB().insertWithData(
-                          name: _name,
-                          identifier: identifier,
-                          publicKey: publicKey,
-                          latestData: null,
-                          read: null,
-                        );
-                      });
+                      FriendDB().insertWithData(
+                        name: _name,
+                        identifier: identifier,
+                        publicKey: publicKey,
+                        latestData: null,
+                        read: null,
+                      );
                     } else {
                       widget._scaffoldState.showSnackBar(SnackBar(
                         content: Text("This person has already been added."),
