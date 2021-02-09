@@ -209,9 +209,6 @@ fabric.properties
 # See https://www.dartlang.org/guides/libraries/private-files
 
 # Files and directories created by pub
-.dart_tool/
-.packages
-build/
 
 # Avoid committing generated Javascript files:
 *.dart.js
@@ -269,25 +266,17 @@ cmake-build-*/
 .idea/**/mongoSettings.xml
 
 # File-based project format
-*.iws
 
 # IntelliJ
-out/
 
 # mpeltonen/sbt-idea plugin
-.idea_modules/
 
 # JIRA plugin
-atlassian-ide-plugin.xml
 
 # Cursive Clojure plugin
 .idea/replstate.xml
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
@@ -327,7 +316,6 @@ fabric.properties
 
 ### macOS ###
 # General
-.DS_Store
 .AppleDouble
 .LSOverride
 
@@ -336,14 +324,11 @@ Icon
 
 
 # Thumbnails
-._*
 
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
-.Spotlight-V100
 .TemporaryItems
-.Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 

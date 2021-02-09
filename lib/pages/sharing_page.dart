@@ -71,7 +71,6 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  Future<List<Friend>> _futureFriends;
 
   @override
   void initState() {
