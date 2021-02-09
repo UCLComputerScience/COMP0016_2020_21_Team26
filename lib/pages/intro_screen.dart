@@ -61,7 +61,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
-    prefs.setString('wb_notif_time', _wbCheckNotifTime.toIso8601String);
+    String _wbCheckTimeString = _wbCheckNotifTime.toIso8601String;
+    prefs.setString('wb_notif_time', _wbCheckTimeString);
 
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
@@ -88,7 +89,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     }
 
     _wbCheckNotifTime = DateTime(
-        2020, 1, DateTime.monday, _wbCheckNotifDay, _wbCheckNotifMinute);
+        2020, 1, _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
 
     _saveInput(
         postcodeController.text.toUpperCase(),
