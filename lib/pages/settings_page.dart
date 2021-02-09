@@ -337,16 +337,12 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
                 rescheduleCheckup(_wbCheckNotifDay,
                     Time(_wbCheckNotifHour, _wbCheckNotifMinute));
                 String wbCheckNotifDayName = days[_wbCheckNotifDay - 1];
-                if (_wbCheckNotifMinute.toString().length == 1) {
-                  String shareNotifMinuteFull = "0$_wbCheckNotifMinute";
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:$shareNotifMinuteFull")));
-                } else {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:$_wbCheckNotifMinute")));
-                }
+
+                //  String shareNotifMinuteFull = "0$_wbCheckNotifMinute";
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:" +
+                            "$_wbCheckNotifMinute".padLeft(2, "0"))));
               }
             });
           })

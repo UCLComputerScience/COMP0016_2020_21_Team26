@@ -57,7 +57,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   }
 
   void _saveInput(String postcode, String suppcode, double _currentSliderValue,
-      _wbCheckNotifTime) async {
+      DateTime _wbCheckNotifTime) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
