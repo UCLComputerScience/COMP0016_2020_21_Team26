@@ -71,7 +71,6 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-
   @override
   void initState() {
     super.initState();
@@ -195,8 +194,7 @@ class SharingPageState extends State<SharingPage> {
               context,
               MaterialPageRoute(
                   // NOTE: not using the new context 'ctx'
-                  builder: (ctx) =>
-                      AddFriendPage(Scaffold.of(context), FriendDB())));
+                  builder: (ctx) => AddFriendPage(Scaffold.of(context))));
         },
         label: Text("Add to care network"),
         icon: Icon(Icons.people),
