@@ -78,15 +78,9 @@ class SharingPageState extends State<SharingPage> {
     getLatest();
   }
 
-  Future<List<Friend>> _getOrderedFriendsList(BuildContext context) =>
-      Provider.of<FriendDB>(context).getFriends().then((friends) {
-        friends.sort(_compareFriends);
-        return friends;
-      });
-
-  /// Comparator used to define an ordering on friends. Currently just brings
-  /// unread messages to the top.
-  int _compareFriends(Friend f1, Friend f2) => f1.read.compareTo(f2.read);
+  /// gets the friends list using provider.
+  Future<List<Friend>> _getFriendsList(BuildContext context) =>
+      Provider.of<FriendDB>(context).getFriends();
 
   Widget _getSharableQR(String identifier, String pubKey) {
     // sends user to our website, which should redirect them to the
@@ -156,7 +150,7 @@ class SharingPageState extends State<SharingPage> {
     final noFriendsWidget = Text(
         "Add people to your care network to share wellbeing data with them.");
     final friendsList = FutureBuilder(
-      future: _getOrderedFriendsList(context),
+      future: _getFriendsList(context),
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
