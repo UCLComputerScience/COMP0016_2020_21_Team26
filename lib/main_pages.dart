@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nudge_me/model/friends_model.dart';
-import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/checkup.dart';
@@ -24,14 +22,6 @@ const BASE_URL = "https://comp0016.cyberchris.xyz";
 enum NavBarIndex { wellbeing, home, network, settings, testing }
 
 class MainPages extends StatefulWidget {
-  final pages = [
-    WellbeingPage(),
-    HomePage(),
-    SharingPage(),
-    SettingsPage(),
-    TestingPage(),
-  ];
-
   // NOTE: SHOULD change [NavBarIndex] if changing this order
   final navBarItems = [
     BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
@@ -79,7 +69,6 @@ class _MainPagesState extends State<MainPages> {
         MaterialPageRoute(
             builder: (_) => AddFriendPage(
                 _scaffoldKey.currentState,
-                FriendDB(),
                 params['identifier'],
                 params['pubKey']))).then((_) => setState(() {
           _selectedIndex = NavBarIndex.network.index;
@@ -88,9 +77,17 @@ class _MainPagesState extends State<MainPages> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      WellbeingPage(),
+      HomePage(),
+      SharingPage(),
+      SettingsPage(),
+      TestingPage(),
+    ];
+
     return Scaffold(
       key: _scaffoldKey,
-      body: SafeArea(child: widget.pages[_selectedIndex]),
+      body: SafeArea(child: pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         items: widget.navBarItems,
         currentIndex: _selectedIndex,
@@ -110,8 +107,8 @@ class _MainPagesState extends State<MainPages> {
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
-        await navigatorKey.currentState.push(MaterialPageRoute(
-            builder: (context) => WellbeingCheck(UserWellbeingDB())));
+        await navigatorKey.currentState
+            .push(MaterialPageRoute(builder: (context) => WellbeingCheck()));
         break;
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState

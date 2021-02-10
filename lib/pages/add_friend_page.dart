@@ -3,18 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
   final ScaffoldState _scaffoldState;
-  final FriendDB _friendDB;
   final String identifier;
   final String pubKey;
 
-  const AddFriendPage(this._scaffoldState, this._friendDB,
-      [this.identifier, this.pubKey]);
+  const AddFriendPage(this._scaffoldState, [this.identifier, this.pubKey]);
 
   @override
   State<StatefulWidget> createState() => AddFriendPageState();
@@ -113,7 +112,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                     // TODO: maybe verify that user identifier exists on server
                     //       before inserting, although this is mostly for if we
                     //       allow direct string input
-                    if (await widget._friendDB
+                    if (await Provider.of<FriendDB>(context, listen: false)
                         .isIdentifierPresent(identifier)) {
                       widget._scaffoldState.showSnackBar(SnackBar(
                         content: Text("This person has already been added."),
@@ -125,15 +124,14 @@ class AddFriendPageState extends State<AddFriendPage> {
                         content: Text("You cannot add yourself."),
                       ));
                     } else {
-                      setState(() {
-                        widget._friendDB.insertWithData(
-                          name: _name,
-                          identifier: identifier,
-                          publicKey: publicKey,
-                          latestData: null,
-                          read: null,
-                        );
-                      });
+                      Provider.of<FriendDB>(context, listen: false)
+                          .insertWithData(
+                        name: _name,
+                        identifier: identifier,
+                        publicKey: publicKey,
+                        latestData: null,
+                        read: null,
+                      );
                     }
 
                     Navigator.pop(context);

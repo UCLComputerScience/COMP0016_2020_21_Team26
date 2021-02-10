@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -138,58 +141,70 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-    return MaterialApp(
-      title: 'NudgeMe',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Color.fromARGB(255, 251, 249, 255),
-        primaryColor: Color.fromARGB(255, 0, 74, 173),
-        accentColor: Color.fromARGB(255, 182, 125, 226),
-        fontFamily: 'Rosario',
-        textTheme: TextTheme(
-            headline1: TextStyle(
-                fontSize: 36.0,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Rosario'),
-            headline2: TextStyle(
-              fontFamily: 'Rosario',
-              fontSize: 25,
-            ),
-            headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
-            subtitle1: TextStyle(
-                fontFamily: 'Rosario',
-                fontWeight: FontWeight.w500,
-                fontSize: 20),
-            subtitle2: TextStyle(
-                fontFamily: 'Rosario',
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
-                fontSize: 20), //for tutorial
-            bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
-            bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedLabelStyle: TextStyle(
-              color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
-          unselectedLabelStyle: TextStyle(
-              color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black,
-          showUnselectedLabels: true,
+    // provider needs to be above [MaterialApp] so it is persisted through
+    // new page routes
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => UserWellbeingDB(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => FriendDB(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'NudgeMe',
+        theme: ThemeData(
+          scaffoldBackgroundColor: Color.fromARGB(255, 251, 249, 255),
+          primaryColor: Color.fromARGB(255, 0, 74, 173),
+          accentColor: Color.fromARGB(255, 182, 125, 226),
+          fontFamily: 'Rosario',
+          textTheme: TextTheme(
+              headline1: TextStyle(
+                  fontSize: 36.0,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Rosario'),
+              headline2: TextStyle(
+                fontFamily: 'Rosario',
+                fontSize: 25,
+              ),
+              headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
+              subtitle1: TextStyle(
+                  fontFamily: 'Rosario',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20),
+              subtitle2: TextStyle(
+                  fontFamily: 'Rosario',
+                  color: Colors.white,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 20), //for tutorial
+              bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
+              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: Colors.white,
+            selectedLabelStyle: TextStyle(
+                color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
+            unselectedLabelStyle: TextStyle(
+                color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
+            showUnselectedLabels: true,
+          ),
+        ),
+        home: FutureBuilder(
+          future: _openIntro,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data ? IntroScreen() : MainPages();
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Oops");
+            }
+            return CircularProgressIndicator();
+          },
+        ),
+        navigatorKey: navigatorKey,
       ),
-      home: FutureBuilder(
-        future: _openIntro,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return snapshot.data ? IntroScreen() : MainPages();
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text("Oops");
-          }
-          return CircularProgressIndicator();
-        },
-      ),
-      navigatorKey: navigatorKey,
     );
   }
 }

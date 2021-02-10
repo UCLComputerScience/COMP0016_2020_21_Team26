@@ -4,17 +4,13 @@ import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
-/// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
+/// key to retreive [bool] from [SharedPreferences] that is true if the tutorial
+/// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
-
-Future<bool> _isHomeTutorialDone() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
-      prefs.getBool(HOME_TUTORIAL_DONE_KEY);
-}
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,10 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // last wellbeing record
-  Future<List<WellbeingItem>> _lastItemListFuture =
-      UserWellbeingDB().getLastNWeeks(1);
-
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
@@ -42,6 +34,12 @@ class _HomePageState extends State<HomePage> {
     if (!(await _isHomeTutorialDone())) {
       Timer(Duration(milliseconds: 100), () => showCoachMarkWB());
     }
+  }
+
+  Future<bool> _isHomeTutorialDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
+        prefs.getBool(HOME_TUTORIAL_DONE_KEY);
   }
 
   ///function to show the first slide of the tutorial, explaining the wellbeing circle
@@ -119,7 +117,7 @@ class _HomePageState extends State<HomePage> {
           ),
           FutureBuilder(
               key: _lastWeekWBTutorialKey,
-              future: _lastItemListFuture,
+              future: Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final List<WellbeingItem> lastItemList = snapshot.data;
