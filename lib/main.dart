@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/intro_screen.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'main_pages.dart';
 
@@ -30,7 +34,6 @@ final _sentry = SentryClient(SentryOptions(
         'https://b3c6b387b20d47be829e679b3290f99a@o513354.ingest.sentry.io/5615069'));
 
 void main() {
-  // needs to be done synchronously
   WidgetsFlutterBinding.ensureInitialized();
   _appInit();
 
@@ -60,6 +63,7 @@ bool get isInDebugMode {
   return inDebugMode;
 }
 
+/// either prints or sends the error to Sentry depending on debug/release mode
 Future<void> _reportError(dynamic error, dynamic stackTrace) async {
   // Print the exception to the console.
   print('Caught error: $error');
@@ -83,9 +87,23 @@ Future<bool> _isFirstTime() async {
 }
 
 void _appInit() async {
-  await initNotification();
+  await initUniLinks();
+  initNotification();
+
   if (await _isFirstTime()) {
     _setupStepCountTotal();
+  }
+}
+
+/// The deeplink that opened this app if any. Could be null.
+Uri initialUri;
+
+Future<Null> initUniLinks() async {
+  try {
+    // in case platform fails
+    initialUri = await getInitialUri();
+  } on FormatException {
+    // maybe warn the user here?
   }
 }
 
@@ -123,58 +141,70 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-    return MaterialApp(
-      title: 'NudgeMe',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Color.fromARGB(255, 251, 249, 255),
-        primaryColor: Color.fromARGB(255, 0, 74, 173),
-        accentColor: Color.fromARGB(255, 182, 125, 226),
-        fontFamily: 'Rosario',
-        textTheme: TextTheme(
-            headline1: TextStyle(
-                fontSize: 36.0,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Rosario'),
-            headline2: TextStyle(
-              fontFamily: 'Rosario',
-              fontSize: 25,
-            ),
-            headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
-            subtitle1: TextStyle(
-                fontFamily: 'Rosario',
-                fontWeight: FontWeight.w500,
-                fontSize: 20),
-            subtitle2: TextStyle(
-                fontFamily: 'Rosario',
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
-                fontSize: 20), //for tutorial
-            bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
-            bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedLabelStyle: TextStyle(
-              color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
-          unselectedLabelStyle: TextStyle(
-              color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black,
-          showUnselectedLabels: true,
+    // provider needs to be above [MaterialApp] so it is persisted through
+    // new page routes
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => UserWellbeingDB(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => FriendDB(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'NudgeMe',
+        theme: ThemeData(
+          scaffoldBackgroundColor: Color.fromARGB(255, 251, 249, 255),
+          primaryColor: Color.fromARGB(255, 0, 74, 173),
+          accentColor: Color.fromARGB(255, 182, 125, 226),
+          fontFamily: 'Rosario',
+          textTheme: TextTheme(
+              headline1: TextStyle(
+                  fontSize: 36.0,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Rosario'),
+              headline2: TextStyle(
+                fontFamily: 'Rosario',
+                fontSize: 25,
+              ),
+              headline3: TextStyle(fontFamily: 'Rosario', fontSize: 25),
+              subtitle1: TextStyle(
+                  fontFamily: 'Rosario',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20),
+              subtitle2: TextStyle(
+                  fontFamily: 'Rosario',
+                  color: Colors.white,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 20), //for tutorial
+              bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
+              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: Colors.white,
+            selectedLabelStyle: TextStyle(
+                color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
+            unselectedLabelStyle: TextStyle(
+                color: Colors.black, fontFamily: 'Rosario', fontSize: 14.0),
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
+            showUnselectedLabels: true,
+          ),
+        ),
+        home: FutureBuilder(
+          future: _openIntro,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data ? IntroScreen() : MainPages();
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Oops");
+            }
+            return CircularProgressIndicator();
+          },
+        ),
+        navigatorKey: navigatorKey,
       ),
-      home: FutureBuilder(
-        future: _openIntro,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return snapshot.data ? IntroScreen() : MainPages();
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text("Oops");
-          }
-          return CircularProgressIndicator();
-        },
-      ),
-      navigatorKey: navigatorKey,
     );
   }
 }

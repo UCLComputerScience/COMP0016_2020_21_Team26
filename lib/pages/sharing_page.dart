@@ -9,11 +9,11 @@ import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
-import 'package:nudge_me/shared/share_button.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -71,8 +71,6 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  final _printKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -80,36 +78,40 @@ class SharingPageState extends State<SharingPage> {
     getLatest();
   }
 
-  Future<List<Friend>> _getOrderedFriendsList(BuildContext context) =>
-      Provider.of<FriendDB>(context).getFriends().then((friends) {
-        friends.sort(_compareFriends);
-        return friends;
-      });
-
-  /// Comparator used to define an ordering on friends. Currently just brings
-  /// unread messages to the top.
-  int _compareFriends(Friend f1, Friend f2) => f1.read.compareTo(f2.read);
+  /// gets the friends list using provider.
+  Future<List<Friend>> _getFriendsList(BuildContext context) =>
+      Provider.of<FriendDB>(context).getFriends();
 
   Widget _getSharableQR(String identifier, String pubKey) {
+    // sends user to our website, which should redirect them to the
+    // nudgeme://... custom scheme (since many apps don't recognise them as
+    // links by default, we redirect them manually).
+    final url = "$BASE_URL/add-friend?"
+        "identifier=${Uri.encodeComponent(identifier)}"
+        "&pubKey=${Uri.encodeComponent(pubKey)}";
+    final shareButton = OutlinedButton(
+        onPressed: () => Share.share("Add me on NudgeMe:\n$url"),
+        child: Icon(
+          Icons.share,
+          size: 40,
+        ));
+
     return SingleChildScrollView(
         child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        RepaintBoundary(
-            key: _printKey,
-            child: Container(
-              // REVIEW: seems a little small on my screen.
-              width: 200,
-              height: 200,
-              child: QrImage(
-                data: "$identifier\n$pubKey",
-                version: QrVersions.auto,
-              ),
-            )),
+        Container(
+          width: 200,
+          height: 200,
+          child: QrImage(
+            data: "$identifier\n$pubKey",
+            version: QrVersions.auto,
+          ),
+        ),
         SizedBox(
           height: 10,
         ),
-        ShareButton(_printKey, 'identity_qr.pdf'),
+        shareButton,
       ],
     ));
   }
@@ -148,7 +150,7 @@ class SharingPageState extends State<SharingPage> {
     final noFriendsWidget = Text(
         "Add people to your care network to share wellbeing data with them.");
     final friendsList = FutureBuilder(
-      future: _getOrderedFriendsList(context),
+      future: _getFriendsList(context),
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
@@ -185,6 +187,7 @@ class SharingPageState extends State<SharingPage> {
           Navigator.push(
               context,
               MaterialPageRoute(
+                  // NOTE: not using the new context 'ctx'
                   builder: (ctx) => AddFriendPage(Scaffold.of(context))));
         },
         label: Text("Add to care network"),
