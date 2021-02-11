@@ -162,7 +162,7 @@ class FriendDB extends ChangeNotifier {
 }
 
 /// Data class of a friend
-class Friend {
+class Friend implements Comparable {
   int id;
   String name;
   String identifier;
@@ -205,5 +205,13 @@ class Friend {
       map[_columns[0]] = id;
     }
     return map;
+  }
+
+  /// unread Friends < read Friends
+  @override
+  int compareTo(other) {
+    final check1 = this.read == null ? 1 : this.read;
+    final check2 = other.read == null ? 1 : other.read;
+    return check1.compareTo(check2);
   }
 }
