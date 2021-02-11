@@ -156,6 +156,9 @@ class SharingPageState extends State<SharingPage> {
       builder: (ctx, data) {
         if (data.hasData) {
           final List<Friend> friends = data.data;
+          // sort so unread moves to the top
+          friends.sort();
+
           return friends.length == 0
               ? noFriendsWidget
               : Expanded(
