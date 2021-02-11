@@ -209,9 +209,27 @@ class RescheduleWBCheckNotif extends StatefulWidget {
 }
 
 class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
-  int wbCheckNotifDay;
-  int wbCheckNotifHour;
-  int wbCheckNotifMinute;
+  int _wbCheckNotifDay;
+  int _wbCheckNotifHour;
+  int _wbCheckNotifMinute;
+
+  void _getWbCheckNotifTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    DateTime _wbCheckNotifTime =
+        DateTime.parse(prefs.getString('wb_notif_time'));
+
+    setState(() {
+      _wbCheckNotifDay = _wbCheckNotifTime.day;
+      _wbCheckNotifHour = _wbCheckNotifTime.hour;
+      _wbCheckNotifMinute = _wbCheckNotifTime.minute;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getWbCheckNotifTime();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +238,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
           style: Theme.of(context).textTheme.headline2),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         DropdownButton(
-          value: wbCheckNotifDay,
+          value: _wbCheckNotifDay,
           hint: Text("Day"),
           icon:
               Icon(Icons.arrow_downward, color: Theme.of(context).primaryColor),
@@ -234,7 +252,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
           onChanged: (value) {
             setState(() {
               if (value != null) {
-                wbCheckNotifDay = value;
+                _wbCheckNotifDay = value;
               }
             });
           },
@@ -255,7 +273,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
         ),
         SizedBox(width: 10),
         DropdownButton(
-            value: wbCheckNotifHour,
+            value: _wbCheckNotifHour,
             hint: Text("Hour"),
             icon: Icon(Icons.arrow_downward,
                 color: Theme.of(context).primaryColor),
@@ -269,7 +287,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
             onChanged: (value) {
               setState(() {
                 if (value != null) {
-                  wbCheckNotifHour = value;
+                  _wbCheckNotifHour = value;
                 }
               });
             },
@@ -281,7 +299,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
             }).toList()),
         SizedBox(width: 5),
         DropdownButton(
-            value: wbCheckNotifMinute,
+            value: _wbCheckNotifMinute,
             hint: Text("Minutes"),
             icon: Icon(Icons.arrow_downward,
                 color: Theme.of(context).primaryColor),
@@ -295,7 +313,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
             onChanged: (value) {
               setState(() {
                 if (value != null) {
-                  wbCheckNotifMinute = value;
+                  _wbCheckNotifMinute = value;
                 }
               });
             },
@@ -304,7 +322,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
                 value: value,
                 child: Text(value.toString()),
               );
-            }).toList())
+            }).toList()),
       ]),
       ElevatedButton(
           style: ButtonStyle(
@@ -313,22 +331,16 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
           child: const Text('Reschedule'),
           onPressed: () {
             setState(() {
-              if (wbCheckNotifDay != null &&
-                  wbCheckNotifHour != null &&
-                  wbCheckNotifMinute != null) {
-                rescheduleCheckup(wbCheckNotifDay,
-                    Time(wbCheckNotifHour, wbCheckNotifMinute));
-                String wbCheckNotifDayName = days[wbCheckNotifDay - 1];
-                if (wbCheckNotifMinute.toString().length == 1) {
-                  String shareNotifMinuteFull = "0$wbCheckNotifMinute";
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $wbCheckNotifHour:$shareNotifMinuteFull")));
-                } else {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $wbCheckNotifHour:$wbCheckNotifMinute")));
-                }
+              if (_wbCheckNotifDay != null &&
+                  _wbCheckNotifHour != null &&
+                  _wbCheckNotifMinute != null) {
+                rescheduleCheckup(_wbCheckNotifDay,
+                    Time(_wbCheckNotifHour, _wbCheckNotifMinute));
+                String wbCheckNotifDayName = days[_wbCheckNotifDay - 1];
+
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:${_wbCheckNotifMinute.toString().padLeft(2, "0")}")));
               }
             });
           })

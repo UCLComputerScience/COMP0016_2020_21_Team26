@@ -41,9 +41,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _wbCheckNotifDay = DateTime.sunday;
   int _wbCheckNotifHour = 12;
   int _wbCheckNotifMinute = 0;
-  int _shareNotifDay = DateTime.monday;
-  int _shareNotifHour = 12;
-  int _shareNotifMinute = 0;
+  DateTime _wbCheckNotifTime;
 
   void setInitialWellbeing(
       double _currentSliderValue, String postcode, String suppode) async {
@@ -58,11 +56,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await UserWellbeingDB().insert(weeklyWellbeingItem);
   }
 
-  void _saveInput(
-      String postcode, String suppcode, double _currentSliderValue) async {
+  void _saveInput(String postcode, String suppcode, double _currentSliderValue,
+      DateTime _wbCheckNotifTime) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
+    String _wbCheckTimeString = _wbCheckNotifTime.toIso8601String();
+    prefs.setString('wb_notif_time', _wbCheckTimeString);
 
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
@@ -77,10 +77,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       bool _currentSwitchValue,
       _wbCheckNotifDay,
       _wbCheckNotifHour,
-      _wbCheckNotifMinute,
-      _shareNotifDay,
-      _shareNotifHour,
-      _shareNotifMinute) async {
+      _wbCheckNotifMinute) async {
     if (!_isInputValid(
       postcodeController.text,
       supportCodeController.text,
@@ -91,8 +88,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       return;
     }
 
-    _saveInput(postcodeController.text.toUpperCase(),
-        supportCodeController.text.toUpperCase(), _currentSliderValue);
+    _wbCheckNotifTime = DateTime(
+        2020, 1, _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
+
+    _saveInput(
+        postcodeController.text.toUpperCase(),
+        supportCodeController.text.toUpperCase(),
+        _currentSliderValue,
+        _wbCheckNotifTime);
 
     // NOTE: this is the 'proper' way of requesting permissions (instead of
     // just lowering the targetSdkVersion) but it doesn't seem to work and
@@ -101,14 +104,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
-    await _finishSetup(
-        _currentSwitchValue,
-        _wbCheckNotifDay,
-        _wbCheckNotifHour,
-        _wbCheckNotifMinute,
-        _shareNotifDay,
-        _shareNotifHour,
-        _shareNotifMinute);
+    await _finishSetup(_currentSwitchValue, _wbCheckNotifTime);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
@@ -116,15 +112,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   }
 
   Future<void> _finishSetup(
-      bool _currentSwitchValue,
-      _wbCheckNotifDay,
-      _wbCheckNotifHour,
-      _wbCheckNotifMinute,
-      _shareNotifDay,
-      _shareNotifHour,
-      _shareNotifMinute) async {
-    scheduleCheckup(
-        _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
+      bool _currentSwitchValue, DateTime _wbCheckNotifTime) async {
+    scheduleCheckup(_wbCheckNotifTime.day,
+        Time(_wbCheckNotifTime.hour, _wbCheckNotifTime.minute));
     if (_currentSwitchValue) {
       schedulePublish(DateTime.monday, 12, 0);
     }
@@ -402,11 +392,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                             "All data used to create the map will be anonymised to protect your privacy.\n",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
-                    Text(
-                        "This is not necessary to use the app. " +
-                            "The only difference is that your data will not be sent automatically on a weekly basis.",
-                        style: introTextStyle,
-                        textAlign: TextAlign.center),
                   ]),
               decoration: pageDecoration),
           PageViewModel(
@@ -449,15 +434,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               decoration: pageDecoration),
         ],
         onDone: () => _onIntroEnd(
-            context,
-            _currentSliderValue,
-            _currentSwitchValue,
-            _wbCheckNotifDay,
-            _wbCheckNotifHour,
-            _wbCheckNotifMinute,
-            _shareNotifDay,
-            _shareNotifHour,
-            _shareNotifMinute),
+              context,
+              _currentSliderValue,
+              _currentSwitchValue,
+              _wbCheckNotifDay,
+              _wbCheckNotifHour,
+              _wbCheckNotifMinute,
+            ),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
