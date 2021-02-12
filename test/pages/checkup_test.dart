@@ -7,7 +7,7 @@ import 'package:nudge_me/pages/checkup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clock/clock.dart';
 
-import 'add_friend_page_test.dart';
+import '../widget_test.dart';
 
 void main() {
   testWidgets('Slider and button present', (WidgetTester tester) async {
