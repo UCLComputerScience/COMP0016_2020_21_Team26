@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cron/cron.dart';
@@ -16,6 +17,7 @@ import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:nudge_me/pages/settings_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the wbCheck/share notifications here to ensure that
@@ -318,10 +320,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               title: "How?",
               image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
               bodyWidget: Text(
-                  "It does this by sending weekly notifications asing how you feel. \n \n" +
-                      "Occasionally, it will nudge you to keep in contact with people you like to speak to. " +
-                      "It will also make you aware of opportunities to share your wellbeing with this group.  \n\n" +
-                      "If you consent to this, swipe left to set up",
+                  "Occasionally, it will nudge you to keep in contact with people you like to speak to. " +
+                      "It will also make you aware of opportunities to share your wellbeing with this group. " +
+                      "If you consent to this, swipe left.",
                   style: introTextStyle,
                   textAlign: TextAlign.center),
               decoration: pageDecoration),
@@ -386,7 +387,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         }),
                     Text(
                         "Click the toggle to consent to the creation of a map that enables you and other app " +
-                            "users to understand the effect of exercise on your wellbeing. " +
+                            "users to understand the effect of movement and social contact has on people's wellbeing. " +
                             "By consenting, you will not be sharing personally identifiable data. " +
                             "All data used to create the map will be anonymised to protect your privacy.\n",
                         style: introTextStyle,
@@ -411,8 +412,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           hintText: "Enter support code here",
                           hintStyle: introHintStyle),
                     ),
-                    Text(
-                        "(This is the code given to you by the person who recommended you this app.)",
+                    Text("If you do not have a support code, type selfhelp",
                         style: Theme.of(context).textTheme.caption,
                         textAlign: TextAlign.center),
                     SizedBox(height: 20),
@@ -428,6 +428,20 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           hintText: "Enter postcode here",
                           hintStyle: introHintStyle),
                     ),
+                    RichText(
+                        text: new TextSpan(children: [
+                      new TextSpan(
+                          text:
+                              "This will help app users to understand the general wellbeing of people in a region - ",
+                          style: Theme.of(context).textTheme.caption),
+                      new TextSpan(
+                          text: "see here",
+                          style: Theme.of(context).textTheme.caption,
+                          recognizer: new TapGestureRecognizer()
+                            ..onTap = () {
+                              launch('https://comp0016.cyberchris.xyz/mapDemo');
+                            })
+                    ])),
                     SizedBox(height: 10),
                   ])),
               decoration: pageDecoration),
