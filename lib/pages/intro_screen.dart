@@ -431,18 +431,19 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     ),
                     RichText(
                         text: new TextSpan(children: [
-                      new TextSpan(
-                          text:
-                              "This will help app users to understand the general wellbeing of people in a region - ",
-                          style: Theme.of(context).textTheme.caption),
-                      new TextSpan(
-                          text: "see here",
-                          style: Theme.of(context).textTheme.caption,
-                          recognizer: new TapGestureRecognizer()
-                            ..onTap = () {
-                              launch(BASE_URL + '/mapDemo');
-                            })
-                    ])),
+                          new TextSpan(
+                              text:
+                                  "This will help app users to understand the general wellbeing of people in a region - ",
+                              style: Theme.of(context).textTheme.caption),
+                          new TextSpan(
+                              text: "see here",
+                              style: Theme.of(context).textTheme.caption,
+                              recognizer: new TapGestureRecognizer()
+                                ..onTap = () {
+                                  launch(BASE_URL + '/mapDemo');
+                                })
+                        ]),
+                        textAlign: TextAlign.center),
                     SizedBox(height: 10),
                   ])),
               decoration: pageDecoration),
