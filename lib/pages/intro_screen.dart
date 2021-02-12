@@ -123,8 +123,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
 
-    // slight performance hit to await but ensures crypto is properly set up:
-    await setupCrypto();
+    /// NOTE: may be a problem if the user immediately goes to the friend page
+    /// and checks their QR code - their identity may not have been generated yet.
+    setupCrypto();
 
     // only start tracking steps after user has done setup
     initBackground();

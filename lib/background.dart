@@ -10,6 +10,7 @@ const PEDOMETER_CHECK_KEY = "pedometer_check";
 const REFRESH_FRIEND_KEY = "refresh_friend_data";
 
 /// inits the [Workmanager] and registers a background task to track steps
+/// and refresh friend data
 void initBackground() {
   Workmanager.initialize(callbackDispatcher, isInDebugMode: kDebugMode);
 
@@ -47,8 +48,9 @@ void callbackDispatcher() {
         break;
       case REFRESH_FRIEND_KEY:
         final bool newData = await getLatest();
-        print(newData);
+
         if (newData) {
+          await initNotification();
           scheduleNewFriendData();
         }
         break;
