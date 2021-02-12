@@ -1,5 +1,6 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Displays list of user contacts that can be selected to send.
 class ContactSharePage extends StatefulWidget {
@@ -15,8 +16,22 @@ class _ContactSharePageState extends State<ContactSharePage> {
   List<Contact> _contacts;
   List<bool> _selected;
 
-  Future<Null> _sendToSelected() {
-    // TODO
+  /// send sms to currently selected contacts.
+  /// Note: doesn't actually execute the sending, just prepares it for the user
+  /// and they can hit send themself.
+  Future<Null> _sendToSelected() async {
+    final csvNumbers = _contacts
+        .asMap()
+        .entries
+        .where((element) => _selected[element.key])
+        .map((e) => e.value.phones.first.value)
+        .join(",");
+    final uri = "sms:$csvNumbers?body=${Uri.encodeComponent(widget.toSend)}";
+
+    if (await canLaunch(uri)) {
+      launch(uri);
+      print("Launched: $uri");
+    }
   }
 
   Widget _getAvatar(Contact c) => c.avatar != null && c.avatar.length > 0
