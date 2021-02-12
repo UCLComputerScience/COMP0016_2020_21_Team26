@@ -25,11 +25,12 @@ enum NavBarIndex { wellbeing, home, network, settings, testing }
 class MainPages extends StatefulWidget {
   // NOTE: SHOULD change [NavBarIndex] if changing this order
   final navBarItems = [
-    TabItem(icon: Icon(Icons.bar_chart), title: "Wellbeing"),
-    TabItem(icon: Icon(Icons.home), title: "Home"),
-    TabItem(icon: Icon(Icons.people), title: "Network"),
-    TabItem(icon: Icon(Icons.settings), title: "Settings"),
-    TabItem(icon: Icon(Icons.receipt), title: "Testing"),
+    TabItem(
+        icon: Icon(Icons.bar_chart, color: Colors.white), title: "Wellbeing"),
+    TabItem(icon: Icon(Icons.home, color: Colors.white), title: "Home"),
+    TabItem(icon: Icon(Icons.people, color: Colors.white), title: "Network"),
+    TabItem(icon: Icon(Icons.settings, color: Colors.white), title: "Settings"),
+    TabItem(icon: Icon(Icons.receipt, color: Colors.white), title: "Testing"),
   ];
 
   @override
@@ -90,11 +91,13 @@ class _MainPagesState extends State<MainPages> {
       key: _scaffoldKey,
       body: SafeArea(child: pages[_selectedIndex]),
       bottomNavigationBar: ConvexAppBar(
-        items: widget.navBarItems,
-        initialActiveIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        top: -16, // affects size of curve
-      ),
+          style: TabStyle.react,
+          items: widget.navBarItems,
+          initialActiveIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          top: -16, // affects size of curve,
+          color: Colors.white,
+          backgroundColor: Theme.of(context).primaryColor),
     );
   }
 
