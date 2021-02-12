@@ -11,6 +11,7 @@ import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 import 'main.dart';
 
@@ -24,11 +25,11 @@ enum NavBarIndex { wellbeing, home, network, settings, testing }
 class MainPages extends StatefulWidget {
   // NOTE: SHOULD change [NavBarIndex] if changing this order
   final navBarItems = [
-    BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Wellbeing"),
-    BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-    BottomNavigationBarItem(icon: Icon(Icons.people), label: "Network"),
-    BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
-    BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Testing"),
+    TabItem(icon: Icon(Icons.bar_chart), title: "Wellbeing"),
+    TabItem(icon: Icon(Icons.home), title: "Home"),
+    TabItem(icon: Icon(Icons.people), title: "Network"),
+    TabItem(icon: Icon(Icons.settings), title: "Settings"),
+    TabItem(icon: Icon(Icons.receipt), title: "Testing"),
   ];
 
   @override
@@ -88,10 +89,11 @@ class _MainPagesState extends State<MainPages> {
     return Scaffold(
       key: _scaffoldKey,
       body: SafeArea(child: pages[_selectedIndex]),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: ConvexAppBar(
         items: widget.navBarItems,
-        currentIndex: _selectedIndex,
+        initialActiveIndex: _selectedIndex,
         onTap: _onItemTapped,
+        top: -16, // affects size of curve
       ),
     );
   }

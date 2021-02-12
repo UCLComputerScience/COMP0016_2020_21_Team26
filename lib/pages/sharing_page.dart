@@ -198,6 +198,7 @@ class SharingPageState extends State<SharingPage> {
         label: Text("Add to care network"),
         icon: Icon(Icons.people),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
