@@ -440,7 +440,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           style: Theme.of(context).textTheme.caption,
                           recognizer: new TapGestureRecognizer()
                             ..onTap = () {
-                              launch('https://comp0016.cyberchris.xyz/mapDemo');
+                              launch(BASE_URL + '/mapDemo');
                             })
                     ])),
                     SizedBox(height: 10),
