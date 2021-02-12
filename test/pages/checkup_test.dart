@@ -7,13 +7,15 @@ import 'package:nudge_me/pages/checkup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clock/clock.dart';
 
+import 'add_friend_page_test.dart';
+
 void main() {
   testWidgets('Slider and button present', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 0});
 
-    await tester.pumpWidget(MaterialApp(
-      home: WellbeingCheck(MockedDB()),
+    await tester.pumpWidget(wrapAppProvider(
+      WellbeingCheck(),
     ));
 
     final buttonFind = find.byType(ElevatedButton);
@@ -28,8 +30,9 @@ void main() {
     final mockedDB = MockedDB();
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
 
-    await tester.pumpWidget(MaterialApp(
-      home: WellbeingCheck(mockedDB),
+    await tester.pumpWidget(wrapAppProvider(
+      WellbeingCheck(),
+      wbDB: mockedDB,
     ));
 
     // should be at score of 10 after dragging
@@ -55,9 +58,7 @@ void main() {
     final mockedDB = MockedDB();
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
 
-    await tester.pumpWidget(MaterialApp(
-      home: WellbeingCheck(mockedDB),
-    ));
+    await tester.pumpWidget(wrapAppProvider(WellbeingCheck(), wbDB: mockedDB));
 
     // should be at score of 10 after dragging
     await tester.drag(find.byType(Slider), Offset(500.0, 0.0));

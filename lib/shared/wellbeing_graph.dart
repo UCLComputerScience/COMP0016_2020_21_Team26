@@ -5,19 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/share_button.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const RECOMMENDED_STEPS_IN_WEEK = 70000;
 
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
-
-/// function that returns whether tutorial should be played
-Future<bool> _isWBTutorialDone() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.containsKey(WB_TUTORIAL_DONE_KEY) &&
-      prefs.getBool(WB_TUTORIAL_DONE_KEY);
-}
 
 /// a [StatefulWidget] that displays the last wellbeing items in a graph,
 /// along with a share button
@@ -44,12 +38,10 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   GlobalKey _wbShareTutorialKey = GlobalObjectKey("wb_share");
 
   final GlobalKey _printKey = GlobalKey();
-  Future<List<WellbeingItem>> _wellbeingItems;
 
   @override
   void initState() {
     super.initState();
-    _wellbeingItems = UserWellbeingDB().getLastNWeeks(5);
     showTutorial();
   }
 
@@ -57,6 +49,13 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
       Timer(Duration(milliseconds: 100), () => showCoachMarkGraph());
     }
+  }
+
+  /// function that returns whether tutorial should be played
+  Future<bool> _isWBTutorialDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(WB_TUTORIAL_DONE_KEY) &&
+        prefs.getBool(WB_TUTORIAL_DONE_KEY);
   }
 
   TextStyle tutorialTextStyle = TextStyle(
@@ -210,7 +209,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _wellbeingItems,
+        future: Provider.of<UserWellbeingDB>(context).getLastNWeeks(5),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final items = snapshot.data;

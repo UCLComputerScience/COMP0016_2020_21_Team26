@@ -1,4 +1,5 @@
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/material.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -17,7 +18,7 @@ const _columns = [
   "read"
 ];
 
-class FriendDB {
+class FriendDB extends ChangeNotifier {
   static final FriendDB _instance = FriendDB._();
   static Database _database;
 
@@ -29,6 +30,7 @@ class FriendDB {
   Future<int> insert(Friend item) async {
     final db = await database;
     final id = await db.insert(_tableName, item.toMap());
+    notifyListeners();
     return id;
   }
 
@@ -85,6 +87,7 @@ class FriendDB {
           where: '${_columns[2]} = ?', whereArgs: [sender]);
     }
     await batch.commit();
+    notifyListeners();
   }
 
   /// get the latest data sent by identifier.
@@ -113,12 +116,14 @@ class FriendDB {
     final db = await database;
     db.update(_tableName, {_columns[5]: 1},
         where: '${_columns[2]} = ?', whereArgs: [identifier]);
+    notifyListeners();
   }
 
   void delete() async {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));
     _database = null; // will be created next time its needed
+    notifyListeners();
   }
 
   Future<Database> get database async {
@@ -156,13 +161,17 @@ class FriendDB {
   }
 }
 
-/// (Effectively) immutable data item of a friend
-class Friend {
+/// Data class of a friend
+class Friend implements Comparable {
   int id;
   String name;
   String identifier;
   String publicKey;
-  String latestData; // json encoded string
+
+  /// json encoded string
+  String latestData;
+
+  /// 0 if unread, otherwise 1
   int read;
 
   Friend({
@@ -196,5 +205,13 @@ class Friend {
       map[_columns[0]] = id;
     }
     return map;
+  }
+
+  /// unread Friends < read Friends
+  @override
+  int compareTo(other) {
+    final check1 = this.read == null ? 1 : this.read;
+    final check2 = other.read == null ? 1 : other.read;
+    return check1.compareTo(check2);
   }
 }
