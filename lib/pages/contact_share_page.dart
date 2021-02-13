@@ -26,6 +26,9 @@ class _ContactSharePageState extends State<ContactSharePage> {
         .where((element) => _selected[element.key])
         .map((e) => e.value.phones.first.value)
         .join(",");
+    // NOTE: this may not work with some messaging apps, in particular, the message
+    //       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
+    //       they aren't following the IANA sms scheme.
     final uri = "sms:$csvNumbers?body=${Uri.encodeComponent(widget.toSend)}";
 
     if (await canLaunch(uri)) {
