@@ -91,7 +91,7 @@ void scheduleNudge() async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
     notifications.nudge.index,
     "Nudge",
-    "Your wellbeing or steps are low, want to share with your care network?",
+    "Let your care network know how you are.",
     tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
     _getSpecifics(),
     androidAllowWhileIdle: true,
