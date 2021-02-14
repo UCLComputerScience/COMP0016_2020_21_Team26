@@ -13,7 +13,7 @@ List<String> days = [
   "Saturday",
   "Sunday"
 ];
-final hours = [for (var i = 1; i < 25; i += 1) i];
+final hours = [for (var i = 1; i < 24; i += 1) i];
 final minutes = [for (var i = 00; i < 60; i += 1) i];
 
 class SettingsPage extends StatelessWidget {
@@ -294,7 +294,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
             items: hours.map<DropdownMenuItem>((value) {
               return DropdownMenuItem(
                 value: value,
-                child: Text(value.toString()),
+                child: Text(value.toString().padLeft(2, "0")),
               );
             }).toList()),
         SizedBox(width: 5),
@@ -320,7 +320,7 @@ class _RescheduleWBCheckNotifState extends State<RescheduleWBCheckNotif> {
             items: minutes.map<DropdownMenuItem>((value) {
               return DropdownMenuItem(
                 value: value,
-                child: Text(value.toString()),
+                child: Text(value.toString().padLeft(2, "0")),
               );
             }).toList()),
       ]),

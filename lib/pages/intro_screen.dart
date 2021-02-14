@@ -249,7 +249,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               items: hours.map<DropdownMenuItem>((value) {
                 return DropdownMenuItem(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().padLeft(2, "0")),
                 );
               }).toList()),
           SizedBox(width: 5),
@@ -275,7 +275,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               items: minutes.map<DropdownMenuItem>((value) {
                 return DropdownMenuItem(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().padLeft(2, "0")),
                 );
               }).toList())
         ]);
