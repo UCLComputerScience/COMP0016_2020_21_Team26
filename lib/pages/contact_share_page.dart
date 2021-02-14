@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,10 +28,12 @@ class _ContactSharePageState extends State<ContactSharePage> {
         .where((element) => _selected[element.key])
         .map((e) => e.value.phones.first.value)
         .join(",");
+    // HACK: Android and iOS parse the sms scheme differently:
+    final sep = Platform.isIOS ? '&' : '?';
     // NOTE: this may not work with some messaging apps, in particular, the message
     //       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
     //       they aren't following the IANA sms scheme.
-    final uri = "sms:$csvNumbers?body=${Uri.encodeComponent(widget.toSend)}";
+    final uri = "sms:$csvNumbers${sep}body=${Uri.encodeComponent(widget.toSend)}";
 
     if (await canLaunch(uri)) {
       launch(uri);
