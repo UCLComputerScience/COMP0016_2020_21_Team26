@@ -5,29 +5,48 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:nudge_me/main.dart';
+import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/model/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-Finder findSubstring(String target, CommonFinders finder) {
-  return finder.byWidgetPredicate((widget) =>
-      widget is Text && widget.data != null && widget.data.contains(target));
+// wraps a [Widget] with [MaterialApp] and also provides databases
+Widget wrapAppProvider(Widget w, {UserWellbeingDB wbDB, FriendDB friendDB}) {
+  if (wbDB == null) {
+    wbDB = MockedWBDB();
+  }
+  if (friendDB == null) {
+    friendDB = MockedFriendDB();
+  }
+
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(
+        value: wbDB,
+      ),
+      ChangeNotifierProvider.value(
+        value: friendDB,
+      ),
+    ],
+    child: MaterialApp(
+      home: w,
+    ),
+  );
 }
 
 void main() {
-  testWidgets('Screen changes smoke test', (WidgetTester tester) async {
-    // TODO: add tests. Async has made it slightly difficult to test so I shall
-    //       leave this for later.
+  testWidgets('Intro screen displayed smoke test', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
 
-    // // Build our app and trigger a frame.
-    // await tester.pumpWidget(MyApp(), Duration(milliseconds: 100));
-    //
-    // // Check the home screen text
-    // expect(findSubstring("Postcode", find), findsOneWidget);
-    // // TODO: investigate why find.text didn't find the text in the graph
-    //
-    // // Switch screens
-    // await tester.tap(find.byIcon(Icons.bar_chart));
-    // await tester.pumpAndSettle();
-    //
-    // // Verify changed screens
-    // expect(findSubstring("Postcode", find), findsNothing);
+    await tester.pumpWidget(MyApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text("Welcome"), findsOneWidget);
   });
 }
+
+class MockedFriendDB extends Mock implements FriendDB {}
+
+class MockedWBDB extends Mock implements UserWellbeingDB {}

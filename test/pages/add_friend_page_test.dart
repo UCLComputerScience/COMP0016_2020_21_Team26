@@ -5,32 +5,10 @@ import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
-import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Widget wrapAppProvider(Widget w, {UserWellbeingDB wbDB, FriendDB friendDB}) {
-  if (wbDB == null) {
-    wbDB = MockedWBDB();
-  }
-  if (friendDB == null) {
-    friendDB = MockedFriendDB();
-  }
-
-  return MultiProvider(
-    providers: [
-      ChangeNotifierProvider.value(
-        value: wbDB,
-      ),
-      ChangeNotifierProvider.value(
-        value: friendDB,
-      ),
-    ],
-    child: MaterialApp(
-      home: w,
-    ),
-  );
-}
+import '../widget_test.dart';
 
 void main() {
   testWidgets('Displays titles', (WidgetTester tester) async {
