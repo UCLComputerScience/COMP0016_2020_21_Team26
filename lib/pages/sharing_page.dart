@@ -110,7 +110,7 @@ class SharingPageState extends State<SharingPage> {
                 content: Text("Need permission to share with contacts.")));
           }
         },
-        child: Text("Share with Contacts"));
+        child: Text("Share using SMS"));
 
     return SingleChildScrollView(
         child: Column(
