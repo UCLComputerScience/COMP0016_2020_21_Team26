@@ -39,7 +39,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(wrapAppProvider(
-      IntroScreen(), wbDB: mockedDB,
+      IntroScreen(),
+      wbDB: mockedDB,
     ));
     for (int i = 0; i < numberOfPages - 1; ++i) {
       await tester.drag(find.byType(Image), Offset(-500.0, 0.0));
@@ -73,7 +74,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(wrapAppProvider(
-      IntroScreen(), wbDB: mockedDB,
+      IntroScreen(),
+      wbDB: mockedDB,
     ));
     for (int i = 0; i < numberOfPages - 1; ++i) {
       await tester.drag(find.byType(Image), Offset(-500.0, 0.0));

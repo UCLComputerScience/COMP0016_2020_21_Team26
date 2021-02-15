@@ -16,6 +16,8 @@ const _columns = [
   "publicKey",
   "latestData",
   "read"
+  "currentStepsGoal",
+  "sentActiveGoal",
 ];
 
 class FriendDB extends ChangeNotifier {
@@ -174,6 +176,12 @@ class Friend implements Comparable {
   /// 0 if unread, otherwise 1
   int read;
 
+  // nullable
+  int currentStepsGoal;
+
+  // 1 if sent & active, 0 otherwise
+  int sentActiveGoal;
+
   Friend({
     this.id, // this should be left null so SQL will handle it
     this.name,
@@ -181,6 +189,8 @@ class Friend implements Comparable {
     this.publicKey,
     this.latestData,
     this.read,
+    this.currentStepsGoal,
+    this.sentActiveGoal
   });
 
   Friend.fromMap(Map<String, dynamic> map) {
@@ -190,6 +200,8 @@ class Friend implements Comparable {
     publicKey = map[_columns[3]];
     latestData = map[_columns[4]];
     read = map[_columns[5]];
+    currentStepsGoal = map[_columns[6]];
+    sentActiveGoal = map[_columns[7]];
   }
 
   Map<String, dynamic> toMap() {
@@ -200,9 +212,14 @@ class Friend implements Comparable {
       _columns[3]: publicKey,
       _columns[4]: latestData,
       _columns[5]: read,
+      // currentStepsGoal nullable
+      _columns[7]: sentActiveGoal,
     };
     if (id != null) {
       map[_columns[0]] = id;
+    }
+    if (currentStepsGoal != null) {
+      map[_columns[6]] = currentStepsGoal;
     }
     return map;
   }

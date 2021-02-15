@@ -222,7 +222,7 @@ class SharingPageState extends State<SharingPage> {
     );
   }
 
-  Widget getListTile(BuildContext ctx, Friend friend) {
+  Widget getListTile(BuildContext context, Friend friend) {
     final sendButton = ElevatedButton(
       onPressed: () => showDialog(
           context: context,
@@ -263,6 +263,35 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ));
     };
+
+    final bottomSheet = BottomSheet(
+        onClosing: () {},
+        builder: (context) => Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.preview),
+                  title: Text("View ${friend.name}'s Wellbeing Graph"),
+                  onTap: () {
+                    Navigator.pop(context);
+                    onView();
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.directions_walk),
+                  title: Text("Check Nudge from ${friend.name}"),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO
+                  },
+                  enabled: friend.currentStepsGoal != null,
+                ),
+              ],
+            ));
+    final moreButton = OutlinedButton(
+        onPressed: () => showModalBottomSheet(
+            context: context, builder: (context) => bottomSheet),
+        child: Text("More"));
+
     // friend.read might be null
     final unread = friend.read == 0;
     return ListTile(
@@ -273,10 +302,7 @@ class SharingPageState extends State<SharingPage> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OutlinedButton(
-            child: Text("View"),
-            onPressed: onView,
-          ),
+          moreButton,
           SizedBox(
             width: 5,
           ),

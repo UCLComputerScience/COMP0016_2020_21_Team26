@@ -33,7 +33,8 @@ class _ContactSharePageState extends State<ContactSharePage> {
     // NOTE: this may not work with some messaging apps, in particular, the message
     //       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
     //       they aren't following the IANA sms scheme.
-    final uri = "sms:$csvNumbers${sep}body=${Uri.encodeComponent(widget.toSend)}";
+    final uri =
+        "sms:$csvNumbers${sep}body=${Uri.encodeComponent(widget.toSend)}";
 
     if (await canLaunch(uri)) {
       launch(uri);
