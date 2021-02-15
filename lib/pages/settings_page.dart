@@ -17,21 +17,26 @@ final hours = [for (var i = 1; i < 24; i += 1) i];
 final minutes = [for (var i = 00; i < 60; i += 1) i];
 
 class SettingsPage extends StatelessWidget {
+  final _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-            child: ListView(children: [
-          Text("Settings",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline1),
-          SizedBox(height: 20),
-          ChangePostcodeWidget(),
-          SizedBox(height: 20),
-          ChangeSupportWidget(),
-          SizedBox(height: 20),
-          RescheduleWBCheckNotif(),
-        ])),
+            child: Scrollbar(
+                isAlwaysShown: true,
+                controller: _scrollController,
+                child: ListView(controller: _scrollController, children: [
+                  Text("Settings",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headline1),
+                  SizedBox(height: 20),
+                  ChangePostcodeWidget(),
+                  SizedBox(height: 20),
+                  ChangeSupportWidget(),
+                  SizedBox(height: 20),
+                  RescheduleWBCheckNotif(),
+                ]))),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
