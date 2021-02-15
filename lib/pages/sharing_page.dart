@@ -77,7 +77,7 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  GlobalKey _networkHeadingKey = GlobalObjectKey("support_network");
+  GlobalKey _networkHeadingTutorialKey = GlobalObjectKey("support_network");
 
   @override
   void initState() {
@@ -99,15 +99,16 @@ class SharingPageState extends State<SharingPage> {
         prefs.getBool(NETWORK_TUTORIAL_DONE_KEY);
   }
 
-  ///function to show the first slide of the tutorial, explaining the wellbeing circle
+  ///function to show the only slide of the tutorial, explaining the support network page
   void showCoachMarkHeading() {
     CoachMark coachMarkHeading = CoachMark();
-    RenderBox target = _networkHeadingKey.currentContext.findRenderObject();
+    RenderBox target =
+        _networkHeadingTutorialKey.currentContext.findRenderObject();
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
     markRect = Rect.fromCircle(
         center: markRect.center, radius: markRect.longestSide * 0.6);
     coachMarkHeading.show(
-        targetContext: _networkHeadingKey.currentContext,
+        targetContext: _networkHeadingTutorialKey.currentContext,
         markRect: markRect,
         children: [
           Center(
@@ -321,7 +322,7 @@ class SharingPageState extends State<SharingPage> {
               child: Text("Support Network",
                   style: Theme.of(context).textTheme.headline1,
                   textAlign: TextAlign.center),
-              key: _networkHeadingKey),
+              key: _networkHeadingTutorialKey),
           SizedBox(height: 10),
           friendsWidget
         ],
