@@ -1,4 +1,6 @@
 PODS:
+  - contacts_service (0.2.2):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
@@ -10,7 +12,7 @@ PODS:
     - Flutter
   - pedometer (0.0.1):
     - Flutter
-  - "permission_handler (5.0.1+1)":
+  - "permission_handler (5.1.0+2)":
     - Flutter
   - printing (0.0.1):
     - Flutter
@@ -36,6 +38,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - contacts_service (from `.symlinks/plugins/contacts_service/ios`)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
@@ -57,6 +60,8 @@ SPEC REPOS:
     - Sentry
 
 EXTERNAL SOURCES:
+  contacts_service:
+    :path: ".symlinks/plugins/contacts_service/ios"
   Flutter:
     :path: Flutter
   flutter_local_notifications:
@@ -85,13 +90,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
+  contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   pedometer: 381969883680ade42559782cc41a3bbd453d8234
-  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   printing: 5ec249946ebbd51cead5ed9b0b48113bb5141bcf
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
