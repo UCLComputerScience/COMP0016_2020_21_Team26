@@ -121,7 +121,10 @@ class SharingPageState extends State<SharingPage> {
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
         duration: Duration(seconds: 15),
-        onClose: () {});
+        onClose: () {
+          SharedPreferences.getInstance()
+              .then((prefs) => prefs.setBool(NETWORK_TUTORIAL_DONE_KEY, true));
+        });
   }
 
   /// gets the friends list using provider.
@@ -184,6 +187,7 @@ class SharingPageState extends State<SharingPage> {
     final showKeyButton = OutlinedButton(
       onPressed: () => showDialog(
           builder: (context) => AlertDialog(
+                scrollable: true,
                 title: Text("Identity - QR Code"),
                 content: FutureBuilder(
                   future: SharedPreferences.getInstance(),
@@ -192,7 +196,19 @@ class SharingPageState extends State<SharingPage> {
                       final SharedPreferences prefs = data.data;
                       final identifier = prefs.getString(USER_IDENTIFIER_KEY);
                       final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
-                      return _getQRCode(identifier, pubKey);
+                      return Column(children: [
+                        _getQRCode(identifier, pubKey),
+                        Text(
+                            "This is your identity code.\n\n For someone to add you to their support network, ask them to:\n ",
+                            style: Theme.of(context).textTheme.bodyText2,
+                            textAlign: TextAlign.center),
+                        Text(
+                            "1. Open their NudgeMe app and navigate to the Network page.\n" +
+                                "2. Click ‘Scan code to add to network’\n" +
+                                "3. Scan your code by pointing their camera to your identity code.\n" +
+                                "4. Once they have added you, add them back by clicking on ‘Scan code to add to network’",
+                            style: Theme.of(context).textTheme.bodyText2)
+                      ]);
                     } else if (data.hasError) {
                       print(data.error);
                       return Text("Couldn't get data.");
@@ -276,9 +292,9 @@ class SharingPageState extends State<SharingPage> {
                       "Click the send buttons below to share your diary with your network. Pull down to reload. ",
                   style: Theme.of(context).textTheme.bodyText2)
             ])));
-
-    final friendsList = FutureBuilder(
-        future: _getFriendsList(context),
+    final friendsList = _getFriendsList(context);
+    final friendsListWidget = FutureBuilder(
+        future: friendsList,
         builder: (ctx, data) {
           if (data.hasData) {
             final List<Friend> friends = data.data;
@@ -297,7 +313,7 @@ class SharingPageState extends State<SharingPage> {
         });
 
     final friendsWidget = FutureBuilder(
-        future: _getFriendsList(context),
+        future: friendsList,
         builder: (ctx, data) {
           final List<Friend> friends = data.data;
           return !data.hasData || friends.length == 0
@@ -305,7 +321,7 @@ class SharingPageState extends State<SharingPage> {
               : Flexible(
                   child: Column(children: [
                   friendsDescription,
-                  friendsList,
+                  friendsListWidget,
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Column(children: [showKeyButton, scanCodeButton]),
                     SizedBox(width: 70),
