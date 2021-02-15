@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:http/http.dart' as http;
@@ -111,9 +112,12 @@ class _StepSelectorState extends State<StepSelector> {
       final body = json.decode(response.body);
 
       if (body['success'] == true) {
+        // set the goal active (so the sender cannot send another and overwrite
+        // their current goal)
+        Provider.of<FriendDB>(context)
+            .updateActiveNudge(widget.friend.identifier, true);
         Scaffold.of(context).showSnackBar(
             SnackBar(content: Text("Nudged ${widget.friend.name}.")));
-        // TODO: setActiveNudge to 1
       } else {
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text("Failed to send nudge.")));

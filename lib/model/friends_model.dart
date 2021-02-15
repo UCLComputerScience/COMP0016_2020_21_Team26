@@ -112,6 +112,17 @@ class FriendDB extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// updates the flag that indicates if a nudge/goal has been sent and is active
+  /// for the friend denoted by identifier
+  Future<Null> updateActiveNudge(String identifier, bool isActive) async {
+    final db = await database;
+
+    final val = isActive ? 1 : 0;
+    db.update(_tableName, {_columns[7]: val},
+        where: '${_columns[2]} = ?', whereArgs: [identifier]);
+    notifyListeners();
+  }
+
   void delete() async {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));
