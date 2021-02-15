@@ -15,7 +15,7 @@ const _columns = [
   "identifier",
   "publicKey",
   "latestData",
-  "read"
+  "read",
   "currentStepsGoal",
   "sentActiveGoal",
 ];
@@ -44,13 +44,18 @@ class FriendDB extends ChangeNotifier {
     publicKey: String,
     latestData: String,
     read: int,
+    currentStepsGoal: int,
+    sentActiveGoal: int,
   }) async {
+    assert(sentActiveGoal != null);
     return insert(Friend(
       name: name,
       identifier: identifier,
       publicKey: publicKey,
       latestData: latestData,
       read: read,
+      currentStepsGoal: currentStepsGoal,
+      sentActiveGoal: sentActiveGoal,
     ));
   }
 
@@ -157,7 +162,9 @@ class FriendDB extends ChangeNotifier {
       ${_columns[2]} TEXT NOT NULL,
       ${_columns[3]} TEXT NOT NULL,
       ${_columns[4]} TEXT,
-      ${_columns[5]} INTEGER
+      ${_columns[5]} INTEGER,
+      ${_columns[6]} INTEGER,
+      ${_columns[7]} INTEGER NOT NULL
     )
       ''');
   }
@@ -182,16 +189,15 @@ class Friend implements Comparable {
   // 1 if sent & active, 0 otherwise
   int sentActiveGoal;
 
-  Friend({
-    this.id, // this should be left null so SQL will handle it
-    this.name,
-    this.identifier,
-    this.publicKey,
-    this.latestData,
-    this.read,
-    this.currentStepsGoal,
-    this.sentActiveGoal
-  });
+  Friend(
+      {this.id, // this should be left null so SQL will handle it
+      this.name,
+      this.identifier,
+      this.publicKey,
+      this.latestData,
+      this.read,
+      this.currentStepsGoal,
+      this.sentActiveGoal});
 
   Friend.fromMap(Map<String, dynamic> map) {
     id = map[_columns[0]];

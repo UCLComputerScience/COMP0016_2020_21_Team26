@@ -264,13 +264,13 @@ class SharingPageState extends State<SharingPage> {
               ));
     };
 
-    final bottomSheet = BottomSheet(
-        onClosing: () {},
+    final onMore = () => showModalBottomSheet<void>(
+        context: context,
         builder: (context) => Column(
               children: [
                 ListTile(
                   leading: Icon(Icons.preview),
-                  title: Text("View ${friend.name}'s Wellbeing Graph"),
+                  title: Text("View ${friend.name}'s Wellbeing"),
                   onTap: () {
                     Navigator.pop(context);
                     onView();
@@ -287,10 +287,7 @@ class SharingPageState extends State<SharingPage> {
                 ),
               ],
             ));
-    final moreButton = OutlinedButton(
-        onPressed: () => showModalBottomSheet(
-            context: context, builder: (context) => bottomSheet),
-        child: Text("More"));
+    final moreButton = OutlinedButton(onPressed: onMore, child: Text("More"));
 
     // friend.read might be null
     final unread = friend.read == 0;
@@ -298,7 +295,7 @@ class SharingPageState extends State<SharingPage> {
       leading: unread ? Icon(Icons.message) : Icon(Icons.person),
       selected: unread,
       title: Text(friend.name),
-      onTap: onView,
+      onTap: onMore,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

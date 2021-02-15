@@ -131,6 +131,8 @@ class AddFriendPageState extends State<AddFriendPage> {
                         publicKey: publicKey,
                         latestData: null,
                         read: null,
+                        currentStepsGoal: null,
+                        sentActiveGoal: 0,
                       );
                     }
 
