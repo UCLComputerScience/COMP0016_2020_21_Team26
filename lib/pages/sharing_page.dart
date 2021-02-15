@@ -157,7 +157,8 @@ class SharingPageState extends State<SharingPage> {
                 content: Text("Need permission to share with contacts.")));
           }
         },
-        child: Text("Share using SMS"));
+        child: Text("Share identity link \nusing SMS",
+            textAlign: TextAlign.center));
 
     return Column(children: [shareButton, contactShareButton]);
   }
@@ -224,7 +225,7 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ),
           context: context),
-      child: Text('My Identity'),
+      child: Text('My Identity \nCode', textAlign: TextAlign.center),
     );
 
     final shareLinkButtons = FutureBuilder(
