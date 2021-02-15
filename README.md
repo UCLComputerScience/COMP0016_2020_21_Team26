@@ -73,6 +73,12 @@ goal of the nudge has been met.
 {'type': 'nudge-completed'},
 ```
 
+So the expected json would be a list of these nudge updates:
+``` json
+[nudgeUpdate1, nudgeUpdate2, ...]
+```
+Although it wouldn't sense currently for there to be more than 2 updates, since there are only two types atm.
+
 For now, clients might not need to encrypt, as we are only sending step goals, and
 whether they were met.
 So the worst case scenario where our server is malicious: our server could track an IP addresses
