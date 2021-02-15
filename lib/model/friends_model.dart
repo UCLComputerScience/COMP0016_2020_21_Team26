@@ -1,6 +1,4 @@
-import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
-import 'package:pointycastle/pointycastle.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
@@ -66,18 +64,6 @@ class FriendDB extends ChangeNotifier {
         .map((friendMap) => Friend.fromMap(friendMap))
         .toList(growable: false);
     return itemList;
-  }
-
-  /// get the public key associated with the [Friend] 'identifier'
-  Future<RSAPublicKey> getKey(String identifier) async {
-    final db = await database;
-    List<Map> friendMaps = await db.query(_tableName,
-        columns: [_columns[3]],
-        where: '${_columns[2]} = ?',
-        whereArgs: [identifier]);
-    assert(friendMaps.length == 1);
-    final String keyString = friendMaps[0][_columns[3]];
-    return RSAKeyParser().parse(keyString) as RSAPublicKey;
   }
 
   /// updates the latest data for all the identifiers in messages.

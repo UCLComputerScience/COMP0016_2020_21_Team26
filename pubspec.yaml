@@ -60,6 +60,7 @@ dependencies:
   qr_flutter: ^3.2.0 # generates a QR code
   liquid_pull_to_refresh: ^2.0.0
   convex_bottom_bar: ^2.6.0
+  sleek_circular_slider: ^1.2.0+web
 
 dev_dependencies:
   flutter_test:

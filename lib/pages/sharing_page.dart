@@ -9,6 +9,7 @@ import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/contact_share_page.dart';
+import 'package:nudge_me/pages/send_nudge_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -277,6 +278,19 @@ class SharingPageState extends State<SharingPage> {
                   },
                 ),
                 ListTile(
+                  leading: Icon(Icons.send_rounded),
+                  title: Text("Nudge ${friend.name}"),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SendNudgePage(friend)));
+                  },
+                  // only allow sending if not already sent a goal
+                  enabled: friend.sentActiveGoal == 0,
+                ),
+                ListTile(
                   leading: Icon(Icons.directions_walk),
                   title: Text("Check Nudge from ${friend.name}"),
                   onTap: () {
@@ -310,7 +324,7 @@ class SharingPageState extends State<SharingPage> {
   }
 
   Future<void> _sendWellbeingData(BuildContext context, Friend friend) async {
-    final friendKey = Provider.of<FriendDB>(context).getKey(friend.identifier);
+    final friendKey = RSAKeyParser().parse(friend.publicKey) as RSAPublicKey;
 
     final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
     final List<Map<String, int>> mapped = items
@@ -322,7 +336,7 @@ class SharingPageState extends State<SharingPage> {
         .toList(growable: false);
     final jsonString = json.encode(mapped);
 
-    final encrypter = Encrypter(RSA(publicKey: await friendKey));
+    final encrypter = Encrypter(RSA(publicKey: friendKey));
     final data = encrypter.encrypt(jsonString).base64;
 
     final prefs = await SharedPreferences.getInstance();
