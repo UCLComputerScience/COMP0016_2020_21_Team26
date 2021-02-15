@@ -233,7 +233,7 @@ class SharingPageState extends State<SharingPage> {
                   style: Theme.of(context).textTheme.bodyText2,
                 )
               ]))),
-      showKeyButton, //should just show QR code
+      showKeyButton,
       scanCodeButton,
       Center(
           child: Padding(
