@@ -127,7 +127,7 @@ class SharingPageState extends State<SharingPage> {
   Future<List<Friend>> _getFriendsList(BuildContext context) =>
       Provider.of<FriendDB>(context).getFriends();
 
-  Widget _getShareLinkButton(String identifier, String pubKey) {
+  Widget _getShareLinkButtons(String identifier, String pubKey) {
     // sends user to our website, which should redirect them to the
     // nudgeme://... custom scheme (since many apps don't recognise them as
     // links by default, we redirect them manually).
@@ -174,7 +174,6 @@ class SharingPageState extends State<SharingPage> {
         SizedBox(
           height: 10,
         ),
-
       ],
     ));
   }
@@ -211,16 +210,14 @@ class SharingPageState extends State<SharingPage> {
       child: Text('My Identity'),
     );
 
-    final 
-      
-      = FutureBuilder(
+    final shareLinkButtons = FutureBuilder(
       future: SharedPreferences.getInstance(),
       builder: (context, data) {
         if (data.hasData) {
           final SharedPreferences prefs = data.data;
           final identifier = prefs.getString(USER_IDENTIFIER_KEY);
           final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
-          return _getShareLinkButton(identifier, pubKey);
+          return _getShareLinkButtons(identifier, pubKey);
         } else if (data.hasError) {
           print(data.error);
           return Text("Couldn't get link.");
@@ -235,7 +232,7 @@ class SharingPageState extends State<SharingPage> {
           MaterialPageRoute(
               // NOTE: not using the new context 'ctx'
               builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
-      child: Text('Scan code to add to network'),
+      child: Text('Scan code to\n add to network', textAlign: TextAlign.center),
     );
 
     final noFriendsWidget = Column(children: [
@@ -265,7 +262,7 @@ class SharingPageState extends State<SharingPage> {
                     style: Theme.of(context).textTheme.bodyText2,
                     textAlign: TextAlign.start)
               ]))),
-      shareButton
+      shareLinkButtons
     ]);
 
     final friendsDescription = Center(
@@ -305,7 +302,16 @@ class SharingPageState extends State<SharingPage> {
           return !data.hasData || friends.length == 0
               ? noFriendsWidget
               : Flexible(
-                  child: Column(children: [friendsDescription, friendsList]));
+                  child: Column(children: [
+                  friendsDescription,
+                  friendsList,
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Column(children: [showKeyButton, scanCodeButton]),
+                    SizedBox(width: 70),
+                    shareLinkButtons
+                  ]),
+                  SizedBox(height: 10)
+                ]));
         });
 
     return Scaffold(
