@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:nudge_me/pages/settings_page.dart';
+import 'package:nudge_me/pages/settings_sections/reschedule_wb.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Screen that displays to faciliate the user setup.

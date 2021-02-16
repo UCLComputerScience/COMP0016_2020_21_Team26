@@ -376,9 +376,11 @@ packages:
   introduction_screen:
     dependency: "direct main"
     description:
-      name: introduction_screen
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: d14f9cd092f3886608d705f10c8417faf732eceb
+      url: "https://github.com/saachipahwa/introduction_screen.git"
+    source: git
     version: "1.0.9"
   io:
     dependency: transitive
@@ -660,6 +662,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.4"
+  settings_ui:
+    dependency: "direct main"
+    description:
+      name: settings_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.0"
   share:
     dependency: "direct main"
     description:
