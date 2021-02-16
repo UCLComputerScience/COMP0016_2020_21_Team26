@@ -69,7 +69,7 @@ class FriendDB extends ChangeNotifier {
   /// updates the latest data for all the identifiers in messages.
   /// each message should have an 'identifier_from' and 'data' index
   /// that points to their respective string values.
-  Future<void> updateData(List<dynamic> messages) async {
+  Future<void> updateWellbeingData(List<dynamic> messages) async {
     final db = await database;
     final batch = db.batch();
     for (var message in messages) {
@@ -121,6 +121,28 @@ class FriendDB extends ChangeNotifier {
     db.update(_tableName, {_columns[7]: val},
         where: '${_columns[2]} = ?', whereArgs: [identifier]);
     notifyListeners();
+  }
+
+  /// Updates the step goal from friend (denoted by identifier).
+  /// stepGoal could be null.
+  Future<Null> updateGoalFromFriend(String identifier, int stepGoal) async {
+    final db = await database;
+
+    db.update(_tableName, {_columns[6]: stepGoal},
+        where: '${_columns[2]} = ?', whereArgs: [identifier]);
+    notifyListeners();
+  }
+
+  Future<String> getName(String identifier) async {
+    final db = await database;
+
+    List<Map> maps = await db.query(_tableName,
+        columns: [_columns[1]],
+        where: '${_columns[2]} = ?',
+        whereArgs: [identifier]);
+
+    assert(maps.length == 1);
+    return maps[0][_columns[1]];
   }
 
   void delete() async {

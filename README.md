@@ -70,7 +70,7 @@ goal of the nudge has been met.
 ```
 
 ``` json
-{'type': 'nudge-completed'},
+{'type': 'nudge-completed', 'goal': 8400},
 ```
 
 For now, clients might not need to encrypt, as we are only sending step goals, and

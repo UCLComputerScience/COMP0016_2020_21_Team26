@@ -1,13 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main.dart';
+import 'package:nudge_me/main_pages.dart';
+import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:nudge_me/pages/sharing_page.dart';
+import 'package:http/http.dart' as http;
 
 const PEDOMETER_CHECK_KEY = "pedometer_check";
 const REFRESH_FRIEND_KEY = "refresh_friend_data";
+const NUDGE_CHECK_KEY = "nudge_check";
 
 /// inits the [Workmanager] and registers a background task to track steps
 /// and refresh friend data
@@ -18,6 +25,8 @@ void initBackground() {
       frequency: Duration(minutes: 15));
   Workmanager.registerPeriodicTask("refresh_friend_task", REFRESH_FRIEND_KEY,
       frequency: Duration(minutes: 15), initialDelay: Duration(seconds: 10));
+  Workmanager.registerPeriodicTask("nudge_check_task", NUDGE_CHECK_KEY,
+      frequency: Duration(minutes: 15), initialDelay: Duration(minutes: 1));
 }
 
 void callbackDispatcher() {
@@ -54,7 +63,60 @@ void callbackDispatcher() {
           scheduleNewFriendData();
         }
         break;
+      case NUDGE_CHECK_KEY:
+        refreshNudge(true);
+        break;
     }
     return Future.value(true);
   });
+}
+
+/// POSTs to the back-end and updates the local DB if needed
+Future<Null> refreshNudge(bool shouldInitNotifications) async {
+  final prefs = await SharedPreferences.getInstance();
+  final body = jsonEncode({
+    'identifier': prefs.getString(USER_IDENTIFIER_KEY),
+    'password': prefs.getString(USER_PASSWORD_KEY),
+  });
+
+  http
+      .post(BASE_URL + "/user/nudge",
+          headers: {'Content-Type': 'application/json'}, body: body)
+      .then((response) async {
+    final List<dynamic> messages = jsonDecode(response.body);
+
+    if (messages.length > 0) {
+      if (shouldInitNotifications) {
+        await initNotification();
+      }
+      messages.forEach(_handleNudge);
+    }
+  });
+}
+
+/// checks if message is from a known friend, and updates DB, depending on type of
+/// nudge, if so
+void _handleNudge(dynamic message) async {
+  final identifierFrom = message['identifier_from'];
+
+  if (await FriendDB().isIdentifierPresent(identifierFrom)) {
+    final data = message['data'];
+    if (data['type'] == null && data['goal'] == null) {
+      return;
+    }
+
+    final name = await FriendDB().getName(identifierFrom);
+
+    switch (data['type']) {
+      case 'nudge-new': // friend sets you a goal
+        FriendDB().updateGoalFromFriend(identifierFrom, data['goal']);
+        scheduleNudgeNewGoal(name, data['goal']);
+        break;
+      case 'nudge-completed': // friend has completed your goal
+        FriendDB().updateActiveNudge(identifierFrom, false);
+        scheduleNudgeCompletedGoal(name, data['goal']);
+        break;
+      default:
+    }
+  }
 }

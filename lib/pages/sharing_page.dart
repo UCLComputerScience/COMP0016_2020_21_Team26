@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
@@ -54,7 +55,7 @@ Future<bool> getLatest([BuildContext ctx]) async {
         String decrypted = encrypter.decrypt64(encrypted);
         message['data'] = decrypted;
       }
-      await friendDB.updateData(messages);
+      await friendDB.updateWellbeingData(messages);
     }
 
     // If any of the messages are from a friend, there is new data:
@@ -78,7 +79,15 @@ class SharingPageState extends State<SharingPage> {
   void initState() {
     super.initState();
 
-    getLatest();
+    _networkRefresh();
+  }
+
+  Future<Null> _networkRefresh() async {
+    // no point checking back-end if no friends in network
+    if (!await Provider.of<FriendDB>(context).empty) {
+      getLatest();
+      refreshNudge(false);
+    }
   }
 
   /// gets the friends list using provider.
