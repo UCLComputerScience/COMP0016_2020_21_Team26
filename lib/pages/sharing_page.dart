@@ -84,12 +84,12 @@ class SharingPageState extends State<SharingPage> {
     super.initState();
 
     getLatest();
-    showTutorial();
+    showNetworkTutorial(8);
   }
 
-  void showTutorial() async {
+  void showNetworkTutorial(int duration) async {
     if (!(await _isNetworkTutorialDone())) {
-      Timer(Duration(milliseconds: 400), () => showCoachMarkHeading());
+      Timer(Duration(milliseconds: 400), () => showCoachMarkHeading(duration));
     }
   }
 
@@ -100,7 +100,7 @@ class SharingPageState extends State<SharingPage> {
   }
 
   ///function to show the only slide of the tutorial, explaining the support network page
-  void showCoachMarkHeading() {
+  void showCoachMarkHeading(int duration) {
     CoachMark coachMarkHeading = CoachMark();
     RenderBox target =
         _networkHeadingTutorialKey.currentContext.findRenderObject();
@@ -120,7 +120,7 @@ class SharingPageState extends State<SharingPage> {
                           "Follow the instructions on this page to add people to your support network.",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 15),
+        duration: Duration(seconds: duration),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(NETWORK_TUTORIAL_DONE_KEY, true));
@@ -335,11 +335,18 @@ class SharingPageState extends State<SharingPage> {
     return Scaffold(
       body: Column(
         children: [
-          Container(
-              child: Text("Support Network",
-                  style: Theme.of(context).textTheme.headline1,
-                  textAlign: TextAlign.center),
-              key: _networkHeadingTutorialKey),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Container(
+                child: Text("Support Network",
+                    style: Theme.of(context).textTheme.headline1,
+                    textAlign: TextAlign.center),
+                key: _networkHeadingTutorialKey),
+            IconButton(
+                icon: Icon(Icons.help_rounded),
+                onPressed: () {
+                  showCoachMarkHeading(20);
+                })
+          ]),
           SizedBox(height: 10),
           friendsWidget
         ],
