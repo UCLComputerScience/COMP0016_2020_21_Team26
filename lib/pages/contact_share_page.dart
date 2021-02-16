@@ -18,6 +18,15 @@ class _ContactSharePageState extends State<ContactSharePage> {
   List<Contact> _contacts;
   List<bool> _selected;
 
+  /// Get the platform specific SMS Uri to be opened,
+  /// NOTE: this may not work anyway with some messaging apps, in particular, the message
+  ///       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
+  ///       they aren't following the IANA sms scheme.
+  String _getPlatformURL(String csvNumbers, String body) => Platform.isIOS
+    // HACK: thanks Apple, who needs to document features anyway?
+    ? "sms:/open?addresses=$csvNumbers&body=$body"
+    : "sms:$csvNumbers?body=$body";
+
   /// send sms to currently selected contacts.
   /// Note: doesn't actually execute the sending, just prepares it for the user
   /// and they can hit send themself.
@@ -28,13 +37,8 @@ class _ContactSharePageState extends State<ContactSharePage> {
         .where((element) => _selected[element.key])
         .map((e) => e.value.phones.first.value)
         .join(",");
-    // HACK: Android and iOS parse the sms scheme differently:
-    final sep = Platform.isIOS ? '&' : '?';
-    // NOTE: this may not work with some messaging apps, in particular, the message
-    //       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
-    //       they aren't following the IANA sms scheme.
-    final uri = "sms:$csvNumbers${sep}body=${Uri.encodeComponent(widget.toSend)}";
 
+    final uri = _getPlatformURL(csvNumbers, Uri.encodeComponent(widget.toSend));
     if (await canLaunch(uri)) {
       launch(uri);
       print("Launched: $uri");
