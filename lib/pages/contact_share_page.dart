@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 
 /// Displays list of user contacts that can be selected to send.
 class ContactSharePage extends StatefulWidget {
@@ -18,30 +16,20 @@ class _ContactSharePageState extends State<ContactSharePage> {
   List<Contact> _contacts;
   List<bool> _selected;
 
-  /// Get the platform specific SMS Uri to be opened,
-  /// NOTE: this may not work anyway with some messaging apps, in particular, the message
-  ///       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
-  ///       they aren't following the IANA sms scheme.
-  String _getPlatformURL(String csvNumbers, String body) => Platform.isIOS
-    // HACK: thanks Apple, who needs to document features anyway?
-    ? "sms:/open?addresses=$csvNumbers&body=$body"
-    : "sms:$csvNumbers?body=$body";
-
   /// send sms to currently selected contacts.
-  /// Note: doesn't actually execute the sending, just prepares it for the user
-  /// and they can hit send themself.
   Future<Null> _sendToSelected() async {
-    final csvNumbers = _contacts
+    final List<String> contactList = _contacts
         .asMap()
         .entries
         .where((element) => _selected[element.key])
         .map((e) => e.value.phones.first.value)
-        .join(",");
+        .toList(growable: false);
 
-    final uri = _getPlatformURL(csvNumbers, Uri.encodeComponent(widget.toSend));
-    if (await canLaunch(uri)) {
-      launch(uri);
-      print("Launched: $uri");
+    if (await canSendSMS()) {
+      sendSMS(message: widget.toSend, recipients: contactList);
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(content:
+        Text("Could not send SMS on this device.")));
     }
   }
 
