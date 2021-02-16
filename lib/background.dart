@@ -109,7 +109,11 @@ void _handleNudge(dynamic message) async {
 
     switch (data['type']) {
       case 'nudge-new': // friend sets you a goal
-        FriendDB().updateGoalFromFriend(identifierFrom, data['goal']);
+        final int currStepTotal = await Pedometer.stepCountStream.first
+            .then((stepCount) => stepCount.steps)
+            .catchError((_) => 0);
+        FriendDB()
+            .updateGoalFromFriend(identifierFrom, data['goal'], currStepTotal);
         scheduleNudgeNewGoal(name, data['goal']);
         break;
       case 'nudge-completed': // friend has completed your goal

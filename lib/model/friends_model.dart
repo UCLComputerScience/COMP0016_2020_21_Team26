@@ -14,8 +14,9 @@ const _columns = [
   "publicKey",
   "latestData",
   "read",
-  "currentStepsGoal",
+  "currentStepsGoal", // columns related to p2p nudging:
   "sentActiveGoal",
+  "initialStepCount"
 ];
 
 class FriendDB extends ChangeNotifier {
@@ -44,6 +45,7 @@ class FriendDB extends ChangeNotifier {
     read: int,
     currentStepsGoal: int,
     sentActiveGoal: int,
+    initialStepCount: int,
   }) async {
     assert(sentActiveGoal != null);
     return insert(Friend(
@@ -125,10 +127,12 @@ class FriendDB extends ChangeNotifier {
 
   /// Updates the step goal from friend (denoted by identifier).
   /// stepGoal could be null.
-  Future<Null> updateGoalFromFriend(String identifier, int stepGoal) async {
+  Future<Null> updateGoalFromFriend(
+      String identifier, int stepGoal, int currentTotalStepCount) async {
     final db = await database;
 
-    db.update(_tableName, {_columns[6]: stepGoal},
+    db.update(
+        _tableName, {_columns[6]: stepGoal, _columns[8]: currentTotalStepCount},
         where: '${_columns[2]} = ?', whereArgs: [identifier]);
     notifyListeners();
   }
@@ -143,6 +147,30 @@ class FriendDB extends ChangeNotifier {
 
     assert(maps.length == 1);
     return maps[0][_columns[1]];
+  }
+
+  Future<int> getInitialStepCount(String identifier) async {
+    final db = await database;
+
+    List<Map> maps = await db.query(_tableName,
+        columns: [_columns[8]],
+        where: '${_columns[2]} = ?',
+        whereArgs: [identifier]);
+
+    assert(maps.length == 1);
+    return maps[0][_columns[8]];
+  }
+
+  Future<Null> updateInitialStepCount(String identifier, int newVal) async {
+    final db = await database;
+
+    db.update(
+      _tableName,
+      {_columns[8]: newVal},
+      where: '${_columns[2]} = ?',
+      whereArgs: [identifier],
+    );
+    notifyListeners();
   }
 
   void delete() async {
@@ -183,7 +211,8 @@ class FriendDB extends ChangeNotifier {
       ${_columns[4]} TEXT,
       ${_columns[5]} INTEGER,
       ${_columns[6]} INTEGER,
-      ${_columns[7]} INTEGER NOT NULL
+      ${_columns[7]} INTEGER NOT NULL,
+      ${_columns[8]} INTEGER
     )
       ''');
   }
@@ -208,15 +237,19 @@ class Friend implements Comparable {
   // 1 if sent & active, 0 otherwise
   int sentActiveGoal;
 
-  Friend(
-      {this.id, // this should be left null so SQL will handle it
-      this.name,
-      this.identifier,
-      this.publicKey,
-      this.latestData,
-      this.read,
-      this.currentStepsGoal,
-      this.sentActiveGoal});
+  int initialStepCount;
+
+  Friend({
+    this.id, // this should be left null so SQL will handle it
+    this.name,
+    this.identifier,
+    this.publicKey,
+    this.latestData,
+    this.read,
+    this.currentStepsGoal,
+    this.sentActiveGoal,
+    this.initialStepCount,
+  });
 
   Friend.fromMap(Map<String, dynamic> map) {
     id = map[_columns[0]];
@@ -227,6 +260,7 @@ class Friend implements Comparable {
     read = map[_columns[5]];
     currentStepsGoal = map[_columns[6]];
     sentActiveGoal = map[_columns[7]];
+    initialStepCount = map[_columns[8]];
   }
 
   Map<String, dynamic> toMap() {
@@ -239,12 +273,16 @@ class Friend implements Comparable {
       _columns[5]: read,
       // currentStepsGoal nullable
       _columns[7]: sentActiveGoal,
+      // initialStepCount nullable
     };
     if (id != null) {
       map[_columns[0]] = id;
     }
     if (currentStepsGoal != null) {
       map[_columns[6]] = currentStepsGoal;
+    }
+    if (initialStepCount != null) {
+      map[_columns[8]] = initialStepCount;
     }
     return map;
   }

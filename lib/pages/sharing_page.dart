@@ -10,6 +10,7 @@ import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/contact_share_page.dart';
+import 'package:nudge_me/pages/nudge_progress_page.dart';
 import 'package:nudge_me/pages/send_nudge_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
@@ -162,7 +163,7 @@ class SharingPageState extends State<SharingPage> {
                       return _getSharableQR(identifier, pubKey);
                     } else if (data.hasError) {
                       print(data.error);
-                      return Text("Couldn't get data.");
+                      return Text("Could not get data.");
                     }
                     return LinearProgressIndicator();
                   },
@@ -304,7 +305,10 @@ class SharingPageState extends State<SharingPage> {
                   title: Text("Check Nudge from ${friend.name}"),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NudgeProgressPage(friend)));
                   },
                   enabled: friend.currentStepsGoal != null,
                 ),
