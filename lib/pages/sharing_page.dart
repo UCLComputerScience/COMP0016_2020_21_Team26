@@ -342,6 +342,7 @@ class SharingPageState extends State<SharingPage> {
                     textAlign: TextAlign.center),
                 key: _networkHeadingTutorialKey),
             IconButton(
+                //help button
                 icon: Icon(Icons.help_rounded),
                 onPressed: () {
                   showCoachMarkHeading(20);
