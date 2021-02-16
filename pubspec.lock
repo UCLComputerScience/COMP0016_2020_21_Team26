@@ -272,6 +272,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_launcher_icons:
+    dependency: "direct dev"
+    description:
+      name: flutter_launcher_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.5"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -369,11 +376,9 @@ packages:
   introduction_screen:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e08341c5d2955b24697c3fa4df2c766f1bc1701e
-      url: "https://github.com/saachipahwa/introduction_screen"
-    source: git
+      name: introduction_screen
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.0.9"
   io:
     dependency: transitive
