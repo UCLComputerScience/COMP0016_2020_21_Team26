@@ -8,8 +8,10 @@ import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
+import 'package:nudge_me/pages/contact_share_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -89,12 +91,26 @@ class SharingPageState extends State<SharingPage> {
     final url = "$BASE_URL/add-friend?"
         "identifier=${Uri.encodeComponent(identifier)}"
         "&pubKey=${Uri.encodeComponent(pubKey)}";
+    final message = "Add me on NudgeMe by clicking this:\n$url";
     final shareButton = OutlinedButton(
-        onPressed: () => Share.share("Add me on NudgeMe:\n$url"),
+        onPressed: () => Share.share(message),
         child: Icon(
           Icons.share,
           size: 40,
         ));
+    final contactShareButton = OutlinedButton(
+        onPressed: () async {
+          if (await Permission.contacts.request().isGranted) {
+            return Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ContactSharePage(message)));
+          } else {
+            Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text("Need permission to share with contacts.")));
+          }
+        },
+        child: Text("Share using SMS"));
 
     return SingleChildScrollView(
         child: Column(
@@ -112,6 +128,10 @@ class SharingPageState extends State<SharingPage> {
           height: 10,
         ),
         shareButton,
+        SizedBox(
+          height: 10,
+        ),
+        contactShareButton,
       ],
     ));
   }

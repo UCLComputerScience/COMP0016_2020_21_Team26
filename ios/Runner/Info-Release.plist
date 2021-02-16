@@ -64,5 +64,7 @@
         </array>
       </dict>
     </array>
+	<key>NSContactsUsageDescription</key>
+    <string>This app requires contacts access to share directly to contacts.</string>
 </dict>
 </plist>
