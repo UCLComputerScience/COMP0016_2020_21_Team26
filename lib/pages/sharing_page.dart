@@ -84,7 +84,7 @@ class SharingPageState extends State<SharingPage> {
 
   Future<Null> _networkRefresh() async {
     // no point checking back-end if no friends in network
-    if (!await Provider.of<FriendDB>(context).empty) {
+    if (!await Provider.of<FriendDB>(context, listen: false).empty) {
       getLatest();
       refreshNudge(false);
     }
