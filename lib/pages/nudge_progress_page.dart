@@ -10,11 +10,15 @@ class NudgeProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("Step Goal Progress"),),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Step Goal Progress"),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text("${friend.name} set you a goal of ${friend.currentStepsGoal} steps"),
+          Text(
+              "${friend.name} set you a goal of ${friend.currentStepsGoal} steps"),
           StreamBuilder(
             stream: Pedometer.stepCountStream,
             builder: (context, snapshot) {

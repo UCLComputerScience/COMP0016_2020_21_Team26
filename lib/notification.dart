@@ -19,7 +19,8 @@ enum notifications {
   nudge,
   newFriendData,
   newGoal,
-  completedGoal
+  completedGoal,
+  friendCompletedGoal,
 }
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -160,12 +161,31 @@ Future<Null> scheduleNudgeNewGoal(String name, int goal) async {
   );
 }
 
+/// takes the name of the friend who set the goal, and the number of steps (the
+/// goal itself), and schedules an appropriate notification
 Future<Null> scheduleNudgeCompletedGoal(String name, int goal) async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
-    notifications.completedGoal.index,
+    notifications.friendCompletedGoal.index,
+    "Steps Goal Complete",
+    "You have completed $goal steps, set by $name",
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: COMPLETED_GOAL_PAYLOAD,
+  );
+}
+
+Future<Null> scheduleNudgeFriendCompletedGoal(String name, int goal) async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notifications.friendCompletedGoal.index,
     "Nudge From Your Network",
     "$name has completed their goal of $goal steps",
     tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),

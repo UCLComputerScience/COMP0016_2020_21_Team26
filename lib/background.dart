@@ -64,6 +64,7 @@ void callbackDispatcher() {
         }
         break;
       case NUDGE_CHECK_KEY:
+        checkIfGoalsCompleted();
         refreshNudge(true);
         break;
     }
@@ -118,9 +119,60 @@ void _handleNudge(dynamic message) async {
         break;
       case 'nudge-completed': // friend has completed your goal
         FriendDB().updateActiveNudge(identifierFrom, false);
-        scheduleNudgeCompletedGoal(name, data['goal']);
+        scheduleNudgeFriendCompletedGoal(name, data['goal']);
         break;
       default:
     }
   }
+}
+
+void checkIfGoalsCompleted() async {
+  final int currStepTotal = await Pedometer.stepCountStream.first
+      .then((value) => value.steps)
+      .catchError((_) => 0);
+  final List<Friend> friends = await FriendDB().getFriends();
+
+  for (Friend friend in friends) {
+    int actualSteps;
+    if (currStepTotal < friend.initialStepCount) {
+      // must have rebooted device
+      FriendDB().updateInitialStepCount(friend.identifier, 0);
+      actualSteps = 0;
+    } else {
+      actualSteps = currStepTotal - friend.initialStepCount;
+    }
+
+    if (actualSteps >= friend.currentStepsGoal) {
+      _handleGoalCompleted(friend);
+    }
+  }
+}
+
+void _handleGoalCompleted(Friend friend) async {
+  await scheduleNudgeCompletedGoal(friend.name, friend.currentStepsGoal);
+
+  // TODO: should probably create put API code into a helper file
+  final prefs = await SharedPreferences.getInstance();
+
+  final data =
+      json.encode({'type': 'nudge-completed', 'goal': friend.currentStepsGoal});
+  final body = json.encode({
+    'identifier_from': prefs.getString(USER_IDENTIFIER_KEY),
+    'password': prefs.getString(USER_PASSWORD_KEY),
+    'identifier_to': friend.identifier,
+    'data': data
+  });
+
+  http
+      .post(
+    BASE_URL + "/user/nudge/new",
+    headers: {"Content-Type": "application/json"},
+    body: body,
+  )
+      .then((response) {
+    final body = json.decode(response.body);
+    print(body);
+  });
+
+  FriendDB().updateGoalFromFriend(friend.identifier, null, null);
 }
