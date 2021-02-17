@@ -1,12 +1,34 @@
+import 'dart:math';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:provider/provider.dart';
 
-class NudgeProgressPage extends StatelessWidget {
+class NudgeProgressPage extends StatefulWidget {
   final Friend friend;
 
   const NudgeProgressPage(this.friend);
+
+  @override
+  _NudgeProgressPageState createState() => _NudgeProgressPageState();
+}
+
+class _NudgeProgressPageState extends State<NudgeProgressPage> {
+  ui.Image imageMarker;
+
+  @override
+  void initState() {
+    super.initState();
+    rootBundle.load("lib/images/StepProgressMarker.jpg").then(
+        (value) => ui.decodeImageFromList(value.buffer.asUint8List(), (result) {
+              setState(() {
+                imageMarker = result;
+              });
+            }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,23 +40,39 @@ class NudgeProgressPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(
-              "${friend.name} set you a goal of ${friend.currentStepsGoal} steps"),
+              "${widget.friend.name} set you a goal of ${widget.friend.currentStepsGoal} steps"),
           StreamBuilder(
             stream: Pedometer.stepCountStream,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                final curr = snapshot.data;
+                final StepCount sc = snapshot.data;
+                final curr = sc.steps;
 
                 int actual;
-                if (curr < friend.initialStepCount) {
+                if (curr < widget.friend.initialStepCount) {
                   Provider.of<FriendDB>(context)
-                      .updateInitialStepCount(friend.identifier, 0);
+                      .updateInitialStepCount(widget.friend.identifier, 0);
                   actual = curr;
                 } else {
-                  actual = curr - friend.initialStepCount;
+                  actual = curr - widget.friend.initialStepCount;
                 }
-                final progress = (actual / friend.currentStepsGoal) * 100;
-                return Text("${progress.truncate()}% completed");
+                final progress = (actual / widget.friend.currentStepsGoal);
+                return Center(
+                  child: Column(
+                    children: [
+                      Text("${(progress * 100).truncate()}% completed"),
+                      imageMarker == null
+                          ? Container()
+                          : Container(
+                              width: 300,
+                              height: 300,
+                              child: CustomPaint(
+                                painter: StepGoalPainter(progress, imageMarker),
+                              ),
+                            )
+                    ],
+                  ),
+                );
               } else if (snapshot.hasError) {
                 return Text("Couldn't retrieve step counter.");
               }
@@ -45,4 +83,89 @@ class NudgeProgressPage extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Painter that draws a circular representation of the completed fraction.
+/// Needs to be given a finite size.
+class StepGoalPainter extends CustomPainter {
+  /// fraction of the goal completed
+  final double completed;
+
+  /// image used to mark the end of the completed bar
+  final ui.Image marker;
+
+  StepGoalPainter(this.completed, this.marker);
+
+  @override
+  void paint(ui.Canvas canvas, ui.Size size) {
+    assert(size.isFinite); // we want a finite canvas
+
+    Offset center = size.center(Offset.zero);
+    final fraction = completed.clamp(0, 1);
+    // radius of the arc:
+    final radius = size.shortestSide / 2;
+    final innerRadius = radius * 0.8;
+
+    final outerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.grey.shade200;
+    final innerPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.purpleAccent;
+    final midPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.white;
+
+    // draw the circular ring
+    canvas.drawCircle(center, radius, outerPaint);
+    canvas.drawArc(
+        Rect.fromCenter(center: center, width: size.width, height: size.height),
+        0.75 * 2 * pi,
+        -fraction * 2 * pi,
+        true,
+        innerPaint);
+    canvas.drawCircle(center, innerRadius, midPaint);
+
+    final target = 0.15;
+    final c = (target * size.width) / marker.width;
+    final midRadius = (radius + innerRadius) / 2;
+
+    // values to translate by, to get image onto the middle stripe
+    double x, y;
+    if (completed <= 0.25) {
+      // four quadrants
+      final theta = completed * 2 * pi;
+      x = -midRadius * sin(theta);
+      y = -midRadius * cos(theta);
+    } else if (completed <= 0.5) {
+      final theta = completed * 2 * pi - 0.25 * 2 * pi;
+      x = -midRadius * cos(theta);
+      y = midRadius * sin(theta);
+    } else if (completed <= 0.75) {
+      final theta = completed * 2 * pi - 0.5 * 2 * pi;
+      x = midRadius * sin(theta);
+      y = midRadius * cos(theta);
+    } else {
+      final theta = completed * 2 * pi - 0.75 * 2 * pi;
+      x = midRadius * cos(theta);
+      y = -midRadius * sin(theta);
+    }
+
+    final imageOffset = center
+            .scale(1 / c, 1 / c)
+            .translate(-marker.width / 2, -marker.height / 2) +
+        Offset(x, y).scale(1 / c, 1 / c);
+
+    canvas.scale(c);
+    canvas.translate(
+        imageOffset.dx + marker.width / 2, imageOffset.dy + marker.height / 2);
+    canvas.rotate(-2 * completed * pi);
+    canvas.translate(-imageOffset.dx - marker.width / 2,
+        -imageOffset.dy - marker.height / 2);
+    canvas.drawImage(marker, imageOffset, Paint());
+  }
+
+  @override
+  bool shouldRepaint(StepGoalPainter oldDelegate) =>
+      completed != oldDelegate.completed || marker != oldDelegate.marker;
 }

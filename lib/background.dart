@@ -132,7 +132,9 @@ void checkIfGoalsCompleted() async {
       .catchError((_) => 0);
   final List<Friend> friends = await FriendDB().getFriends();
 
-  for (Friend friend in friends) {
+  // checking steps goal for every friend who has set us a goal
+  for (Friend friend
+      in friends.where((element) => element.currentStepsGoal != null)) {
     int actualSteps;
     if (currStepTotal < friend.initialStepCount) {
       // must have rebooted device
@@ -149,9 +151,10 @@ void checkIfGoalsCompleted() async {
 }
 
 void _handleGoalCompleted(Friend friend) async {
+  await initNotification();
   await scheduleNudgeCompletedGoal(friend.name, friend.currentStepsGoal);
 
-  // TODO: should probably create put API code into a helper file
+  // TODO: should probably put API code into a helper file
   final prefs = await SharedPreferences.getInstance();
 
   final data =
