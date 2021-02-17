@@ -28,8 +28,8 @@ class _ContactSharePageState extends State<ContactSharePage> {
     if (await canSendSMS()) {
       sendSMS(message: widget.toSend, recipients: contactList);
     } else {
-      Scaffold.of(context).showSnackBar(SnackBar(content:
-        Text("Could not send SMS on this device.")));
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text("Could not send SMS on this device.")));
     }
   }
 
@@ -67,7 +67,9 @@ class _ContactSharePageState extends State<ContactSharePage> {
               return ListView.builder(
                   itemCount: contacts.length,
                   itemBuilder: (context, i) => CheckboxListTile(
-                        title: Text(contacts[i].displayName),
+                        title: Text(contacts[i].displayName != null
+                            ? contacts[i].displayName
+                            : contacts[i].givenName),
                         secondary: _getAvatar(contacts[i]),
                         selected: _selected[i],
                         value: _selected[i],
