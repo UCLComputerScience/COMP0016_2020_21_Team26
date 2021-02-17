@@ -100,7 +100,7 @@ void _handleNudge(dynamic message) async {
   final identifierFrom = message['identifier_from'];
 
   if (await FriendDB().isIdentifierPresent(identifierFrom)) {
-    final data = message['data'];
+    final data = json.decode(message['data']);
     if (data['type'] == null && data['goal'] == null) {
       return;
     }

@@ -10,29 +10,35 @@ class NudgeProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: Pedometer.stepCountStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final curr = snapshot.data;
+    return Scaffold(appBar: AppBar(title: Text("Step Goal Progress"),),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text("${friend.name} set you a goal of ${friend.currentStepsGoal} steps"),
+          StreamBuilder(
+            stream: Pedometer.stepCountStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final curr = snapshot.data;
 
-          int actual;
-          if (curr < friend.initialStepCount) {
-            Provider.of<FriendDB>(context)
-                .updateInitialStepCount(friend.identifier, 0);
-            actual = curr;
-          } else {
-            actual = curr - friend.initialStepCount;
-          }
-
-          final progress = (actual / friend.currentStepsGoal) * 100;
-          return Text(
-              "${progress.truncate()}% completed of your ${friend.initialStepCount} goal.");
-        } else if (snapshot.hasError) {
-          return Text("Something went wrong.");
-        }
-        return LinearProgressIndicator();
-      },
+                int actual;
+                if (curr < friend.initialStepCount) {
+                  Provider.of<FriendDB>(context)
+                      .updateInitialStepCount(friend.identifier, 0);
+                  actual = curr;
+                } else {
+                  actual = curr - friend.initialStepCount;
+                }
+                final progress = (actual / friend.currentStepsGoal) * 100;
+                return Text("${progress.truncate()}% completed");
+              } else if (snapshot.hasError) {
+                return Text("Couldn't retrieve step counter.");
+              }
+              return LinearProgressIndicator();
+            },
+          ),
+        ],
+      ),
     );
   }
 }
