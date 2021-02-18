@@ -76,6 +76,8 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
+  GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -209,6 +211,7 @@ class SharingPageState extends State<SharingPage> {
     );
 
     return Scaffold(
+      key: _scaffoldState,
       body: Column(
         children: [
           showKeyButton,
@@ -280,7 +283,8 @@ class SharingPageState extends State<SharingPage> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => SendNudgePage(friend)));
+                      builder: (context) =>
+                          SendNudgePage(friend, _scaffoldState.currentState)));
             }
           },
         ),

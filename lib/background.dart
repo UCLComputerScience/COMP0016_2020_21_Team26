@@ -125,6 +125,8 @@ Future<Null> _handleNudge(dynamic message) async {
         await scheduleNudgeFriendCompletedGoal(name, data['goal']);
         break;
       default:
+        print("Unknown nudge type.");
+        break;
     }
   }
 }

@@ -11,8 +11,9 @@ import 'package:nudge_me/crypto.dart';
 
 class SendNudgePage extends StatelessWidget {
   final Friend friend;
+  final ScaffoldState scaffoldState;
 
-  const SendNudgePage(this.friend);
+  const SendNudgePage(this.friend, this.scaffoldState);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class SendNudgePage extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            StepSelector(friend),
+            StepSelector(friend, scaffoldState),
           ],
         ),
       ),
@@ -41,8 +42,12 @@ class SendNudgePage extends StatelessWidget {
 
 class StepSelector extends StatefulWidget {
   final Friend friend;
+  final ScaffoldState scaffoldState;
 
-  const StepSelector(this.friend);
+  const StepSelector(
+    this.friend,
+    this.scaffoldState,
+  );
 
   @override
   State<StatefulWidget> createState() => _StepSelectorState();
@@ -116,10 +121,10 @@ class _StepSelectorState extends State<StepSelector> {
         // their current goal)
         Provider.of<FriendDB>(context)
             .updateActiveNudge(widget.friend.identifier, true);
-        Scaffold.of(context).showSnackBar(
+        widget.scaffoldState.showSnackBar(
             SnackBar(content: Text("Nudged ${widget.friend.name}.")));
       } else {
-        Scaffold.of(context)
+        widget.scaffoldState
             .showSnackBar(SnackBar(content: Text("Failed to send nudge.")));
       }
     });

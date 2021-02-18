@@ -137,7 +137,7 @@ class _MainPagesState extends State<MainPages> {
         });
         break;
       default:
-        print("If this isn't a test, something went wrong.");
+        print('If this is not a test, something went wrong.');
     }
   }
 
