@@ -22,8 +22,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-const NETWORK_TUTORIAL_DONE_KEY = "network_tutorial_done";
-
 /// get the latest messages for this user
 /// returns true if there are new messages from a friend
 Future<bool> getLatest([BuildContext ctx]) async {
@@ -77,54 +75,37 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  GlobalKey _networkHeadingTutorialKey = GlobalObjectKey("support_network");
+  GlobalKey _networkButtonsTutorialKey = GlobalObjectKey("support_network");
 
   @override
   void initState() {
     super.initState();
 
     getLatest();
-    showNetworkTutorial(8);
-  }
-
-  void showNetworkTutorial(int duration) async {
-    if (!(await _isNetworkTutorialDone())) {
-      Timer(Duration(milliseconds: 400), () => showCoachMarkHeading(duration));
-    }
-  }
-
-  Future<bool> _isNetworkTutorialDone() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey(NETWORK_TUTORIAL_DONE_KEY) &&
-        prefs.getBool(NETWORK_TUTORIAL_DONE_KEY);
   }
 
   ///function to show the only slide of the tutorial, explaining the support network page
-  void showCoachMarkHeading(int duration) {
+  void showCoachMarkButtons(int duration) {
     CoachMark coachMarkHeading = CoachMark();
     RenderBox target =
-        _networkHeadingTutorialKey.currentContext.findRenderObject();
+        _networkButtonsTutorialKey.currentContext.findRenderObject();
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
     markRect = Rect.fromCircle(
         center: markRect.center, radius: markRect.longestSide * 0.6);
     coachMarkHeading.show(
-        targetContext: _networkHeadingTutorialKey.currentContext,
+        targetContext: _networkButtonsTutorialKey.currentContext,
         markRect: markRect,
         children: [
           Center(
               child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 200),
                   child: Text(
-                      "Your support network is a list of people that you would be willing to share your wellbeing diary with. \n\n" +
-                          "Sharing your wellbeing diary can help you start conversations about your mental wellbeing with people in your life.\n\n" +
-                          "Follow the instructions on this page to add people to your support network.",
+                      "Share a link to add people to your support network using the buttons on the left.\n\n" +
+                          "Scan each other's QR codes to be added to each other's support networks using the buttons on the right.",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
         duration: Duration(seconds: duration),
-        onClose: () {
-          SharedPreferences.getInstance()
-              .then((prefs) => prefs.setBool(NETWORK_TUTORIAL_DONE_KEY, true));
-        });
+        onClose: () {});
   }
 
   /// gets the friends list using provider.
@@ -189,7 +170,8 @@ class SharingPageState extends State<SharingPage> {
       onPressed: () => showDialog(
           builder: (context) => AlertDialog(
                 scrollable: true,
-                title: Text("Identity - QR Code"),
+                title: Text("My NudgeMe Identity \n(QR Code)",
+                    textAlign: TextAlign.center),
                 content: FutureBuilder(
                   future: SharedPreferences.getInstance(),
                   builder: (context, data) {
@@ -205,16 +187,17 @@ class SharingPageState extends State<SharingPage> {
                             textAlign: TextAlign.center),
                         Text(
                             "1. Open their NudgeMe app and navigate to the Network page.\n" +
-                                "2. Click ‘Scan code to add to network’\n" +
-                                "3. Scan your code by pointing their camera to your identity code.\n" +
-                                "4. Once they have added you, add them back by clicking on ‘Scan code to add to network’",
+                                "2. Click ‘Scan code to add to network.’\n" +
+                                "3. Using the camera on their phone, scan your code.\n" +
+                                "4. Once they have added you, add them back by clicking on the ‘Scan code to add to network’ button.",
                             style: Theme.of(context).textTheme.bodyText2)
                       ]);
                     } else if (data.hasError) {
                       print(data.error);
                       return Text("Couldn't get data.");
                     }
-                    return LinearProgressIndicator();
+                    return Row(
+                        children: [Expanded(child: LinearProgressIndicator())]);
                   },
                 ),
                 actions: [
@@ -258,29 +241,25 @@ class SharingPageState extends State<SharingPage> {
           child: Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Column(children: [
-                Text("There are two ways to add someone to your support network on NudgeMe.\n\n" +
-                    "To add someone, the person must already have NudgeMe on their phone. You must both add each other to be added to each other’s support network.\n"),
-                Text("1. In person: ",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(
-                  "Ask the person you want to add to click ‘My identity’ and scan the code on their phone. \nThen, click ‘My Identity’ on your phone and allow them to scan your code.",
-                  style: Theme.of(context).textTheme.bodyText2,
-                )
+                Text("With NudgeMe, caring is sharing. \n\n" +
+                    "Let people in your care network know how you are. Do them by texting them a link to download NudgeMe.\n\n"),
+                //share button for link to download app
+                Text("Then, share a link using one of these buttons/"),
               ]))),
-      showKeyButton,
-      scanCodeButton,
+      shareLinkButtons,
+      Text("When you both have NudgeMe, you can send your wellbeing diary to people who care for you and" +
+          " they can do the same with you. Hopefully, this will  start a conversation about wellbeing that is meaningful and helpful.\n"),
       Center(
           child: Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Column(children: [
-                Text("\n2. Over message: ",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
-                    "Share a link with someone who has NudgeMe. When they click the link, it will add you to their care network.\nAsk them to send you a link so you can add them back.",
+                    "\nAlternatively, add people to your care network in person by scanning their QR code and having them scan yours.",
                     style: Theme.of(context).textTheme.bodyText2,
                     textAlign: TextAlign.start)
               ]))),
-      shareLinkButtons
+      showKeyButton,
+      scanCodeButton,
     ]);
 
     final friendsDescription = Center(
@@ -288,9 +267,9 @@ class SharingPageState extends State<SharingPage> {
             padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Column(children: [
               Text(
-                  "This is your support network. Your support network is a list of people that you would be willing to share your wellbeing diary with. \n\n" +
-                      "Sharing your wellbeing diary can help you start conversations about your mental wellbeing with people in your life.\n\n" +
-                      "Click the send buttons below to share your diary with your network. Pull down to reload. ",
+                  "With NudgeMe, caring is sharing. \n\nLet people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n" +
+                      "Click the send button below to share your diary with your network or to send a nudge. Sending a nudge to someone in your care network allows you to set them a steps goal. View other people’s wellbeing and diaries and nudges with the View button.\n\n" +
+                      "Pull down to reload.",
                   style: Theme.of(context).textTheme.bodyText2)
             ])));
     final friendsList = _getFriendsList(context);
@@ -310,7 +289,7 @@ class SharingPageState extends State<SharingPage> {
                       itemBuilder: (ctx, i) => getListTile(ctx, friends[i]),
                     )));
           }
-          return CircularProgressIndicator();
+          return Expanded(child: CircularProgressIndicator());
         });
 
     final friendsWidget = FutureBuilder(
@@ -323,11 +302,21 @@ class SharingPageState extends State<SharingPage> {
                   child: Column(children: [
                   friendsDescription,
                   friendsListWidget,
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Column(children: [showKeyButton, scanCodeButton]),
-                    SizedBox(width: 70),
-                    shareLinkButtons
-                  ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      key: _networkButtonsTutorialKey,
+                      children: [
+                        shareLinkButtons,
+                        SizedBox(width: 20),
+                        IconButton(
+                            //help button
+                            icon: Icon(Icons.help_rounded),
+                            onPressed: () {
+                              showCoachMarkButtons(20);
+                            }),
+                        SizedBox(width: 20),
+                        Column(children: [showKeyButton, scanCodeButton])
+                      ]),
                   SizedBox(height: 10)
                 ]));
         });
@@ -337,16 +326,10 @@ class SharingPageState extends State<SharingPage> {
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-                child: Text("Support Network",
-                    style: Theme.of(context).textTheme.headline1,
-                    textAlign: TextAlign.center),
-                key: _networkHeadingTutorialKey),
-            IconButton(
-                //help button
-                icon: Icon(Icons.help_rounded),
-                onPressed: () {
-                  showCoachMarkHeading(20);
-                })
+              child: Text("Support Network",
+                  style: Theme.of(context).textTheme.headline1,
+                  textAlign: TextAlign.center),
+            ),
           ]),
           SizedBox(height: 10),
           friendsWidget
