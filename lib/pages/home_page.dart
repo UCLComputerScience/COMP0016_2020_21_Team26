@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
     markRect = Rect.fromCircle(
         center: markRect.center, radius: markRect.longestSide * 0.6);
     coachMarkSteps.show(
-        targetContext: _lastWeekWBTutorialKey.currentContext,
+        targetContext: _stepsTutorialKey.currentContext,
         markRect: markRect,
         children: [
           Center(
