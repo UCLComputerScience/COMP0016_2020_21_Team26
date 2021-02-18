@@ -291,10 +291,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 style: introTextStyle,
                 textAlign: TextAlign.center),
             SizedBox(height: 5),
-            Container(
+            Center(
+                child: Container(
               height: 60,
               child: notificationSelector,
-            ),
+            )),
           ],
         ),
         decoration: pageDecoration);
@@ -445,7 +446,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                               style: Theme.of(context).textTheme.caption),
                           new TextSpan(
                               text: "see here",
-                              style: Theme.of(context).textTheme.caption,
+                              style: TextStyle(
+                                  fontFamily: 'Rosario',
+                                  fontSize: 12,
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.black),
                               recognizer: new TapGestureRecognizer()
                                 ..onTap = () {
                                   launch(BASE_URL + '/mapDemo');
