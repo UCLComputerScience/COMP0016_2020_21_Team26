@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 
 /// Displays list of user contacts that can be selected to send.
 class ContactSharePage extends StatefulWidget {
@@ -19,25 +17,19 @@ class _ContactSharePageState extends State<ContactSharePage> {
   List<bool> _selected;
 
   /// send sms to currently selected contacts.
-  /// Note: doesn't actually execute the sending, just prepares it for the user
-  /// and they can hit send themself.
   Future<Null> _sendToSelected() async {
-    final csvNumbers = _contacts
+    final List<String> contactList = _contacts
         .asMap()
         .entries
         .where((element) => _selected[element.key])
         .map((e) => e.value.phones.first.value)
-        .join(",");
-    // HACK: Android and iOS parse the sms scheme differently:
-    final sep = Platform.isIOS ? '&' : '?';
-    // NOTE: this may not work with some messaging apps, in particular, the message
-    //       body may not be parse correctly. THIS IS THE MESSAGING APPS'S FAULT,
-    //       they aren't following the IANA sms scheme.
-    final uri = "sms:$csvNumbers${sep}body=${Uri.encodeComponent(widget.toSend)}";
+        .toList(growable: false);
 
-    if (await canLaunch(uri)) {
-      launch(uri);
-      print("Launched: $uri");
+    if (await canSendSMS()) {
+      sendSMS(message: widget.toSend, recipients: contactList);
+    } else {
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text("Could not send SMS on this device.")));
     }
   }
 
@@ -75,7 +67,9 @@ class _ContactSharePageState extends State<ContactSharePage> {
               return ListView.builder(
                   itemCount: contacts.length,
                   itemBuilder: (context, i) => CheckboxListTile(
-                        title: Text(contacts[i].displayName),
+                        title: Text(contacts[i].displayName != null
+                            ? contacts[i].displayName
+                            : contacts[i].givenName),
                         secondary: _getAvatar(contacts[i]),
                         selected: _selected[i],
                         value: _selected[i],
