@@ -33,7 +33,7 @@ class _ChangeSupportCodeState extends State<ChangeSupportCode> {
           Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Text(
-                  "1. Click inside the purple box and type in your new support code \n 2. Click the Change button\n",
+                  "1.  Click inside the purple box and type in your new support code \n2.  Click the Change button\n",
                   textAlign: TextAlign.start)),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text("Current Support Code: ",
