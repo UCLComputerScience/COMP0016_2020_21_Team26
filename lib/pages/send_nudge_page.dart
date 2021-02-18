@@ -51,7 +51,7 @@ class StepSelector extends StatefulWidget {
 class _StepSelectorState extends State<StepSelector> {
   int _roundedStep(double val) {
     final int v = val.truncate();
-    return v - (v % 1000);
+    return v - (v % 500);
   }
 
   @override

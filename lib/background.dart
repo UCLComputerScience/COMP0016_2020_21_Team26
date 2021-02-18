@@ -50,7 +50,7 @@ void callbackDispatcher() {
             DateTime.now().difference(prevDateTime) >= Duration(days: 2)) {
           // if step count hasn't changed in 2 days
           await initNotification(); // needs to be done since outside app
-          scheduleNudge();
+          await scheduleNudge();
           prefs.setStringList(PREV_PEDOMETER_PAIR_KEY,
               [currTotal.toString(), DateTime.now().toIso8601String()]);
         }
@@ -60,12 +60,12 @@ void callbackDispatcher() {
 
         if (newData) {
           await initNotification();
-          scheduleNewFriendData();
+          await scheduleNewFriendData();
         }
         break;
       case NUDGE_CHECK_KEY:
-        checkIfGoalsCompleted();
-        refreshNudge(true);
+        await refreshNudge(true);
+        await checkIfGoalsCompleted();
         break;
     }
     return Future.value(true);
@@ -80,24 +80,27 @@ Future<Null> refreshNudge(bool shouldInitNotifications) async {
     'password': prefs.getString(USER_PASSWORD_KEY),
   });
 
-  http
+  await http
       .post(BASE_URL + "/user/nudge",
           headers: {'Content-Type': 'application/json'}, body: body)
       .then((response) async {
     final List<dynamic> messages = jsonDecode(response.body);
+    print("User Nudges received: $messages");
 
     if (messages.length > 0) {
       if (shouldInitNotifications) {
         await initNotification();
       }
-      messages.forEach(_handleNudge);
+      for (dynamic message in messages) {
+        await _handleNudge(message);
+      }
     }
   });
 }
 
 /// checks if message is from a known friend, and updates DB, depending on type of
 /// nudge, if so
-void _handleNudge(dynamic message) async {
+Future<Null> _handleNudge(dynamic message) async {
   final identifierFrom = message['identifier_from'];
 
   if (await FriendDB().isIdentifierPresent(identifierFrom)) {
@@ -113,20 +116,20 @@ void _handleNudge(dynamic message) async {
         final int currStepTotal = await Pedometer.stepCountStream.first
             .then((stepCount) => stepCount.steps)
             .catchError((_) => 0);
-        FriendDB()
+        await FriendDB()
             .updateGoalFromFriend(identifierFrom, data['goal'], currStepTotal);
-        scheduleNudgeNewGoal(name, data['goal']);
+        await scheduleNudgeNewGoal(name, data['goal']);
         break;
       case 'nudge-completed': // friend has completed your goal
-        FriendDB().updateActiveNudge(identifierFrom, false);
-        scheduleNudgeFriendCompletedGoal(name, data['goal']);
+        await FriendDB().updateActiveNudge(identifierFrom, false);
+        await scheduleNudgeFriendCompletedGoal(name, data['goal']);
         break;
       default:
     }
   }
 }
 
-void checkIfGoalsCompleted() async {
+Future<Null> checkIfGoalsCompleted() async {
   final int currStepTotal = await Pedometer.stepCountStream.first
       .then((value) => value.steps)
       .catchError((_) => 0);
@@ -138,19 +141,19 @@ void checkIfGoalsCompleted() async {
     int actualSteps;
     if (currStepTotal < friend.initialStepCount) {
       // must have rebooted device
-      FriendDB().updateInitialStepCount(friend.identifier, 0);
+      await FriendDB().updateInitialStepCount(friend.identifier, 0);
       actualSteps = 0;
     } else {
       actualSteps = currStepTotal - friend.initialStepCount;
     }
 
     if (actualSteps >= friend.currentStepsGoal) {
-      _handleGoalCompleted(friend);
+      await _handleGoalCompleted(friend);
     }
   }
 }
 
-void _handleGoalCompleted(Friend friend) async {
+Future<Null> _handleGoalCompleted(Friend friend) async {
   await initNotification();
   await scheduleNudgeCompletedGoal(friend.name, friend.currentStepsGoal);
 
@@ -166,7 +169,7 @@ void _handleGoalCompleted(Friend friend) async {
     'data': data
   });
 
-  http
+  await http
       .post(
     BASE_URL + "/user/nudge/new",
     headers: {"Content-Type": "application/json"},
@@ -177,5 +180,5 @@ void _handleGoalCompleted(Friend friend) async {
     print(body);
   });
 
-  FriendDB().updateGoalFromFriend(friend.identifier, null, null);
+  await FriendDB().updateGoalFromFriend(friend.identifier, null, null);
 }

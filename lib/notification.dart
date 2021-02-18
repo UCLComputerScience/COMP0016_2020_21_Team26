@@ -95,7 +95,7 @@ Future rescheduleCheckup(int day, Time time) async {
   scheduleCheckup(day, time);
 }
 
-void scheduleNudge() async {
+Future<Null> scheduleNudge() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
 
