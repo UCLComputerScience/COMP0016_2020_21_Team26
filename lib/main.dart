@@ -180,7 +180,8 @@ class MyApp extends StatelessWidget {
                   fontStyle: FontStyle.italic,
                   fontSize: 20), //for tutorial
               bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
-              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
+              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15),
+              caption: TextStyle(fontFamily: 'Rosario', fontSize: 12)),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: Colors.white,
             selectedLabelStyle: TextStyle(
