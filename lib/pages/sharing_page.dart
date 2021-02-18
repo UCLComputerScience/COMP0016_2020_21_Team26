@@ -234,9 +234,8 @@ class SharingPageState extends State<SharingPage> {
     );
   }
 
-  Widget getListTile(BuildContext context, Friend friend) {
-    final sendButton = ElevatedButton(
-      onPressed: () => showDialog(
+  void _showWellbeingSendDialog(BuildContext context, Friend friend) =>
+      showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
                 title: Text("Send data?"),
@@ -251,15 +250,44 @@ class SharingPageState extends State<SharingPage> {
                   ),
                   TextButton(
                       child: Text('Yes'),
-                      onPressed: () async {
+                      onPressed: () {
                         Navigator.pop(context);
                         _sendWellbeingData(context, friend);
                       }),
                 ],
-              )),
-      child: Text("Send"),
+              ));
+
+  Widget getListTile(BuildContext context, Friend friend) {
+    final sendOptionsDialog = SimpleDialog(
+      title: const Text("Choose what to send"),
+      children: [
+        SimpleDialogOption(
+          child: const Text("Send Wellbeing Data"),
+          onPressed: () {
+            Navigator.pop(context);
+            _showWellbeingSendDialog(context, friend);
+          },
+        ),
+        SimpleDialogOption(
+          child: Text("Nudge ${friend.name} - Set a Step Goal"),
+          onPressed: () {
+            Navigator.pop(context);
+            if (friend.sentActiveGoal == 1) {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content:
+                      const Text("Their previous goal is still in progress.")));
+            } else {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SendNudgePage(friend)));
+            }
+          },
+        ),
+      ],
     );
-    final onView = () {
+
+    final onViewWellbeing = () {
       Provider.of<FriendDB>(context, listen: false).setRead(friend.identifier);
       return showDialog(
           context: context,
@@ -275,47 +303,35 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ));
     };
+    final viewOptionsDialog = SimpleDialog(
+      title: const Text("Choose what to view"),
+      children: [
+        SimpleDialogOption(
+          child: Text("Wellbeing Data from ${friend.name}"),
+          onPressed: onViewWellbeing,
+        ),
+        SimpleDialogOption(
+          child: Text("Step Goal from ${friend.name} 🚶"),
+          onPressed: () {
+            Navigator.pop(context);
+            if (friend.currentStepsGoal != null) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NudgeProgressPage(friend)));
+            } else {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text("${friend.name} has not sent you any goal yet.")));
+            }
+          },
+        )
+      ],
+    );
 
-    final onMore = () => showModalBottomSheet<void>(
-        context: context,
-        builder: (context) => Column(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.preview),
-                  title: Text("View ${friend.name}'s Wellbeing"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    onView();
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.send_rounded),
-                  title: Text("Nudge ${friend.name}"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SendNudgePage(friend)));
-                  },
-                  // only allow sending if not already sent a goal
-                  enabled: friend.sentActiveGoal == 0,
-                ),
-                ListTile(
-                  leading: Icon(Icons.directions_walk),
-                  title: Text("Check Nudge from ${friend.name}"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NudgeProgressPage(friend)));
-                  },
-                  enabled: friend.currentStepsGoal != null,
-                ),
-              ],
-            ));
-    final moreButton = OutlinedButton(onPressed: onMore, child: Text("More"));
+    final onView = () =>
+        showDialog(context: context, builder: (context) => viewOptionsDialog);
+    final viewButton = OutlinedButton(onPressed: onView, child: Text("View"));
 
     // friend.read might be null
     final unread = friend.read == 0;
@@ -323,15 +339,18 @@ class SharingPageState extends State<SharingPage> {
       leading: unread ? Icon(Icons.message) : Icon(Icons.person),
       selected: unread,
       title: Text(friend.name),
-      onTap: onMore,
+      onTap: onView,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          moreButton,
+          viewButton,
           SizedBox(
             width: 5,
           ),
-          sendButton,
+          ElevatedButton(
+              onPressed: () => showDialog(
+                  context: context, builder: (context) => sendOptionsDialog),
+              child: const Text("Send")),
         ],
       ),
     );
