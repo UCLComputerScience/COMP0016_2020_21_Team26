@@ -194,7 +194,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: new SplashScreen(
-          seconds: 3,
+          seconds: 6,
           navigateAfterSeconds: FutureBuilder(
             future: _openIntro,
             builder: (context, snapshot) {

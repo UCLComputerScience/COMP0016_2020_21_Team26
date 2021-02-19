@@ -121,10 +121,15 @@ class SharingPageState extends State<SharingPage> {
         "&pubKey=${Uri.encodeComponent(pubKey)}";
     final message = "Add me on NudgeMe by clicking this:\n$url";
     final shareButton = OutlinedButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+                Theme.of(context).primaryColor)),
         onPressed: () => Share.share(message),
-        child:
-            Icon(Icons.share, size: 40, color: Theme.of(context).primaryColor));
+        child: Icon(Icons.share, size: 40, color: Colors.white));
     final contactShareButton = OutlinedButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+                Theme.of(context).primaryColor)),
         onPressed: () async {
           if (await Permission.contacts.request().isGranted) {
             return Navigator.push(
@@ -138,7 +143,7 @@ class SharingPageState extends State<SharingPage> {
         },
         child: Text("Share identity link \nusing SMS",
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).primaryColor)));
+            style: TextStyle(color: Colors.white)));
 
     return Column(children: [shareButton, contactShareButton]);
   }
@@ -166,6 +171,9 @@ class SharingPageState extends State<SharingPage> {
   @override
   Widget build(BuildContext context) {
     final showKeyButton = OutlinedButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+                Theme.of(context).accentColor)),
         onPressed: () => showDialog(
             builder: (context) => AlertDialog(
                   scrollable: true,
@@ -211,7 +219,7 @@ class SharingPageState extends State<SharingPage> {
         child: Text(
           'My Identity \nCode',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor),
+          style: TextStyle(fontSize: 12, color: Colors.white),
         ));
 
     final shareLinkButtons = FutureBuilder(
@@ -231,17 +239,19 @@ class SharingPageState extends State<SharingPage> {
     );
 
     final scanCodeButton = OutlinedButton(
-      onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              // NOTE: not using the new context 'ctx'
-              builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
-      child: Text(
-        'Scan code to\n add to network',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor),
-      ),
-    );
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+                Theme.of(context).accentColor)),
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                // NOTE: not using the new context 'ctx'
+                builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
+        child: Text(
+          'Scan code to\n add to network',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, color: Colors.white),
+        ));
 
     final noFriendsWidget = Column(children: [
       Center(
