@@ -398,29 +398,6 @@ class SharingPageState extends State<SharingPage> {
           Column(children: [showKeyButton, scanCodeButton])
         ]);
 
-    final customScrollFriendsWidget = FutureBuilder(
-        future: friendsList,
-        builder: (ctx, data) {
-          final List<Friend> friends = data.data;
-          return !data.hasData || friends.length == 0
-              ? noFriendsWidget
-              : Column(children: [
-                  CustomScrollView(slivers: [
-                    SliverAppBar(
-                      expandedHeight: 30.0,
-                      flexibleSpace: const FlexibleSpaceBar(
-                          title: Text(
-                        "With NudgeMe, caring is sharing. \n\nLet people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n" +
-                            "Click the send button below to share your diary with your network or to send a nudge. Sending a nudge to someone in your care network allows you to set them a steps goal. View other people’s wellbeing and diaries and nudges with the View button.\n\n" +
-                            "Pull down to reload.",
-                      )),
-                    ),
-                    SliverToBoxAdapter(child: friendsListWidget),
-                  ]),
-                  SliverToBoxAdapter(child: friendsButtonsWidget)
-                ]);
-        });
-
     final friendsWidget = FutureBuilder(
         future: friendsList,
         builder: (ctx, data) {
