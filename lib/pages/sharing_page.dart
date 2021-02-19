@@ -122,10 +122,8 @@ class SharingPageState extends State<SharingPage> {
     final message = "Add me on NudgeMe by clicking this:\n$url";
     final shareButton = OutlinedButton(
         onPressed: () => Share.share(message),
-        child: Icon(
-          Icons.share,
-          size: 40,
-        ));
+        child:
+            Icon(Icons.share, size: 40, color: Theme.of(context).primaryColor));
     final contactShareButton = OutlinedButton(
         onPressed: () async {
           if (await Permission.contacts.request().isGranted) {
@@ -139,7 +137,8 @@ class SharingPageState extends State<SharingPage> {
           }
         },
         child: Text("Share identity link \nusing SMS",
-            textAlign: TextAlign.center));
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme.of(context).primaryColor)));
 
     return Column(children: [shareButton, contactShareButton]);
   }
@@ -167,49 +166,53 @@ class SharingPageState extends State<SharingPage> {
   @override
   Widget build(BuildContext context) {
     final showKeyButton = OutlinedButton(
-      onPressed: () => showDialog(
-          builder: (context) => AlertDialog(
-                scrollable: true,
-                title: Text("My NudgeMe Identity \n(QR Code)",
-                    textAlign: TextAlign.center),
-                content: FutureBuilder(
-                  future: SharedPreferences.getInstance(),
-                  builder: (context, data) {
-                    if (data.hasData) {
-                      final SharedPreferences prefs = data.data;
-                      final identifier = prefs.getString(USER_IDENTIFIER_KEY);
-                      final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
-                      return Column(children: [
-                        _getQRCode(identifier, pubKey),
-                        Text(
-                            "This is your identity code.\n\n For someone to add you to their support network, ask them to:\n ",
-                            style: Theme.of(context).textTheme.bodyText2,
-                            textAlign: TextAlign.center),
-                        Text(
-                            "1. Open their NudgeMe app and navigate to the Network page.\n" +
-                                "2. Click ‘Scan code to add to network.’\n" +
-                                "3. Using the camera on their phone, scan your code.\n" +
-                                "4. Once they have added you, add them back by clicking on the ‘Scan code to add to network’ button.",
-                            style: Theme.of(context).textTheme.bodyText2)
+        onPressed: () => showDialog(
+            builder: (context) => AlertDialog(
+                  scrollable: true,
+                  title: Text("My NudgeMe Identity \n(QR Code)",
+                      textAlign: TextAlign.center),
+                  content: FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, data) {
+                      if (data.hasData) {
+                        final SharedPreferences prefs = data.data;
+                        final identifier = prefs.getString(USER_IDENTIFIER_KEY);
+                        final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
+                        return Column(children: [
+                          _getQRCode(identifier, pubKey),
+                          Text(
+                              "This is your identity code.\n\n For someone to add you to their support network, ask them to:\n ",
+                              style: Theme.of(context).textTheme.bodyText2,
+                              textAlign: TextAlign.center),
+                          Text(
+                              "1. Open their NudgeMe app and navigate to the Network page.\n" +
+                                  "2. Click ‘Scan code to add to network.’\n" +
+                                  "3. Using the camera on their phone, scan your code.\n" +
+                                  "4. Once they have added you, add them back by clicking on the ‘Scan code to add to network’ button.",
+                              style: Theme.of(context).textTheme.bodyText2)
+                        ]);
+                      } else if (data.hasError) {
+                        print(data.error);
+                        return Text("Couldn't get data.");
+                      }
+                      return Row(children: [
+                        Expanded(child: LinearProgressIndicator())
                       ]);
-                    } else if (data.hasError) {
-                      print(data.error);
-                      return Text("Couldn't get data.");
-                    }
-                    return Row(
-                        children: [Expanded(child: LinearProgressIndicator())]);
-                  },
+                    },
+                  ),
+                  actions: [
+                    TextButton(
+                      child: Text('Done'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
                 ),
-                actions: [
-                  TextButton(
-                    child: Text('Done'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ),
-          context: context),
-      child: Text('My Identity \nCode', textAlign: TextAlign.center),
-    );
+            context: context),
+        child: Text(
+          'My Identity \nCode',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor),
+        ));
 
     final shareLinkButtons = FutureBuilder(
       future: SharedPreferences.getInstance(),
@@ -233,7 +236,11 @@ class SharingPageState extends State<SharingPage> {
           MaterialPageRoute(
               // NOTE: not using the new context 'ctx'
               builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
-      child: Text('Scan code to\n add to network', textAlign: TextAlign.center),
+      child: Text(
+        'Scan code to\n add to network',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor),
+      ),
     );
 
     final noFriendsWidget = Column(children: [
@@ -241,36 +248,120 @@ class SharingPageState extends State<SharingPage> {
           child: Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Column(children: [
-                Text("With NudgeMe, caring is sharing. \n\n" +
-                    "Let people in your care network know how you are. Do them by texting them a link to download NudgeMe.\n\n"),
+                RichText(
+                    text: new TextSpan(children: [
+                      new TextSpan(
+                          text: "With NudgeMe, caring is sharing. \n\n" +
+                              "Let people in your care network know how you are. Do them by texting them a link to download NudgeMe.\n",
+                          style: Theme.of(context).textTheme.bodyText2),
+                    ]),
+                    textAlign: TextAlign.center),
                 //share button for link to download app
-                Text("Then, share a link using one of these buttons/"),
+                RichText(
+                    text: new TextSpan(children: [
+                      new TextSpan(
+                          text:
+                              "Then, share the link to using one of these buttons:",
+                          style: Theme.of(context).textTheme.bodyText2)
+                    ]),
+                    textAlign: TextAlign.center),
+                SizedBox(height: 20)
               ]))),
       shareLinkButtons,
-      Text("When you both have NudgeMe, you can send your wellbeing diary to people who care for you and" +
-          " they can do the same with you. Hopefully, this will  start a conversation about wellbeing that is meaningful and helpful.\n"),
+      SizedBox(height: 20),
       Center(
           child: Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(children: [
-                Text(
-                    "\nAlternatively, add people to your care network in person by scanning their QR code and having them scan yours.",
-                    style: Theme.of(context).textTheme.bodyText2,
-                    textAlign: TextAlign.start)
-              ]))),
+              child: RichText(
+                  text: new TextSpan(children: [
+                    new TextSpan(
+                        text:
+                            "When you both have NudgeMe, you can send your wellbeing diary to people who care for you and they can do the same with you.",
+                        style: TextStyle(
+                            fontFamily: "Rosario",
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
+                    new TextSpan(
+                        text:
+                            " Hopefully, this will  start a conversation about wellbeing that is meaningful and helpful.",
+                        style: TextStyle(
+                            fontFamily: "Rosario",
+                            fontSize: 15,
+                            color: Colors.black)),
+                    new TextSpan(
+                        text:
+                            "\n\n\nAlternatively, add people to your care network in person by scanning their QR code and having them scan yours.",
+                        style: TextStyle(
+                            fontFamily: "Rosario",
+                            fontSize: 13,
+                            color: Colors.black))
+                  ]),
+                  textAlign: TextAlign.center))),
+      SizedBox(height: 5),
       showKeyButton,
-      scanCodeButton,
+      scanCodeButton
     ]);
 
     final friendsDescription = Center(
         child: Padding(
             padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Column(children: [
-              Text(
-                  "With NudgeMe, caring is sharing. \n\nLet people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n" +
-                      "Click the send button below to share your diary with your network or to send a nudge. Sending a nudge to someone in your care network allows you to set them a steps goal. View other people’s wellbeing and diaries and nudges with the View button.\n\n" +
-                      "Pull down to reload.",
-                  style: Theme.of(context).textTheme.bodyText2)
+              RichText(
+                  text: new TextSpan(children: [
+                    TextSpan(
+                        text: "With NudgeMe, caring is sharing. \n\n",
+                        style: Theme.of(context).textTheme.bodyText2),
+                    TextSpan(
+                        text:
+                            "Let people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n",
+                        style: Theme.of(context).textTheme.bodyText2),
+                    TextSpan(children: [
+                      TextSpan(
+                          text: "Click the ",
+                          style: Theme.of(context).textTheme.bodyText2),
+                      TextSpan(
+                          text: "send button below ",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                      TextSpan(
+                          text: "to ",
+                          style: Theme.of(context).textTheme.bodyText2),
+                      TextSpan(
+                          text: "share your wellbeing diary ",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                      TextSpan(
+                          text: "with your network or to ",
+                          style: Theme.of(context).textTheme.bodyText2),
+                      TextSpan(
+                          text: "send a nudge. ",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                    ]),
+                    TextSpan(
+                        text:
+                            "Sending a nudge to someone in your care network allows you to set them a steps goal. ",
+                        style: Theme.of(context).textTheme.bodyText2),
+                    TextSpan(children: [
+                      TextSpan(
+                          text:
+                              "\nView other people’s wellbeing and diaries and nudges with the ",
+                          style: Theme.of(context).textTheme.bodyText2),
+                      TextSpan(
+                          text: "View button.",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black))
+                    ]),
+                    TextSpan(
+                        text: "\n\nPull down to reload.",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black)),
+                  ]),
+                  textAlign: TextAlign.center)
             ])));
     final friendsList = _getFriendsList(context);
     final friendsListWidget = FutureBuilder(
@@ -291,6 +382,44 @@ class SharingPageState extends State<SharingPage> {
           }
           return Expanded(child: CircularProgressIndicator());
         });
+    final friendsButtonsWidget = Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        key: _networkButtonsTutorialKey,
+        children: [
+          shareLinkButtons,
+          SizedBox(width: 20),
+          IconButton(
+              //help button
+              icon: Icon(Icons.help_rounded),
+              onPressed: () {
+                showCoachMarkButtons(20);
+              }),
+          SizedBox(width: 20),
+          Column(children: [showKeyButton, scanCodeButton])
+        ]);
+
+    final customScrollFriendsWidget = FutureBuilder(
+        future: friendsList,
+        builder: (ctx, data) {
+          final List<Friend> friends = data.data;
+          return !data.hasData || friends.length == 0
+              ? noFriendsWidget
+              : Column(children: [
+                  CustomScrollView(slivers: [
+                    SliverAppBar(
+                      expandedHeight: 30.0,
+                      flexibleSpace: const FlexibleSpaceBar(
+                          title: Text(
+                        "With NudgeMe, caring is sharing. \n\nLet people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n" +
+                            "Click the send button below to share your diary with your network or to send a nudge. Sending a nudge to someone in your care network allows you to set them a steps goal. View other people’s wellbeing and diaries and nudges with the View button.\n\n" +
+                            "Pull down to reload.",
+                      )),
+                    ),
+                    SliverToBoxAdapter(child: friendsListWidget),
+                  ]),
+                  SliverToBoxAdapter(child: friendsButtonsWidget)
+                ]);
+        });
 
     final friendsWidget = FutureBuilder(
         future: friendsList,
@@ -302,21 +431,7 @@ class SharingPageState extends State<SharingPage> {
                   child: Column(children: [
                   friendsDescription,
                   friendsListWidget,
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      key: _networkButtonsTutorialKey,
-                      children: [
-                        shareLinkButtons,
-                        SizedBox(width: 20),
-                        IconButton(
-                            //help button
-                            icon: Icon(Icons.help_rounded),
-                            onPressed: () {
-                              showCoachMarkButtons(20);
-                            }),
-                        SizedBox(width: 20),
-                        Column(children: [showKeyButton, scanCodeButton])
-                      ]),
+                  friendsButtonsWidget,
                   SizedBox(height: 10)
                 ]));
         });
