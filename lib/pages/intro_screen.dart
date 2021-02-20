@@ -319,7 +319,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         pages: [
           PageViewModel(
               title: "Welcome",
-              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              image: Image.asset("lib/images/IntroLogo.png"),
               bodyWidget: Text(
                   "It is recognised that people often forget to look after themselves. \n\n " +
                       "This app has been designed to encourage you to do this. \n \n",
@@ -328,7 +328,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               decoration: pageDecoration),
           PageViewModel(
               title: "How?",
-              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              image: Image.asset("lib/images/IntroLogo.png"),
               bodyWidget: Text(
                   "Occasionally, it will nudge you to keep in contact with people you like to speak to. " +
                       "It will also make you aware of opportunities to share your wellbeing with this group. " +

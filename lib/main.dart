@@ -209,18 +209,17 @@ class MyApp extends StatelessWidget {
             showUnselectedLabels: true,
           ),
         ),
-        home: new SplashScreen(
-          title: new Text('NudgeMe',
-              style: TextStyle(
-                fontFamily: 'Rosario',
-                fontSize: 40,
-                color: Colors.black,
-              )),
-          image: new Image.asset('lib/images/launcher/logo.png'),
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          photoSize: 100.0,
-          loaderColor: Color.fromARGB(255, 0, 74, 173),
-          navigateAfterFuture: loadAfterSplash(),
+        home: FutureBuilder(
+          future: _openIntro,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data ? IntroScreen() : MainPages();
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Oops");
+            }
+            return CircularProgressIndicator();
+          },
         ),
         navigatorKey: navigatorKey,
       ),
