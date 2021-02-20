@@ -137,6 +137,27 @@ void _setupStepCountTotal() async {
 class MyApp extends StatelessWidget {
   final Future<bool> _openIntro = _isFirstTime();
 
+  Future<Widget> loadAfterSplash() async {
+    return Future.value(FutureBuilder(
+      future: _openIntro,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data) {
+            return IntroScreen();
+          }
+          if (!snapshot.data) {
+            return MainPages();
+          }
+        } else if (snapshot.hasError) {
+          print(snapshot.error);
+          return Text("Oops");
+        }
+        print("no info");
+        return CircularProgressIndicator();
+      },
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -194,19 +215,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: new SplashScreen(
-          seconds: 6,
-          navigateAfterSeconds: FutureBuilder(
-            future: _openIntro,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return snapshot.data ? IntroScreen() : MainPages();
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Text("Oops");
-              }
-              return CircularProgressIndicator();
-            },
-          ),
           title: new Text('NudgeMe',
               style: TextStyle(
                 fontFamily: 'Rosario',
@@ -217,6 +225,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           photoSize: 100.0,
           loaderColor: Color.fromARGB(255, 0, 74, 173),
+          navigateAfterFuture: loadAfterSplash(),
         ),
         navigatorKey: navigatorKey,
       ),
