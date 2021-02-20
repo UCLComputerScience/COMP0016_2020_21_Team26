@@ -114,7 +114,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 30, 180.0),
                 child: Text(
-                    "The share button at the bottom allows you to save or share your graph with your care network!",
+                    "The share button allows you to save or share your graph.",
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],
@@ -215,21 +215,27 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           if (snapshot.hasData) {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
-            final children = [
+            final buttons = [
               Container(
                   child: IconButton(
                       icon: Icon(Icons.info_outline,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {
                         showCoachMarkGraph(20);
-                      })),
-              Container(key: _wbGraphTutorialKey, child: graph)
+                      }))
             ];
             if (widget.displayShare) {
-              children.add(Container(
+              buttons.add(Container(
                   key: _wbShareTutorialKey,
                   child: ShareButton(_printKey, 'wellbeing-score.pdf')));
             }
+
+            final children = [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: buttons),
+              Container(key: _wbGraphTutorialKey, child: graph)
+            ];
 
             return Column(
               children: children,
