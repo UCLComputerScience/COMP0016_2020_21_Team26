@@ -218,7 +218,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             final children = [
               Container(
                   child: IconButton(
-                      icon: Icon(Icons.help_rounded),
+                      icon: Icon(Icons.info_outline,
+                          color: Theme.of(context).primaryColor),
                       onPressed: () {
                         showCoachMarkGraph(20);
                       })),

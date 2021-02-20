@@ -400,7 +400,8 @@ class SharingPageState extends State<SharingPage> {
           SizedBox(width: 20),
           IconButton(
               //help button
-              icon: Icon(Icons.help_rounded),
+              icon: Icon(Icons.info_outline,
+                  color: Theme.of(context).primaryColor),
               onPressed: () {
                 showCoachMarkButtons(20);
               }),
