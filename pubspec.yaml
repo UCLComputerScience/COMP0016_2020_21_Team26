@@ -123,6 +123,10 @@ flutter:
       - family: Rosario
         fonts:
           - asset: lib/fonts/Rosario-Regular.ttf
+      - family: Kite_One
+        fonts:
+          - asset: lib/fonts/KiteOne-Regular.ttf
+         
 
   #   - family: Schyler
   #     fonts:

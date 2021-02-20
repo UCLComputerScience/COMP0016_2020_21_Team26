@@ -180,7 +180,7 @@ class MyApp extends StatelessWidget {
               headline1: TextStyle(
                   fontSize: 36.0,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Rosario'),
+                  fontFamily: 'Kite_One'),
               headline2: TextStyle(
                 fontFamily: 'Rosario',
                 fontSize: 25,
