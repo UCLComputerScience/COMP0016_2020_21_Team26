@@ -22,7 +22,7 @@ class _NudgeProgressPageState extends State<NudgeProgressPage> {
   @override
   void initState() {
     super.initState();
-    rootBundle.load("lib/images/StepProgressMarker.jpg").then(
+    rootBundle.load("lib/images/StepProgressMarker.png").then(
         (value) => ui.decodeImageFromList(value.buffer.asUint8List(), (result) {
               setState(() {
                 imageMarker = result;
