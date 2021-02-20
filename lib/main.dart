@@ -142,12 +142,7 @@ class MyApp extends StatelessWidget {
       future: _openIntro,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data) {
-            return IntroScreen();
-          }
-          if (!snapshot.data) {
-            return MainPages();
-          }
+          return snapshot.data ? IntroScreen() : MainPages();
         } else if (snapshot.hasError) {
           print(snapshot.error);
           return Text("Oops");
