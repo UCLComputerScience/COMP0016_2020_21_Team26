@@ -13,8 +13,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uni_links/uni_links.dart';
-import 'package:splashscreen/splashscreen.dart';
-
 import 'main_pages.dart';
 
 /// key to retrieve [bool] that is true if setup is done
