@@ -56,20 +56,34 @@ class _NudgeProgressPageState extends State<NudgeProgressPage> {
                 } else {
                   actual = curr - widget.friend.initialStepCount;
                 }
+                if (actual >= widget.friend.currentStepsGoal) {
+                  Navigator.pop(context);
+                }
+
                 final progress = (actual / widget.friend.currentStepsGoal);
                 return Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text("${(progress * 100).truncate()}% completed"),
+                      Text("$actual/${widget.friend.currentStepsGoal} steps completed"),
+                      SizedBox(height: 20,),
                       imageMarker == null
                           ? Container()
-                          : Container(
-                              width: 300,
-                              height: 300,
-                              child: CustomPaint(
-                                painter: StepGoalPainter(progress, imageMarker),
+                          : Stack(
+                        alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 300,
+                                height: 300,
+                                child: CustomPaint(
+                                  painter: StepGoalPainter(progress, imageMarker),
+                                ),
                               ),
-                            )
+                              Text("${(progress * 100).truncate()}%",
+                                style: Theme.of(context).textTheme.headline1,
+                              ),
+                            ],
+                          )
                     ],
                   ),
                 );

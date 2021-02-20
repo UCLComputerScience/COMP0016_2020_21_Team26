@@ -265,14 +265,14 @@ class SharingPageState extends State<SharingPage> {
       title: const Text("Choose what to send"),
       children: [
         SimpleDialogOption(
-          child: const Text("Send Wellbeing Data"),
+          child: const Text("📮 Send Your Wellbeing Data"),
           onPressed: () {
             Navigator.pop(context);
             _showWellbeingSendDialog(context, friend);
           },
         ),
         SimpleDialogOption(
-          child: Text("Nudge ${friend.name} - Set a Step Goal"),
+          child: Text("⏱ Set ${friend.name} a Step Goal"),
           onPressed: () {
             Navigator.pop(context);
             if (friend.sentActiveGoal == 1) {
@@ -311,11 +311,11 @@ class SharingPageState extends State<SharingPage> {
       title: const Text("Choose what to view"),
       children: [
         SimpleDialogOption(
-          child: Text("Wellbeing Data from ${friend.name}"),
+          child: Text("📊 Wellbeing Data from ${friend.name}"),
           onPressed: onViewWellbeing,
         ),
         SimpleDialogOption(
-          child: Text("Step Goal from ${friend.name} 🚶"),
+          child: Text("🚶 Step Goal from ${friend.name}"),
           onPressed: () {
             Navigator.pop(context);
             if (friend.currentStepsGoal != null) {
