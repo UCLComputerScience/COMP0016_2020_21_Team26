@@ -14,7 +14,7 @@ class SettingsPage extends StatelessWidget {
           tiles: [
             SettingsTile(
               title: 'Postcode',
-              subtitle: 'Change/Update',
+              subtitle: 'View/Change',
               leading: Icon(Icons.house),
               onPressed: (BuildContext context) {
                 Navigator.push(
@@ -25,7 +25,7 @@ class SettingsPage extends StatelessWidget {
             ),
             SettingsTile(
               title: 'Support Code',
-              subtitle: 'Change/Update',
+              subtitle: 'View/Change',
               leading: Icon(Icons.phone_android_rounded),
               onPressed: (BuildContext context) {
                 Navigator.push(

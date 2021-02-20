@@ -24,19 +24,9 @@ class _ChangeSupportCodeState extends State<ChangeSupportCode> {
     return Scaffold(
         appBar: AppBar(title: Text("Change Support Code")),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Text(
-                "\nIf your support has changed, follow the following instructions to change it.\n",
-                textAlign: TextAlign.center,
-              )),
-          Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Text(
-                  "1.  Click inside the purple box and type in your new support code \n2.  Click the Change button\n",
-                  textAlign: TextAlign.start)),
+          SizedBox(height: 30),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text("Current Support Code: ",
+            Text("Currently, your support code is: ",
                 style: Theme.of(context).textTheme.subtitle1),
             FutureBuilder(
                 future: _getSupportCode(),
@@ -52,6 +42,17 @@ class _ChangeSupportCodeState extends State<ChangeSupportCode> {
                   return CircularProgressIndicator();
                 })
           ]),
+          Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Text(
+                "\nIf your support has changed, follow the following instructions to change it.\n",
+                textAlign: TextAlign.center,
+              )),
+          Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Text(
+                  "1.  Click inside the purple box and type in your new support code \n2.  Click the Change button\n",
+                  textAlign: TextAlign.start)),
           SizedBox(height: 8),
           Container(
               child: Form(
