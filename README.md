@@ -1,6 +1,6 @@
 # NudgeMe - COMP0016 2020/21, Team 26
 
-[![GitHub Super-Linter](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/workflows/flutter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 V2 of the CarerCare app.
 
