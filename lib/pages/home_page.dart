@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
 
   void showTutorial() async {
     if (!(await _isHomeTutorialDone())) {
-      Timer(Duration(milliseconds: 400), () => showCoachMarkWB());
+      Timer(Duration(milliseconds: 500), () => showCoachMarkWB());
     }
   }
 
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Center(
               child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
+                  padding: EdgeInsets.fromLTRB(10, 150, 10, 0),
                   child: Text(
                       "This is where you can view \n last week's score.",
                       style: Theme.of(context).textTheme.subtitle2)))
@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
     markRect = Rect.fromCircle(
         center: markRect.center, radius: markRect.longestSide * 0.6);
     coachMarkSteps.show(
-        targetContext: _lastWeekWBTutorialKey.currentContext,
+        targetContext: _stepsTutorialKey.currentContext,
         markRect: markRect,
         children: [
           Center(
@@ -115,23 +115,34 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 10.0,
           ),
-          FutureBuilder(
-              key: _lastWeekWBTutorialKey,
-              future: Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final List<WellbeingItem> lastItemList = snapshot.data;
-                  return lastItemList.isNotEmpty
-                      ? WellbeingCircle(
-                          lastItemList[0].wellbeingScore.truncate())
-                      : WellbeingCircle();
-                } else if (snapshot.hasError) {
-                  print(snapshot.error);
-                  Text("Something went wrong.",
-                      style: Theme.of(context).textTheme.bodyText1);
-                }
-                return CircularProgressIndicator();
-              }),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                height: 200,
+                width: 200,
+                key: _lastWeekWBTutorialKey,
+              ),
+              FutureBuilder(
+                  future:
+                      Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final List<WellbeingItem> lastItemList = snapshot.data;
+                      return lastItemList.isNotEmpty
+                          ? WellbeingCircle(
+                              lastItemList[0].wellbeingScore.truncate())
+                          : WellbeingCircle();
+                    } else if (snapshot.hasError) {
+                      print(snapshot.error);
+                      Text("Something went wrong.",
+                          style: Theme.of(context).textTheme.bodyText1);
+                    }
+                    return CircularProgressIndicator();
+                  }),
+            ],
+          ),
+
           const SizedBox(
             height: 5.0,
           ),

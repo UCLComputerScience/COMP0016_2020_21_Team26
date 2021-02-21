@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:nudge_me/pages/settings_page.dart';
+import 'package:nudge_me/pages/settings_sections/reschedule_wb.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Screen that displays to faciliate the user setup.
@@ -249,7 +249,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               items: hours.map<DropdownMenuItem>((value) {
                 return DropdownMenuItem(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().padLeft(2, "0")),
                 );
               }).toList()),
           SizedBox(width: 5),
@@ -275,7 +275,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               items: minutes.map<DropdownMenuItem>((value) {
                 return DropdownMenuItem(
                   value: value,
-                  child: Text(value.toString()),
+                  child: Text(value.toString().padLeft(2, "0")),
                 );
               }).toList())
         ]);
@@ -291,10 +291,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 style: introTextStyle,
                 textAlign: TextAlign.center),
             SizedBox(height: 5),
-            Container(
+            Center(
+                child: Container(
               height: 60,
               child: notificationSelector,
-            ),
+            )),
           ],
         ),
         decoration: pageDecoration);
@@ -318,7 +319,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         pages: [
           PageViewModel(
               title: "Welcome",
-              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              image: Image.asset("lib/images/IntroLogo.png"),
               bodyWidget: Text(
                   "It is recognised that people often forget to look after themselves. \n\n " +
                       "This app has been designed to encourage you to do this. \n \n",
@@ -327,7 +328,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
               decoration: pageDecoration),
           PageViewModel(
               title: "How?",
-              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              image: Image.asset("lib/images/IntroLogo.png"),
               bodyWidget: Text(
                   "Occasionally, it will nudge you to keep in contact with people you like to speak to. " +
                       "It will also make you aware of opportunities to share your wellbeing with this group. " +
@@ -445,7 +446,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                               style: Theme.of(context).textTheme.caption),
                           new TextSpan(
                               text: "see here",
-                              style: Theme.of(context).textTheme.caption,
+                              style: TextStyle(
+                                  fontFamily: 'Rosario',
+                                  fontSize: 12,
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.black),
                               recognizer: new TapGestureRecognizer()
                                 ..onTap = () {
                                   launch(BASE_URL + '/mapDemo');
