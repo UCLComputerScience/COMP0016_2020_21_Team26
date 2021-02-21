@@ -40,7 +40,7 @@ curl -d $DATA -H 'Content-Type: application/json;charset=UTF-8' https://comp0016
 
 ## Wellbeing Sharing
 
-We would like to share the last 5 weeks, like with the PDF, so the JSON data would be 
+We would like to share the last 5 weeks, like with the PDF, so the JSON data would be
 something like this:
 
 ``` json
