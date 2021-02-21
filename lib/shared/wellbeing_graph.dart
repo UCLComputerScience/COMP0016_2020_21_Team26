@@ -42,12 +42,12 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   @override
   void initState() {
     super.initState();
-    showTutorial();
+    showTutorial(10);
   }
 
-  void showTutorial() async {
+  void showTutorial(int duration) async {
     if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
-      Timer(Duration(milliseconds: 100), () => showCoachMarkGraph());
+      Timer(Duration(milliseconds: 100), () => showCoachMarkGraph(duration));
     }
   }
 
@@ -66,7 +66,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
       backgroundColor: Colors.white);
 
   ///function to show the first slide of the tutorial, explaining the wellbeing graph
-  void showCoachMarkGraph() {
+  void showCoachMarkGraph(int duration) {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
@@ -92,14 +92,15 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                     style: tutorialTextStyle)),
           ])
         ],
-        duration: Duration(seconds: 10),
+        duration: Duration(seconds: duration),
         onClose: () {
-          Timer(Duration(milliseconds: 100), () => showCoachMarkShare());
+          Timer(
+              Duration(milliseconds: 100), () => showCoachMarkShare(duration));
         });
   }
 
   ///function to show the second slide of the tutorial, explaining the share button
-  void showCoachMarkShare() {
+  void showCoachMarkShare(int duration) {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
@@ -113,11 +114,11 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 30, 180.0),
                 child: Text(
-                    "The share button at the bottom allows you to save or share your graph with your care network!",
+                    "The share button allows you to save or share your graph.",
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],
-        duration: Duration(seconds: 10),
+        duration: Duration(seconds: duration),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(WB_TUTORIAL_DONE_KEY, true));
@@ -214,14 +215,27 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           if (snapshot.hasData) {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
-            final children = [
-              Container(key: _wbGraphTutorialKey, child: graph)
+            final buttons = [
+              Container(
+                  child: IconButton(
+                      icon: Icon(Icons.info_outline,
+                          color: Theme.of(context).primaryColor),
+                      onPressed: () {
+                        showCoachMarkGraph(20);
+                      }))
             ];
             if (widget.displayShare) {
-              children.add(Container(
+              buttons.add(Container(
                   key: _wbShareTutorialKey,
                   child: ShareButton(_printKey, 'wellbeing-score.pdf')));
             }
+
+            final children = [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: buttons),
+              Container(key: _wbGraphTutorialKey, child: graph)
+            ];
 
             return Column(
               children: children,

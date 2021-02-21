@@ -39,6 +39,17 @@ class _ContactSharePageState extends State<ContactSharePage> {
         )
       : CircleAvatar(child: Text(c.initials()));
 
+  void _updateAvatars() async {
+    _contacts.forEach((contact) async {
+        final avatar = await ContactsService.getAvatar(contact, photoHighRes: false);
+        if (avatar != null) {
+          setState(() {
+              contact.avatar = avatar;
+          });
+        }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final fab = FloatingActionButton(
@@ -52,13 +63,14 @@ class _ContactSharePageState extends State<ContactSharePage> {
 
     return Scaffold(
       body: FutureBuilder(
-          future: ContactsService.getContacts(),
+          future: ContactsService.getContacts(withThumbnails: false),
           builder: (context, futureData) {
             if (futureData.hasData) {
               List<Contact> contacts = futureData.data.toList(growable: false);
               if (_contacts == null || contacts.length != _contacts.length) {
                 // contacts must have updated
                 _contacts = contacts;
+                _updateAvatars();
                 _selected = List<bool>.generate(
                     contacts.length, (index) => false,
                     growable: false);

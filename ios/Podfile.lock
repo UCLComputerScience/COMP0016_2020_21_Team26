@@ -1,6 +1,12 @@
 PODS:
+  - contacts_service (0.2.2):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
+    - Flutter
+  - flutter_sms (1.1.0):
+    - Flutter
+  - flutter_user_agent (1.2.2):
     - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
@@ -10,7 +16,7 @@ PODS:
     - Flutter
   - pedometer (0.0.1):
     - Flutter
-  - "permission_handler (5.0.1+1)":
+  - "permission_handler (5.1.0+2)":
     - Flutter
   - printing (0.0.1):
     - Flutter
@@ -36,8 +42,11 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - contacts_service (from `.symlinks/plugins/contacts_service/ios`)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_sms (from `.symlinks/plugins/flutter_sms/ios`)
+  - flutter_user_agent (from `.symlinks/plugins/flutter_user_agent/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - pedometer (from `.symlinks/plugins/pedometer/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
@@ -57,10 +66,16 @@ SPEC REPOS:
     - Sentry
 
 EXTERNAL SOURCES:
+  contacts_service:
+    :path: ".symlinks/plugins/contacts_service/ios"
   Flutter:
     :path: Flutter
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_sms:
+    :path: ".symlinks/plugins/flutter_sms/ios"
+  flutter_user_agent:
+    :path: ".symlinks/plugins/flutter_user_agent/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   pedometer:
@@ -85,13 +100,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
+  contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  flutter_sms: 91ce41530f55c85d6524d82307a5d555844c086a
+  flutter_user_agent: 27c45d034dc31b80948d29998cea52cd3a7bf936
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   pedometer: 381969883680ade42559782cc41a3bbd453d8234
-  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   printing: 5ec249946ebbd51cead5ed9b0b48113bb5141bcf
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
@@ -102,6 +120,6 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
-PODFILE CHECKSUM: a75497545d4391e2d394c3668e20cfb1c2bbd4aa
+PODFILE CHECKSUM: 8dddaa4dd1f10e82efa97f9bfa129e26ac9d1a60
 
 COCOAPODS: 1.10.0

@@ -13,7 +13,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uni_links/uni_links.dart';
-
 import 'main_pages.dart';
 
 /// key to retrieve [bool] that is true if setup is done
@@ -136,6 +135,21 @@ void _setupStepCountTotal() async {
 class MyApp extends StatelessWidget {
   final Future<bool> _openIntro = _isFirstTime();
 
+  Future<Widget> loadAfterSplash() async {
+    return FutureBuilder(
+      future: _openIntro,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return snapshot.data ? IntroScreen() : MainPages();
+        } else if (snapshot.hasError) {
+          print(snapshot.error);
+          return Text("Oops");
+        }
+        return CircularProgressIndicator();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -163,7 +177,7 @@ class MyApp extends StatelessWidget {
               headline1: TextStyle(
                   fontSize: 36.0,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Rosario'),
+                  fontFamily: 'Kite_One'),
               headline2: TextStyle(
                 fontFamily: 'Rosario',
                 fontSize: 25,
@@ -179,7 +193,8 @@ class MyApp extends StatelessWidget {
                   fontStyle: FontStyle.italic,
                   fontSize: 20), //for tutorial
               bodyText1: TextStyle(fontFamily: 'Rosario', fontSize: 20),
-              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15)),
+              bodyText2: TextStyle(fontFamily: 'Rosario', fontSize: 15),
+              caption: TextStyle(fontFamily: 'Rosario', fontSize: 12)),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: Colors.white,
             selectedLabelStyle: TextStyle(

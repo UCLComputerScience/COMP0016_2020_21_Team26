@@ -58,8 +58,9 @@ class AddFriendPageState extends State<AddFriendPage> {
     final _steps = [
       Step(
           title: Text("Scan their QR code"),
-          subtitle: Text('Ask them to tap "My Identity"' +
-              ' and point the camera at their identity code.'),
+          subtitle: Text(
+              "1. Ask the person to click ‘My Identity’ on their NudgeMe Network page.\n" +
+                  "2. Point the camera below at their code.\n"),
           content: widget.identifier == null
               ? Container(
                   height: 400,
@@ -72,6 +73,8 @@ class AddFriendPageState extends State<AddFriendPage> {
           state: _getQRState()),
       Step(
           title: Text("Enter their name"),
+          subtitle: Text(
+              "Type in their name. Remember that they must add you back to be part of your support network."),
           content: Form(
             key: _formKey,
             child: Column(
