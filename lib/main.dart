@@ -136,7 +136,7 @@ class MyApp extends StatelessWidget {
   final Future<bool> _openIntro = _isFirstTime();
 
   Future<Widget> loadAfterSplash() async {
-    return Future.value(FutureBuilder(
+    return FutureBuilder(
       future: _openIntro,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -145,10 +145,9 @@ class MyApp extends StatelessWidget {
           print(snapshot.error);
           return Text("Oops");
         }
-        print("no info");
         return CircularProgressIndicator();
       },
-    ));
+    );
   }
 
   @override
