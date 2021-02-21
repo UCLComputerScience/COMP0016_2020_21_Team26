@@ -1,6 +1,6 @@
 # NudgeMe - COMP0016 2020/21, Team 26
 
-![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/workflows/flutter.yml/badge.svg)
+[![Flutter](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml/badge.svg)](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml)
 
 V2 of the CarerCare app.
 
