@@ -580,7 +580,8 @@ class SharingPageState extends State<SharingPage> {
   }
 
   Future<void> _sendWellbeingData(BuildContext context, Friend friend) async {
-    final friendKey = RSAKeyParser().parse(friend.publicKey) as RSAPublicKey;
+    final friendKey =
+        RSAKeyParser().parse(friend.publicKey) as pointyCastle.RSAPublicKey;
 
     final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
     final List<Map<String, int>> mapped = items

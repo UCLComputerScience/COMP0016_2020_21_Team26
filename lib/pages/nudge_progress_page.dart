@@ -65,25 +65,30 @@ class _NudgeProgressPageState extends State<NudgeProgressPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text("$actual/${widget.friend.currentStepsGoal} steps completed"),
-                      SizedBox(height: 20,),
+                      Text(
+                          "$actual/${widget.friend.currentStepsGoal} steps completed"),
+                      SizedBox(
+                        height: 20,
+                      ),
                       imageMarker == null
                           ? Container()
                           : Stack(
-                        alignment: Alignment.center,
-                            children: [
-                              Container(
-                                width: 300,
-                                height: 300,
-                                child: CustomPaint(
-                                  painter: StepGoalPainter(progress, imageMarker),
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  width: 300,
+                                  height: 300,
+                                  child: CustomPaint(
+                                    painter:
+                                        StepGoalPainter(progress, imageMarker),
+                                  ),
                                 ),
-                              ),
-                              Text("${(progress * 100).truncate()}%",
-                                style: Theme.of(context).textTheme.headline1,
-                              ),
-                            ],
-                          )
+                                Text(
+                                  "${(progress * 100).truncate()}%",
+                                  style: Theme.of(context).textTheme.headline1,
+                                ),
+                              ],
+                            )
                     ],
                   ),
                 );
