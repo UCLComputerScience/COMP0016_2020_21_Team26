@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
+import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
@@ -180,33 +181,40 @@ class _HomePageState extends State<HomePage> {
           }
           return CircularProgressIndicator();
         });
+    final unreadMessages = FutureBuilder(
+        future: Provider.of<FriendDB>(context).getUnreadCount(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Text(snapshot.data.toString());
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text('Error');
+          }
+          return CircularProgressIndicator();
+        });
 
     return Container(
         width: double.infinity,
         child: Column(children: [
-          const SizedBox(
-            height: 5.0,
-          ),
           Text(
-            "This Week's Activity",
+            'Activity',
             style: Theme.of(context).textTheme.headline3,
           ),
           const SizedBox(
             height: 5.0,
           ),
-          Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [
-                  Icon(Icons.directions_walk_outlined),
-                  Text("Steps", style: Theme.of(context).textTheme.subtitle1)
-                ]),
-                pedometer,
-              ],
-            ),
+          ListTile(
+            leading: Icon(Icons.directions_walk),
+            title: Text('This Week\'s Steps',
+                style: Theme.of(context).textTheme.subtitle1),
+            trailing: pedometer,
           ),
+          ListTile(
+            leading: Icon(Icons.mark_chat_unread),
+            title: Text('Network - Unread Wellbeing',
+                style: Theme.of(context).textTheme.subtitle1),
+            trailing: unreadMessages,
+          )
         ]));
   }
 

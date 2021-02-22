@@ -68,6 +68,13 @@ class FriendDB extends ChangeNotifier {
     return itemList;
   }
 
+  Future<int> getUnreadCount() async {
+    final db = await database;
+    final queryString = 'SELECT COUNT(*) FROM $_tableName '
+        'WHERE ${_columns[5]} = 0'; // unread when explicitly 0
+    return firstIntValue(await db.rawQuery(queryString));
+  }
+
   /// updates the latest data for all the identifiers in messages.
   /// each message should have an 'identifier_from' and 'data' index
   /// that points to their respective string values.
