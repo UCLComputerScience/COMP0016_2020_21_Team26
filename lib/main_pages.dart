@@ -105,7 +105,7 @@ class _MainPagesState extends State<MainPages> {
       TestingPage(),
     ];
 
-    final badgeMap = _unreadNum == null
+    final Map<int, dynamic> badgeMap = _unreadNum == null || _unreadNum == 0
         ? {}
         : {NavBarIndex.network.index: _unreadNum.toString()};
 
