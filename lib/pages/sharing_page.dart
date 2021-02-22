@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:nudge_me/background.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main_pages.dart';
@@ -506,24 +507,35 @@ class SharingPageState extends State<SharingPage> {
 
     // friend.read might be null
     final unread = friend.read == 0;
-    return ListTile(
-      leading: unread ? Icon(Icons.message) : Icon(Icons.person),
-      selected: unread,
-      title: Text(friend.name),
-      onTap: onView,
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          viewButton,
-          SizedBox(
-            width: 5,
-          ),
-          ElevatedButton(
-              onPressed: () => showDialog(
-                  context: context, builder: (context) => sendOptionsDialog),
-              child: const Text("Send")),
-        ],
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      child: ListTile(
+        leading: unread ? Icon(Icons.message) : Icon(Icons.person),
+        selected: unread,
+        title: Text(friend.name),
+        onTap: onView,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            viewButton,
+            SizedBox(
+              width: 5,
+            ),
+            ElevatedButton(
+                onPressed: () => showDialog(
+                    context: context, builder: (context) => sendOptionsDialog),
+                child: const Text("Send")),
+          ],
+        ),
       ),
+      actions: [
+        IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () => Provider.of<FriendDB>(context, listen: false).deleteFriend(friend),
+        )
+      ],
     );
   }
 
