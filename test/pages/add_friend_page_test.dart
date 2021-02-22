@@ -61,6 +61,9 @@ void main() {
       publicKey: pubKey,
       latestData: null,
       read: null,
+      currentStepsGoal: null,
+      sentActiveGoal: 0,
+      initialStepCount: null,
     ));
   });
 

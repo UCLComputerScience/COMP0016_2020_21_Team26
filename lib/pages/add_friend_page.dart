@@ -112,9 +112,6 @@ class AddFriendPageState extends State<AddFriendPage> {
                       return;
                     }
 
-                    // TODO: maybe verify that user identifier exists on server
-                    //       before inserting, although this is mostly for if we
-                    //       allow direct string input
                     if (await Provider.of<FriendDB>(context, listen: false)
                         .isIdentifierPresent(identifier)) {
                       widget._scaffoldState.showSnackBar(SnackBar(
@@ -132,8 +129,13 @@ class AddFriendPageState extends State<AddFriendPage> {
                         name: _name,
                         identifier: identifier,
                         publicKey: publicKey,
+                        // could leave these out, but making them explicit means
+                        // we can verify they are null in tests
                         latestData: null,
                         read: null,
+                        currentStepsGoal: null,
+                        sentActiveGoal: 0,
+                        initialStepCount: null,
                       );
                     }
 
