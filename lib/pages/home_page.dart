@@ -193,29 +193,36 @@ class _HomePageState extends State<HomePage> {
           return CircularProgressIndicator();
         });
 
+    final contentColumn = Column(children: [
+      Text(
+        'Activity',
+        style: Theme.of(context).textTheme.headline3,
+      ),
+      Divider(),
+      ListTile(
+        leading: Icon(Icons.directions_walk),
+        title: Text('This Week\'s Steps',
+            style: Theme.of(context).textTheme.subtitle1),
+        trailing: pedometer,
+      ),
+      ListTile(
+        leading: Icon(Icons.mark_chat_unread),
+        title: Text('Unread Wellbeing Data',
+            style: Theme.of(context).textTheme.subtitle1),
+        trailing: unreadMessages,
+      )
+    ]);
+
     return Container(
         width: double.infinity,
-        child: Column(children: [
-          Text(
-            'Activity',
-            style: Theme.of(context).textTheme.headline3,
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.6),
+            spreadRadius: 1,
+            blurRadius: 3,
           ),
-          const SizedBox(
-            height: 5.0,
-          ),
-          ListTile(
-            leading: Icon(Icons.directions_walk),
-            title: Text('This Week\'s Steps',
-                style: Theme.of(context).textTheme.subtitle1),
-            trailing: pedometer,
-          ),
-          ListTile(
-            leading: Icon(Icons.mark_chat_unread),
-            title: Text('Network - Unread Wellbeing',
-                style: Theme.of(context).textTheme.subtitle1),
-            trailing: unreadMessages,
-          )
-        ]));
+        ]),
+        child: contentColumn);
   }
 
   @override
