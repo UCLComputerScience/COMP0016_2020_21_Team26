@@ -47,6 +47,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _wbCheckNotifMinute = 0;
   DateTime _wbCheckNotifTime;
 
+  /// true if done was tapped with valid input
+  bool doneTapped = false;
+
   void setInitialWellbeing(
       double _currentSliderValue, String postcode, String suppCode) async {
     final dateString = clock.now().toIso8601String().substring(0, 10);
@@ -89,7 +92,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         content: Text("Invalid postcode or support code."),
       ));
       return;
+    } else if (doneTapped) {
+      // this check is needed so we don't perform multiple setups
+      // in case they tap multiple times
+      return;
     }
+    setState(() {
+        doneTapped = true;
+    });
     _dismisKeyboard(); // to avoid some rendering issues
 
     _wbCheckNotifTime = DateTime(
@@ -125,9 +135,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
 
-    /// NOTE: may be a problem if the user immediately goes to the friend page
-    /// and checks their QR code - their identity may not have been generated yet.
-    setupCrypto();
+    await setupCrypto();
 
     // only start tracking steps after user has done setup
     initBackground();
