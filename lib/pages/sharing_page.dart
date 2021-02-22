@@ -219,7 +219,7 @@ class SharingPageState extends State<SharingPage> {
         child: Text(
           'Scan code to\n add to network',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ));
     final showKeyButton = OutlinedButton(
         style: ButtonStyle(
@@ -268,7 +268,7 @@ class SharingPageState extends State<SharingPage> {
         child: Text(
           'My Identity \nCode',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ));
     final shareLinkButtons = _getShareLinkButtons();
     final buttons = shareLinkButtons + [showKeyButton, scanCodeButton];
