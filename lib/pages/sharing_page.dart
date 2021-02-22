@@ -307,60 +307,58 @@ class SharingPageState extends State<SharingPage> {
       scanCodeButton,
     ]);
     final friendsDescription = Center(
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: RichText(
-                text: new TextSpan(children: [
-                  TextSpan(
-                      text: "With NudgeMe, caring is sharing. \n\n",
-                      style: Theme.of(context).textTheme.bodyText2),
-                  TextSpan(
-                      text:
-                          "Let people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n",
-                      style: Theme.of(context).textTheme.bodyText2),
-                  TextSpan(children: [
-                    TextSpan(
-                        text: "Click the ",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(
-                        text: "send button below ",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
-                    TextSpan(
-                        text: "to ",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(
-                        text: "share your wellbeing diary ",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
-                    TextSpan(
-                        text: "with your network or to ",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(
-                        text: "send a nudge. ",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
-                  ]),
-                  TextSpan(
-                      text:
-                          "Sending a nudge to someone in your care network allows you to set them a steps goal. ",
-                      style: Theme.of(context).textTheme.bodyText2),
-                  TextSpan(children: [
-                    TextSpan(
-                        text:
-                            "\nView other people’s wellbeing and diaries and nudges with the ",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(
-                        text: "View button.",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black))
-                  ]),
-                  TextSpan(
-                      text: "\n\nPull down to reload.",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black)),
-                ]),
-                textAlign: TextAlign.center)));
+        child: RichText(
+            text: new TextSpan(children: [
+              TextSpan(
+                  text: "With NudgeMe, caring is sharing. \n\n",
+                  style: Theme.of(context).textTheme.bodyText2),
+              TextSpan(
+                  text:
+                      "Let people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n",
+                  style: Theme.of(context).textTheme.bodyText2),
+              TextSpan(children: [
+                TextSpan(
+                    text: "Click the ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "send button below ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+                TextSpan(
+                    text: "to ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "share your wellbeing diary ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+                TextSpan(
+                    text: "with your network or to ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "send a nudge. ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+              ]),
+              TextSpan(
+                  text:
+                      "Sending a nudge to someone in your care network allows you to set them a steps goal. ",
+                  style: Theme.of(context).textTheme.bodyText2),
+              TextSpan(children: [
+                TextSpan(
+                    text:
+                        "\nView other people’s wellbeing and diaries and nudges with the ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "View button.",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black))
+              ]),
+              TextSpan(
+                  text: "\n\nPull down to reload.",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black)),
+            ]),
+            textAlign: TextAlign.center));
 
     return friends.length == 0
         ? noFriendsWidget
@@ -370,8 +368,9 @@ class SharingPageState extends State<SharingPage> {
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(
+                  pinned: true,
                   backgroundColor: Colors.white,
-                  expandedHeight: 350,
+                  expandedHeight: 325,
                   title: Text(
                     "Support Network",
                     style: Theme.of(context).textTheme.headline3,
