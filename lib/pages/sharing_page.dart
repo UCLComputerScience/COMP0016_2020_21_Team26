@@ -425,7 +425,8 @@ class SharingPageState extends State<SharingPage> {
         });
 
     return Scaffold(
-      body: Column(
+      body: SingleChildScrollView(
+          child: Column(
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
@@ -437,7 +438,7 @@ class SharingPageState extends State<SharingPage> {
           SizedBox(height: 10),
           friendsWidget
         ],
-      ),
+      )),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     );
   }
