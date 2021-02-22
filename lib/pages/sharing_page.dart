@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/background.dart';
-import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
@@ -79,7 +78,6 @@ class SharingPage extends StatefulWidget {
 
 class SharingPageState extends State<SharingPage> {
   GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
-  GlobalKey _networkButtonsTutorialKey = GlobalObjectKey("support_network");
 
   @override
   void initState() {
@@ -95,30 +93,6 @@ class SharingPageState extends State<SharingPage> {
       checkIfGoalsCompleted();
       refreshNudge(false);
     }
-  }
-
-  ///function to show the only slide of the tutorial, explaining the support network page
-  void showCoachMarkButtons(int duration) {
-    CoachMark coachMarkHeading = CoachMark();
-    RenderBox target =
-        _networkButtonsTutorialKey.currentContext.findRenderObject();
-    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-    markRect = Rect.fromCircle(
-        center: markRect.center, radius: markRect.longestSide * 0.6);
-    coachMarkHeading.show(
-        targetContext: _networkButtonsTutorialKey.currentContext,
-        markRect: markRect,
-        children: [
-          Center(
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 200),
-                  child: Text(
-                      "Share a link to add people to your support network using the buttons on the left.\n\n" +
-                          "Scan each other's QR codes to be added to each other's support networks using the buttons on the right.",
-                      style: Theme.of(context).textTheme.subtitle2)))
-        ],
-        duration: Duration(seconds: duration),
-        onClose: () {});
   }
 
   /// gets the friends list using provider.
@@ -171,15 +145,14 @@ class SharingPageState extends State<SharingPage> {
   }
 
   Widget _getQRCode(String identifier, String pubKey) {
-    return SingleChildScrollView(
-        child: Container(
+    return Container(
       width: 200,
       height: 200,
       child: QrImage(
-        data: "$identifier\n$pubKey",
-        version: QrVersions.auto,
+    data: "$identifier\n$pubKey",
+    version: QrVersions.auto,
       ),
-    ));
+    );
   }
 
   @override
@@ -254,7 +227,7 @@ class SharingPageState extends State<SharingPage> {
                         print(data.error);
                         return Text("Couldn't get data.");
                       }
-                      return Expanded(child: LinearProgressIndicator());
+                      return LinearProgressIndicator();
                     },
                   ),
                   actions: [
@@ -405,6 +378,7 @@ class SharingPageState extends State<SharingPage> {
                   ),
                   flexibleSpace: FlexibleSpaceBar(
                     background: friendsDescription,
+                    collapseMode: CollapseMode.none,
                   ),
                 ),
                 SliverToBoxAdapter(
