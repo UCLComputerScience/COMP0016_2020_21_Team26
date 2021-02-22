@@ -421,7 +421,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           border: InputBorder.none,
                           hintText: "Enter support code here",
                           hintStyle: introHintStyle),
-                      autofocus: false,
                     ),
                     Text("If you do not have a support code, type selfhelp",
                         style: Theme.of(context).textTheme.caption,
