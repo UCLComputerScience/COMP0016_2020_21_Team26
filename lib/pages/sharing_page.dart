@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
+import 'package:nudge_me/background.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main_pages.dart';
@@ -10,6 +11,8 @@ import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/contact_share_page.dart';
+import 'package:nudge_me/pages/nudge_progress_page.dart';
+import 'package:nudge_me/pages/send_nudge_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart' as pointyCastle;
@@ -55,7 +58,7 @@ Future<bool> getLatest([BuildContext ctx]) async {
         String decrypted = encrypter.decrypt64(encrypted);
         message['data'] = decrypted;
       }
-      await friendDB.updateData(messages);
+      await friendDB.updateWellbeingData(messages);
     }
 
     // If any of the messages are from a friend, there is new data:
@@ -75,13 +78,23 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
+  GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
   GlobalKey _networkButtonsTutorialKey = GlobalObjectKey("support_network");
 
   @override
   void initState() {
     super.initState();
 
-    getLatest();
+    _networkRefresh();
+  }
+
+  Future<Null> _networkRefresh() async {
+    // no point checking back-end if no friends in network
+    if (!await Provider.of<FriendDB>(context, listen: false).empty) {
+      getLatest();
+      checkIfGoalsCompleted();
+      refreshNudge(false);
+    }
   }
 
   ///function to show the only slide of the tutorial, explaining the support network page
@@ -425,6 +438,7 @@ class SharingPageState extends State<SharingPage> {
         });
 
     return Scaffold(
+      key: _scaffoldState,
       body: Column(
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -442,9 +456,8 @@ class SharingPageState extends State<SharingPage> {
     );
   }
 
-  Widget getListTile(BuildContext ctx, Friend friend) {
-    final sendButton = ElevatedButton(
-      onPressed: () => showDialog(
+  void _showWellbeingSendDialog(BuildContext context, Friend friend) =>
+      showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
                 title: Text("Send data?"),
@@ -459,15 +472,45 @@ class SharingPageState extends State<SharingPage> {
                   ),
                   TextButton(
                       child: Text('Yes'),
-                      onPressed: () async {
+                      onPressed: () {
                         Navigator.pop(context);
                         _sendWellbeingData(context, friend);
                       }),
                 ],
-              )),
-      child: Text("Send"),
+              ));
+
+  Widget getListTile(BuildContext context, Friend friend) {
+    final sendOptionsDialog = SimpleDialog(
+      title: const Text("Choose what to send"),
+      children: [
+        SimpleDialogOption(
+          child: const Text("📮 Send Your Wellbeing Data"),
+          onPressed: () {
+            Navigator.pop(context);
+            _showWellbeingSendDialog(context, friend);
+          },
+        ),
+        SimpleDialogOption(
+          child: Text("⏱ Set ${friend.name} a Step Goal"),
+          onPressed: () {
+            Navigator.pop(context);
+            if (friend.sentActiveGoal == 1) {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content:
+                      const Text("Their previous goal is still in progress.")));
+            } else {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SendNudgePage(friend, _scaffoldState.currentState)));
+            }
+          },
+        ),
+      ],
     );
-    final onView = () {
+
+    final onViewWellbeing = () {
       Provider.of<FriendDB>(context, listen: false).setRead(friend.identifier);
       return showDialog(
           context: context,
@@ -483,6 +526,36 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ));
     };
+    final viewOptionsDialog = SimpleDialog(
+      title: const Text("Choose what to view"),
+      children: [
+        SimpleDialogOption(
+          child: Text("📊 Wellbeing Data from ${friend.name}"),
+          onPressed: onViewWellbeing,
+        ),
+        SimpleDialogOption(
+          child: Text("🚶 Step Goal from ${friend.name}"),
+          onPressed: () {
+            Navigator.pop(context);
+            if (friend.currentStepsGoal != null) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NudgeProgressPage(friend)));
+            } else {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text("${friend.name} has not sent you any goal yet.")));
+            }
+          },
+        )
+      ],
+    );
+
+    final onView = () =>
+        showDialog(context: context, builder: (context) => viewOptionsDialog);
+    final viewButton = OutlinedButton(onPressed: onView, child: Text("View"));
+
     // friend.read might be null
     final unread = friend.read == 0;
     return ListTile(
@@ -493,21 +566,22 @@ class SharingPageState extends State<SharingPage> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OutlinedButton(
-            child: Text("View"),
-            onPressed: onView,
-          ),
+          viewButton,
           SizedBox(
             width: 5,
           ),
-          sendButton,
+          ElevatedButton(
+              onPressed: () => showDialog(
+                  context: context, builder: (context) => sendOptionsDialog),
+              child: const Text("Send")),
         ],
       ),
     );
   }
 
   Future<void> _sendWellbeingData(BuildContext context, Friend friend) async {
-    final friendKey = Provider.of<FriendDB>(context).getKey(friend.identifier);
+    final friendKey =
+        RSAKeyParser().parse(friend.publicKey) as pointyCastle.RSAPublicKey;
 
     final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
     final List<Map<String, int>> mapped = items
@@ -519,7 +593,7 @@ class SharingPageState extends State<SharingPage> {
         .toList(growable: false);
     final jsonString = json.encode(mapped);
 
-    final encrypter = Encrypter(RSA(publicKey: await friendKey));
+    final encrypter = Encrypter(RSA(publicKey: friendKey));
     final data = encrypter.encrypt(jsonString).base64;
 
     final prefs = await SharedPreferences.getInstance();

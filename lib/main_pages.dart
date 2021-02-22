@@ -124,8 +124,20 @@ class _MainPagesState extends State<MainPages> {
           _selectedIndex = NavBarIndex.network.index; // switch to friend tab
         });
         break;
+      // TODO: should probably open up the respective goal, could modify the payload
+      // format to achieve this
+      case NEW_GOAL_PAYLOAD:
+        setState(() {
+          _selectedIndex = NavBarIndex.network.index;
+        });
+        break;
+      case COMPLETED_GOAL_PAYLOAD:
+        setState(() {
+          _selectedIndex = NavBarIndex.network.index;
+        });
+        break;
       default:
-        print("If this isn't a test, something went wrong.");
+        print('If this is not a test, something went wrong.');
     }
   }
 

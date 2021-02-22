@@ -41,12 +41,13 @@ class _ContactSharePageState extends State<ContactSharePage> {
 
   void _updateAvatars() async {
     _contacts.forEach((contact) async {
-        final avatar = await ContactsService.getAvatar(contact, photoHighRes: false);
-        if (avatar != null) {
-          setState(() {
-              contact.avatar = avatar;
-          });
-        }
+      final avatar =
+          await ContactsService.getAvatar(contact, photoHighRes: false);
+      if (avatar != null) {
+        setState(() {
+          contact.avatar = avatar;
+        });
+      }
     });
   }
 
