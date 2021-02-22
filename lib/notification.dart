@@ -9,8 +9,19 @@ const CHECKUP_PAYLOAD = "checkup";
 const PUBLISH_PAYLOAD = "publish";
 const NUDGE_PAYLOAD = "nudge";
 const FRIEND_DATA_PAYLOAD = "friend";
+const NEW_GOAL_PAYLOAD = "newGoal";
+const COMPLETED_GOAL_PAYLOAD = "completedGoal";
 
-enum notifications { test, wbCheck, publish, nudge, newFriendData }
+enum notifications {
+  test,
+  wbCheck,
+  publish,
+  nudge,
+  newFriendData,
+  newGoal,
+  completedGoal,
+  friendCompletedGoal,
+}
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -84,7 +95,7 @@ Future rescheduleCheckup(int day, Time time) async {
   scheduleCheckup(day, time);
 }
 
-void scheduleNudge() async {
+Future<Null> scheduleNudge() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
 
@@ -130,6 +141,59 @@ Future scheduleNewFriendData() async {
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
     payload: FRIEND_DATA_PAYLOAD,
+  );
+}
+
+Future<Null> scheduleNudgeNewGoal(String name, int goal) async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notifications.newGoal.index,
+    "Nudge From Your Network",
+    "$name set you a goal of $goal steps",
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: NEW_GOAL_PAYLOAD,
+  );
+}
+
+/// takes the name of the friend who set the goal, and the number of steps (the
+/// goal itself), and schedules an appropriate notification
+Future<Null> scheduleNudgeCompletedGoal(String name, int goal) async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notifications.friendCompletedGoal.index,
+    "Steps Goal Complete",
+    "You have completed $goal steps, set by $name",
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: COMPLETED_GOAL_PAYLOAD,
+  );
+}
+
+Future<Null> scheduleNudgeFriendCompletedGoal(String name, int goal) async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation("Europe/London"));
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notifications.friendCompletedGoal.index,
+    "Nudge From Your Network",
+    "$name has completed their goal of $goal steps",
+    tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
+    _getSpecifics(),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: COMPLETED_GOAL_PAYLOAD,
   );
 }
 
