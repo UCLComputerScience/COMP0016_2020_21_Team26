@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:clock/clock.dart';
+import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cron/cron.dart';
@@ -7,14 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:nudge_me/background.dart';
+import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:nudge_me/pages/settings_page.dart';
+import 'package:nudge_me/pages/settings_sections/reschedule_wb.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Screen that displays to faciliate the user setup.
 /// Also schedules the wbCheck/share notifications here to ensure that
@@ -40,28 +45,27 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _wbCheckNotifDay = DateTime.sunday;
   int _wbCheckNotifHour = 12;
   int _wbCheckNotifMinute = 0;
-  int _shareNotifDay = DateTime.monday;
-  int _shareNotifHour = 12;
-  int _shareNotifMinute = 0;
+  DateTime _wbCheckNotifTime;
 
   void setInitialWellbeing(
-      double _currentSliderValue, String postcode, String suppode) async {
-    final dateString = DateTime.now().toIso8601String().substring(0, 10);
-    WellbeingItem weeklyWellbeingItem = new WellbeingItem(
-        id: null,
-        date: dateString,
-        postcode: postcode,
-        wellbeingScore: _currentSliderValue,
-        numSteps: 0,
-        supportCode: suppode);
-    await UserWellbeingDB().insert(weeklyWellbeingItem);
+      double _currentSliderValue, String postcode, String suppCode) async {
+    final dateString = clock.now().toIso8601String().substring(0, 10);
+    await Provider.of<UserWellbeingDB>(context, listen: false).insertWithData(
+      date: dateString,
+      postcode: postcode,
+      wellbeingScore: _currentSliderValue,
+      numSteps: 0,
+      supportCode: suppCode,
+    );
   }
 
-  void _saveInput(
-      String postcode, String suppcode, double _currentSliderValue) async {
+  void _saveInput(String postcode, String suppcode, double _currentSliderValue,
+      DateTime _wbCheckNotifTime) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
+    String _wbCheckTimeString = _wbCheckNotifTime.toIso8601String();
+    prefs.setString('wb_notif_time', _wbCheckTimeString);
 
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
@@ -76,10 +80,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       bool _currentSwitchValue,
       _wbCheckNotifDay,
       _wbCheckNotifHour,
-      _wbCheckNotifMinute,
-      _shareNotifDay,
-      _shareNotifHour,
-      _shareNotifMinute) async {
+      _wbCheckNotifMinute) async {
     if (!_isInputValid(
       postcodeController.text,
       supportCodeController.text,
@@ -90,8 +91,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       return;
     }
 
-    _saveInput(postcodeController.text.toUpperCase(),
-        supportCodeController.text.toUpperCase(), _currentSliderValue);
+    _wbCheckNotifTime = DateTime(
+        2020, 1, _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
+
+    _saveInput(
+        postcodeController.text.toUpperCase(),
+        supportCodeController.text.toUpperCase(),
+        _currentSliderValue,
+        _wbCheckNotifTime);
 
     // NOTE: this is the 'proper' way of requesting permissions (instead of
     // just lowering the targetSdkVersion) but it doesn't seem to work and
@@ -100,34 +107,27 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
+    await _finishSetup(_currentSwitchValue, _wbCheckNotifTime);
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MainPages()),
     );
-    _finishSetup(
-        _currentSwitchValue,
-        _wbCheckNotifDay,
-        _wbCheckNotifHour,
-        _wbCheckNotifMinute,
-        _shareNotifDay,
-        _shareNotifHour,
-        _shareNotifMinute);
   }
 
-  void _finishSetup(
-      bool _currentSwitchValue,
-      _wbCheckNotifDay,
-      _wbCheckNotifHour,
-      _wbCheckNotifMinute,
-      _shareNotifDay,
-      _shareNotifHour,
-      _shareNotifMinute) async {
-    scheduleCheckup(
-        _wbCheckNotifDay, Time(_wbCheckNotifHour, _wbCheckNotifMinute));
+  Future<void> _finishSetup(
+      bool _currentSwitchValue, DateTime _wbCheckNotifTime) async {
+    scheduleCheckup(_wbCheckNotifTime.day,
+        Time(_wbCheckNotifTime.hour, _wbCheckNotifTime.minute));
     if (_currentSwitchValue) {
       schedulePublish(DateTime.monday, 12, 0);
     }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+
+    /// NOTE: may be a problem if the user immediately goes to the friend page
+    /// and checks their QR code - their identity may not have been generated yet.
+    setupCrypto();
+
     // only start tracking steps after user has done setup
     initBackground();
   }
@@ -135,7 +135,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   void schedulePublish(int day, int hour, int minute) {
     // This may help: https://crontab.guru/
     Cron().schedule(Schedule.parse("$minute $hour * * $day"), () async {
-      if (!await UserWellbeingDB().empty) {
+      if (!await Provider.of<UserWellbeingDB>(context).empty) {
         // publish if there is at least one wellbeing item saved
         _publishData();
       }
@@ -150,7 +150,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   }
 
   void _publishData() async {
-    final items = await UserWellbeingDB().getLastNWeeks(1);
+    final items = await Provider.of<UserWellbeingDB>(context).getLastNWeeks(1);
     final item = items[0];
     final int anonScore = anonymizeScore(item.wellbeingScore);
     // int1/int2 is a double in dart
@@ -188,6 +188,97 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
 
   PageViewModel _getWBCheckNotificationPage(
       context, TextStyle introTextStyle, PageDecoration pageDecoration) {
+    final notificationSelector = ListView(
+        padding: const EdgeInsets.all(5),
+        scrollDirection: Axis.horizontal,
+        children: [
+          DropdownButton(
+            value: _wbCheckNotifDay,
+            hint: Text("Day"),
+            icon: Icon(Icons.arrow_downward,
+                color: Theme.of(context).primaryColor),
+            iconSize: 20,
+            elevation: 16,
+            style: introTextStyle,
+            underline: Container(
+              height: 2,
+              color: Theme.of(context).primaryColor,
+            ),
+            onChanged: (value) {
+              setState(() {
+                if (value != null) {
+                  _wbCheckNotifDay = value;
+                }
+              });
+            },
+            items: <int>[
+              DateTime.monday,
+              DateTime.tuesday,
+              DateTime.wednesday,
+              DateTime.thursday,
+              DateTime.friday,
+              DateTime.saturday,
+              DateTime.sunday
+            ].map<DropdownMenuItem<int>>((int value) {
+              return DropdownMenuItem<int>(
+                value: value,
+                child: Text(days[value - 1]),
+              );
+            }).toList(),
+          ),
+          SizedBox(width: 10),
+          DropdownButton(
+              value: _wbCheckNotifHour,
+              hint: Text("Hour"),
+              icon: Icon(Icons.arrow_downward,
+                  color: Theme.of(context).primaryColor),
+              iconSize: 20,
+              elevation: 16,
+              style: introTextStyle,
+              underline: Container(
+                height: 2,
+                color: Theme.of(context).primaryColor,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  if (value != null) {
+                    _wbCheckNotifHour = value;
+                  }
+                });
+              },
+              items: hours.map<DropdownMenuItem>((value) {
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(value.toString().padLeft(2, "0")),
+                );
+              }).toList()),
+          SizedBox(width: 5),
+          DropdownButton(
+              value: _wbCheckNotifMinute,
+              hint: Text("Minutes"),
+              icon: Icon(Icons.arrow_downward,
+                  color: Theme.of(context).primaryColor),
+              iconSize: 20,
+              elevation: 16,
+              style: introTextStyle,
+              underline: Container(
+                height: 2,
+                color: Theme.of(context).primaryColor,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  if (value != null) {
+                    _wbCheckNotifMinute = value;
+                  }
+                });
+              },
+              items: minutes.map<DropdownMenuItem>((value) {
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(value.toString().padLeft(2, "0")),
+                );
+              }).toList())
+        ]);
     return PageViewModel(
         title: "Wellbeing Check Notification",
         image: Center(
@@ -200,94 +291,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 style: introTextStyle,
                 textAlign: TextAlign.center),
             SizedBox(height: 5),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              DropdownButton(
-                value: _wbCheckNotifDay,
-                hint: Text("Day"),
-                icon: Icon(Icons.arrow_downward,
-                    color: Theme.of(context).primaryColor),
-                iconSize: 20,
-                elevation: 16,
-                style: introTextStyle,
-                underline: Container(
-                  height: 2,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      _wbCheckNotifDay = value;
-                    }
-                  });
-                },
-                items: <int>[
-                  DateTime.monday,
-                  DateTime.tuesday,
-                  DateTime.wednesday,
-                  DateTime.thursday,
-                  DateTime.friday,
-                  DateTime.saturday,
-                  DateTime.sunday
-                ].map<DropdownMenuItem<int>>((int value) {
-                  return DropdownMenuItem<int>(
-                    value: value,
-                    child: Text(days[value - 1]),
-                  );
-                }).toList(),
-              ),
-              SizedBox(width: 10),
-              DropdownButton(
-                  value: _wbCheckNotifHour,
-                  hint: Text("Hour"),
-                  icon: Icon(Icons.arrow_downward,
-                      color: Theme.of(context).primaryColor),
-                  iconSize: 20,
-                  elevation: 16,
-                  style: introTextStyle,
-                  underline: Container(
-                    height: 2,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      if (value != null) {
-                        _wbCheckNotifHour = value;
-                      }
-                    });
-                  },
-                  items: hours.map<DropdownMenuItem>((value) {
-                    return DropdownMenuItem(
-                      value: value,
-                      child: Text(value.toString()),
-                    );
-                  }).toList()),
-              SizedBox(width: 5),
-              DropdownButton(
-                  value: _wbCheckNotifMinute,
-                  hint: Text("Minutes"),
-                  icon: Icon(Icons.arrow_downward,
-                      color: Theme.of(context).primaryColor),
-                  iconSize: 20,
-                  elevation: 16,
-                  style: introTextStyle,
-                  underline: Container(
-                    height: 2,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      if (value != null) {
-                        _wbCheckNotifMinute = value;
-                      }
-                    });
-                  },
-                  items: minutes.map<DropdownMenuItem>((value) {
-                    return DropdownMenuItem(
-                      value: value,
-                      child: Text(value.toString()),
-                    );
-                  }).toList())
-            ]),
+            Center(
+                child: Container(
+              height: 60,
+              child: notificationSelector,
+            )),
           ],
         ),
         decoration: pageDecoration);
@@ -311,20 +319,20 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         pages: [
           PageViewModel(
               title: "Welcome",
-              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              image: Image.asset("lib/images/IntroLogo.png"),
               bodyWidget: Text(
-                  "Someone from the NHS will have recommended this app to you. \n\n " +
-                      "This app has been designed to encourage you to take care of yourself. \n \n" +
-                      "Swipe left to learn more",
+                  "It is recognised that people often forget to look after themselves. \n\n " +
+                      "This app has been designed to encourage you to do this. \n \n",
                   style: introTextStyle,
                   textAlign: TextAlign.center),
               decoration: pageDecoration),
           PageViewModel(
               title: "How?",
-              image: Image.asset("lib/images/IntroLogo.png", height: 250.0),
+              image: Image.asset("lib/images/IntroLogo.png"),
               bodyWidget: Text(
-                  "It does this by sending weekly notifications asking you how you feel, and show how walking more can improve your wellbeing. \n\n" +
-                      "Occasionally, it will nudge you to share your wellbeing with people you know. \n \n ",
+                  "Occasionally, it will nudge you to keep in contact with people you like to speak to. " +
+                      "It will also make you aware of opportunities to share your wellbeing with this group. " +
+                      "If you consent to this, swipe left.",
                   style: introTextStyle,
                   textAlign: TextAlign.center),
               decoration: pageDecoration),
@@ -343,6 +351,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                     Text(
                         "\n Over the past 7 days, rate how well you have felt out of 10. ",
                         style: introTextStyle,
+                        textAlign: TextAlign.center),
+                    Text("Confused? Find additional instructions below.",
+                        style: Theme.of(context).textTheme.caption,
                         textAlign: TextAlign.center),
                     Container(
                         child: Slider(
@@ -386,14 +397,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         }),
                     Text(
                         "Click the toggle to consent to the creation of a map that enables you and other app " +
-                            "users to understand the effect of exercise on your wellbeing. " +
+                            "users to understand the effect of movement and social contact has on people's wellbeing. " +
                             "By consenting, you will not be sharing personally identifiable data. " +
                             "All data used to create the map will be anonymised to protect your privacy.\n",
-                        style: introTextStyle,
-                        textAlign: TextAlign.center),
-                    Text(
-                        "This is not necessary to use the app. " +
-                            "The only difference is that you will not be asked to publish your data.",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                   ]),
@@ -416,8 +422,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           hintText: "Enter support code here",
                           hintStyle: introHintStyle),
                     ),
-                    Text(
-                        "(This is the code given to you by the person who recommended you this app.)",
+                    Text("If you do not have a support code, type selfhelp",
                         style: Theme.of(context).textTheme.caption,
                         textAlign: TextAlign.center),
                     SizedBox(height: 20),
@@ -433,20 +438,37 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                           hintText: "Enter postcode here",
                           hintStyle: introHintStyle),
                     ),
+                    RichText(
+                        text: new TextSpan(children: [
+                          new TextSpan(
+                              text:
+                                  "This will help app users to understand the general wellbeing of people in a region - ",
+                              style: Theme.of(context).textTheme.caption),
+                          new TextSpan(
+                              text: "see here",
+                              style: TextStyle(
+                                  fontFamily: 'Rosario',
+                                  fontSize: 12,
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.black),
+                              recognizer: new TapGestureRecognizer()
+                                ..onTap = () {
+                                  launch(BASE_URL + '/mapDemo');
+                                })
+                        ]),
+                        textAlign: TextAlign.center),
                     SizedBox(height: 10),
                   ])),
               decoration: pageDecoration),
         ],
         onDone: () => _onIntroEnd(
-            context,
-            _currentSliderValue,
-            _currentSwitchValue,
-            _wbCheckNotifDay,
-            _wbCheckNotifHour,
-            _wbCheckNotifMinute,
-            _shareNotifDay,
-            _shareNotifHour,
-            _shareNotifMinute),
+              context,
+              _currentSliderValue,
+              _currentSwitchValue,
+              _wbCheckNotifDay,
+              _wbCheckNotifHour,
+              _wbCheckNotifMinute,
+            ),
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),

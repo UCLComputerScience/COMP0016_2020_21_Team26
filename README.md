@@ -1,6 +1,6 @@
 # NudgeMe - COMP0016 2020/21, Team 26
 
-[![GitHub Super-Linter](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml/badge.svg)](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml)
 
 V2 of the CarerCare app.
 
@@ -37,3 +37,22 @@ Using curl:
 DATA='{"postCode":"TW5", "wellbeingScore":9, "weeklySteps":650, "errorRate":9, "supportCode":"GP", "date_sent":"2021-01-02"}'
 curl -d $DATA -H 'Content-Type: application/json;charset=UTF-8' https://comp0016.cyberchris.xyz/add-wellbeing-record
 ```
+
+## Wellbeing Sharing
+
+We would like to share the last 5 weeks, like with the PDF, so the JSON data would be
+something like this:
+
+``` json
+[
+{'week': 1, 'score': 8, 'steps': 1005},
+{'week': 2, 'score': 9, 'steps': 12300},
+{'week': 3, 'score': 7, 'steps': 105},
+{'week': 4, 'score': 2, 'steps': 200},
+{'week': 5, 'score': 3, 'steps': 300},
+]
+```
+(Using a dictionary instead of an array because we may want their week number.)
+
+But we want e2e encryption, so mobile clients should convert this json to a string and
+encrypt this with the friend's public key, then send this as base64.

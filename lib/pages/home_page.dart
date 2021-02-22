@@ -4,17 +4,13 @@ import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
-/// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
+/// key to retreive [bool] from [SharedPreferences] that is true if the tutorial
+/// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
-
-Future<bool> _isHomeTutorialDone() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
-      prefs.getBool(HOME_TUTORIAL_DONE_KEY);
-}
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,10 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // last wellbeing record
-  Future<List<WellbeingItem>> _lastItemListFuture =
-      UserWellbeingDB().getLastNWeeks(1);
-
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
@@ -44,6 +36,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<bool> _isHomeTutorialDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
+        prefs.getBool(HOME_TUTORIAL_DONE_KEY);
+  }
+
   ///function to show the first slide of the tutorial, explaining the wellbeing circle
   void showCoachMarkWB() {
     CoachMark coachMarkWB = CoachMark();
@@ -57,14 +55,14 @@ class _HomePageState extends State<HomePage> {
         children: [
           Center(
               child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
+                  padding: EdgeInsets.fromLTRB(10, 150, 10, 0),
                   child: Text(
                       "This is where you can view \n last week's score.",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 3),
+        duration: Duration(seconds: 8),
         onClose: () {
-          Timer(Duration(seconds: 1), () => showCoachMarkSteps());
+          Timer(Duration(milliseconds: 100), () => showCoachMarkSteps());
         });
   }
 
@@ -76,7 +74,7 @@ class _HomePageState extends State<HomePage> {
     markRect = Rect.fromCircle(
         center: markRect.center, radius: markRect.longestSide * 0.6);
     coachMarkSteps.show(
-        targetContext: _lastWeekWBTutorialKey.currentContext,
+        targetContext: _stepsTutorialKey.currentContext,
         markRect: markRect,
         children: [
           Center(
@@ -86,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                       "This is where you can view your steps so far (we start counting now)",
                       style: Theme.of(context).textTheme.subtitle2)))
         ],
-        duration: Duration(seconds: 5),
+        duration: Duration(seconds: 10),
         onClose: () {
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(HOME_TUTORIAL_DONE_KEY, true));
@@ -117,23 +115,34 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 10.0,
           ),
-          FutureBuilder(
-              key: _lastWeekWBTutorialKey,
-              future: _lastItemListFuture,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final List<WellbeingItem> lastItemList = snapshot.data;
-                  return lastItemList.isNotEmpty
-                      ? WellbeingCircle(
-                          lastItemList[0].wellbeingScore.truncate())
-                      : WellbeingCircle();
-                } else if (snapshot.hasError) {
-                  print(snapshot.error);
-                  Text("Something went wrong.",
-                      style: Theme.of(context).textTheme.bodyText1);
-                }
-                return CircularProgressIndicator();
-              }),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                height: 200,
+                width: 200,
+                key: _lastWeekWBTutorialKey,
+              ),
+              FutureBuilder(
+                  future:
+                      Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final List<WellbeingItem> lastItemList = snapshot.data;
+                      return lastItemList.isNotEmpty
+                          ? WellbeingCircle(
+                              lastItemList[0].wellbeingScore.truncate())
+                          : WellbeingCircle();
+                    } else if (snapshot.hasError) {
+                      print(snapshot.error);
+                      Text("Something went wrong.",
+                          style: Theme.of(context).textTheme.bodyText1);
+                    }
+                    return CircularProgressIndicator();
+                  }),
+            ],
+          ),
+
           const SizedBox(
             height: 5.0,
           ),

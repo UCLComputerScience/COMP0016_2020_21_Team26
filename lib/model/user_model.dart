@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
 
-const dbName = "wellbeing_items_db.db";
-const dbVersion = 1;
+const _dbName = "wellbeing_items_db.db";
+const _dbVersion = 1;
 
-const tableName = "WellbeingItems";
-const columns = [
+const _tableName = "WellbeingItems";
+const _columns = [
   "id",
   "date",
   "postcode",
@@ -15,8 +16,9 @@ const columns = [
   "support_code"
 ];
 
-/// Singleton class to read/write to DB
-class UserWellbeingDB {
+/// Singleton [ChangeNotifier] to read/write to DB.
+/// Stores the user's wellbeing scores and steps.
+class UserWellbeingDB extends ChangeNotifier {
   static final UserWellbeingDB _instance = UserWellbeingDB._();
   static Database _database;
 
@@ -28,7 +30,8 @@ class UserWellbeingDB {
   /// returns the id of the newly inserted record
   Future<int> insert(WellbeingItem item) async {
     final db = await database;
-    final id = await db.insert(tableName, item.toMap());
+    final id = await db.insert(_tableName, item.toMap());
+    notifyListeners();
     return id;
   }
 
@@ -54,8 +57,8 @@ class UserWellbeingDB {
   /// returns up to n wellbeing items
   Future<List<WellbeingItem>> getLastNWeeks(int n) async {
     final db = await database;
-    List<Map> wellbeingMaps = await db.query(tableName,
-        columns: columns, orderBy: "${columns[0]} DESC", limit: n);
+    List<Map> wellbeingMaps = await db.query(_tableName,
+        columns: _columns, orderBy: "${_columns[0]} DESC", limit: n);
     final itemList = wellbeingMaps
         .map((wellbeingMap) => WellbeingItem.fromMap(wellbeingMap))
         .toList(growable: false);
@@ -65,8 +68,9 @@ class UserWellbeingDB {
 
   void delete() async {
     final base = await getDatabasesPath();
-    deleteDatabase(join(base, dbName));
+    deleteDatabase(join(base, _dbName));
     _database = null; // will be created next time its needed
+    notifyListeners();
   }
 
   Future<Database> get database async {
@@ -80,31 +84,31 @@ class UserWellbeingDB {
   Future<bool> get empty async {
     final db = await database;
     return firstIntValue(
-            await db.rawQuery('SELECT COUNT(*) FROM $tableName')) ==
+            await db.rawQuery('SELECT COUNT(*) FROM $_tableName')) ==
         0;
   }
 
   Future<Database> _init() async {
     final dir = await getDatabasesPath();
-    final dbPath = join(dir, dbName);
-    return openDatabase(dbPath, version: dbVersion, onCreate: _onCreate);
+    final dbPath = join(dir, _dbName);
+    return openDatabase(dbPath, version: _dbVersion, onCreate: _onCreate);
   }
 
   void _onCreate(Database db, int version) {
     db.execute('''
-      CREATE TABLE $tableName (
-      ${columns[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
-      ${columns[1]} TEXT,
-      ${columns[2]} TEXT,
-      ${columns[3]} DOUBLE,
-      ${columns[4]} INTEGER,
-      ${columns[5]} TEXT
+      CREATE TABLE $_tableName (
+      ${_columns[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+      ${_columns[1]} TEXT,
+      ${_columns[2]} TEXT,
+      ${_columns[3]} DOUBLE,
+      ${_columns[4]} INTEGER,
+      ${_columns[5]} TEXT
     )
       ''');
   }
 }
 
-/// Immutable data item of a week's wellbeing record
+/// (Effectively) immutable data item of a week's wellbeing record
 class WellbeingItem {
   int id;
   String date;
@@ -122,25 +126,25 @@ class WellbeingItem {
       this.supportCode});
 
   WellbeingItem.fromMap(Map<String, dynamic> map) {
-    id = map[columns[0]];
-    date = map[columns[1]];
-    postcode = map[columns[2]];
-    wellbeingScore = map[columns[3]];
-    numSteps = map[columns[4]];
-    supportCode = map[columns[5]];
+    id = map[_columns[0]];
+    date = map[_columns[1]];
+    postcode = map[_columns[2]];
+    wellbeingScore = map[_columns[3]];
+    numSteps = map[_columns[4]];
+    supportCode = map[_columns[5]];
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       // id might be null
-      columns[1]: date,
-      columns[2]: postcode,
-      columns[3]: wellbeingScore,
-      columns[4]: numSteps,
-      columns[5]: supportCode,
+      _columns[1]: date,
+      _columns[2]: postcode,
+      _columns[3]: wellbeingScore,
+      _columns[4]: numSteps,
+      _columns[5]: supportCode,
     };
     if (id != null) {
-      map[columns[0]] = id;
+      map[_columns[0]] = id;
     }
     return map;
   }

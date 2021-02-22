@@ -19,7 +19,7 @@ class TestingPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               final datetime =
-                  tz.TZDateTime.now(tz.local).add(Duration(milliseconds: 20));
+                  tz.TZDateTime.now(tz.local).add(Duration(seconds: 1));
               scheduleCheckupOnce(datetime);
             },
             child: Text("Wellbeing Check Notification"),
@@ -29,10 +29,8 @@ class TestingPage extends StatelessWidget {
             child: Text("Example Nudge"),
           ),
           ElevatedButton(
-              onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => WellbeingCheck(UserWellbeingDB()))),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WellbeingCheck())),
               child: Text("Wellbeing Check Screen")),
           ElevatedButton(
             onPressed: () async {

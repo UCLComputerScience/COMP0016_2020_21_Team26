@@ -1,18 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clock/clock.dart';
 
 class WellbeingCheck extends StatelessWidget {
-  final UserWellbeingDB _userWellbeingDB;
-
-  const WellbeingCheck(this._userWellbeingDB, {Key key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,16 +20,13 @@ class WellbeingCheck extends StatelessWidget {
               Text("Wellbeing Check",
                   style: Theme.of(context).textTheme.headline1),
               SizedBox(height: 30),
-              WellbeingCheckWidgets(_userWellbeingDB),
+              WellbeingCheckWidgets(),
             ]))),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
 class WellbeingCheckWidgets extends StatefulWidget {
-  final UserWellbeingDB _userWellbeingDB;
-  WellbeingCheckWidgets(this._userWellbeingDB, {Key key}) : super(key: key);
-
   @override
   _WellbeingCheckWidgetsState createState() => _WellbeingCheckWidgetsState();
 }
@@ -110,13 +103,18 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
   void _checkWellbeing(final int n) async {
     assert(n >= 1);
     final List<WellbeingItem> items =
-        await widget._userWellbeingDB.getLastNWeeks(n + 1);
+        await Provider.of<UserWellbeingDB>(context).getLastNWeeks(n + 1);
     if (items.length == n + 1 &&
         _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
       scheduleNudge();
     }
   }
+
+  /// gets the actual steps taken, accounting for the fact that the user may
+  /// have reset their device
+  int _getActualSteps(int total, int prevTotal) =>
+      prevTotal > total ? total : total - prevTotal;
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +126,8 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final int lastTotalSteps = snapshot.data;
-            final thisWeeksSteps = lastTotalSteps > _currentTotalSteps
-                ? _currentTotalSteps
-                : _currentTotalSteps - lastTotalSteps;
+            final thisWeeksSteps =
+                _getActualSteps(_currentTotalSteps, lastTotalSteps);
             return Text(thisWeeksSteps.toString(),
                 style: TextStyle(
                     fontFamily: 'Rosario',
@@ -173,12 +170,14 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
             final dateString = // get date with fakeable clock
                 clock.now().toIso8601String().substring(0, 10);
 
-            await widget._userWellbeingDB.insertWithData(
-                date: dateString,
-                postcode: await _getPostcode(),
-                wellbeingScore: _currentSliderValue,
-                numSteps: _currentTotalSteps - lastTotalSteps,
-                supportCode: await _getSupportCode());
+            await Provider.of<UserWellbeingDB>(context, listen: false)
+                .insertWithData(
+                    date: dateString,
+                    postcode: await _getPostcode(),
+                    wellbeingScore: _currentSliderValue,
+                    numSteps:
+                        _getActualSteps(_currentTotalSteps, lastTotalSteps),
+                    supportCode: await _getSupportCode());
             SharedPreferences.getInstance().then((value) =>
                 value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
 

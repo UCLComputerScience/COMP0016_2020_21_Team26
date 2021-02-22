@@ -16,8 +16,8 @@ class NudgeScreen extends StatelessWidget {
                 height: 5,
               ),
               Text(
-                "Hey! We noticed some low step counts/scores lately, "
-                "so we'd recommend sharing your score with a friend.",
+                "Would you like to let your care network how you are? "
+                "If yes, click the share button at the bottom of the screen.",
                 textAlign: TextAlign.center,
               ),
               Divider(),
