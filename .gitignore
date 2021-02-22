@@ -350,3 +350,4 @@ Temporary Items
 # End of https://www.toptal.com/developers/gitignore/api/vscode,intellij,dart,macos
 
 .idea/
+coverage/
