@@ -94,8 +94,10 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         ],
         duration: Duration(seconds: duration),
         onClose: () {
-          Timer(
-              Duration(milliseconds: 100), () => showCoachMarkShare(duration));
+          if (widget.displayShare) {
+            Timer(Duration(milliseconds: 100),
+                () => showCoachMarkShare(duration));
+          }
         });
   }
 
@@ -217,8 +219,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             final graph = _getGraph(items, widget.animate);
             final buttons = [
               Container(
-                  child: IconButton(
-                      icon: Icon(Icons.info_outline,
+                  child: OutlinedButton(
+                      child: Icon(Icons.info_outline,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {
                         showCoachMarkGraph(20);

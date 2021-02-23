@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
@@ -53,6 +54,21 @@ class TestingPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () => UserWellbeingDB().delete(),
             child: Text("Reset Wellbeing Data"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final num = Random().nextInt(999);
+              return FriendDB().insertWithData(
+                name: "Friend $num",
+                identifier: "id $num",
+                publicKey: "key $num",
+                latestData: null,
+                sentActiveGoal: 0,
+                read: null,
+                currentStepsGoal: null,
+              );
+            },
+            child: Text("Generate Random Friend"),
           )
         ]),
       ),

@@ -63,7 +63,8 @@ void main() {
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
     final fakeStepStream = Stream.fromIterable([0]);
 
-    await tester.pumpWidget(wrapAppProvider(WellbeingCheck(fakeStepStream), wbDB: mockedDB));
+    await tester.pumpWidget(
+        wrapAppProvider(WellbeingCheck(fakeStepStream), wbDB: mockedDB));
     await tester.pumpAndSettle();
 
     // should be at score of 10 after dragging
