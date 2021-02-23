@@ -98,7 +98,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       return;
     }
     setState(() {
-        doneTapped = true;
+      doneTapped = true;
     });
     _dismisKeyboard(); // to avoid some rendering issues
 

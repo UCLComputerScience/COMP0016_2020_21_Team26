@@ -95,8 +95,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         duration: Duration(seconds: duration),
         onClose: () {
           if (widget.displayShare) {
-            Timer(
-                Duration(milliseconds: 100), () => showCoachMarkShare(duration));
+            Timer(Duration(milliseconds: 100),
+                () => showCoachMarkShare(duration));
           }
         });
   }

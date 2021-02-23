@@ -150,8 +150,8 @@ class SharingPageState extends State<SharingPage> {
       width: 200,
       height: 200,
       child: QrImage(
-    data: "$identifier\n$pubKey",
-    version: QrVersions.auto,
+        data: "$identifier\n$pubKey",
+        version: QrVersions.auto,
       ),
     );
   }
@@ -308,7 +308,7 @@ class SharingPageState extends State<SharingPage> {
       scanCodeButton,
     ]);
     final friendsDescription = Padding(
-      padding: EdgeInsets.fromLTRB(5, 65, 5, 0),
+        padding: EdgeInsets.fromLTRB(5, 65, 5, 0),
         child: RichText(
             text: new TextSpan(children: [
               TextSpan(
@@ -327,8 +327,7 @@ class SharingPageState extends State<SharingPage> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black)),
                 TextSpan(
-                    text: "to ",
-                    style: Theme.of(context).textTheme.bodyText2),
+                    text: "to ", style: Theme.of(context).textTheme.bodyText2),
                 TextSpan(
                     text: "share your wellbeing diary ",
                     style: TextStyle(
@@ -537,7 +536,8 @@ class SharingPageState extends State<SharingPage> {
           caption: 'Delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => Provider.of<FriendDB>(context, listen: false).deleteFriend(friend),
+          onTap: () => Provider.of<FriendDB>(context, listen: false)
+              .deleteFriend(friend),
         )
       ],
     );
