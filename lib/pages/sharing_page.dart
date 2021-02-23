@@ -307,7 +307,8 @@ class SharingPageState extends State<SharingPage> {
       showKeyButton,
       scanCodeButton,
     ]);
-    final friendsDescription = Center(
+    final friendsDescription = Padding(
+      padding: EdgeInsets.fromLTRB(5, 65, 5, 0),
         child: RichText(
             text: new TextSpan(children: [
               TextSpan(
@@ -371,10 +372,10 @@ class SharingPageState extends State<SharingPage> {
                 SliverAppBar(
                   pinned: true,
                   backgroundColor: Colors.white,
-                  expandedHeight: 325,
+                  expandedHeight: 350,
                   title: Text(
                     "Support Network",
-                    style: Theme.of(context).textTheme.headline3,
+                    style: Theme.of(context).textTheme.headline1,
                   ),
                   flexibleSpace: FlexibleSpaceBar(
                     background: friendsDescription,
@@ -385,12 +386,15 @@ class SharingPageState extends State<SharingPage> {
                   child: Divider(),
                 ),
                 // arranges buttons in a grid
-                SliverGrid.count(
-                  childAspectRatio: 3,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 10,
-                  crossAxisCount: 2,
-                  children: buttons,
+                SliverPadding(
+                  padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                  sliver: SliverGrid.count(
+                    childAspectRatio: 3,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                    crossAxisCount: 2,
+                    children: buttons,
+                  ),
                 ),
                 SliverToBoxAdapter(
                   child: Divider(),
