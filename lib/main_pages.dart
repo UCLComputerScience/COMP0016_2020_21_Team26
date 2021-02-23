@@ -10,6 +10,7 @@ import 'package:nudge_me/pages/sharing_page.dart';
 import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
@@ -112,8 +113,9 @@ class _MainPagesState extends State<MainPages> {
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
-        await navigatorKey.currentState
-            .push(MaterialPageRoute(builder: (context) => WellbeingCheck()));
+        await navigatorKey.currentState.push(MaterialPageRoute(
+            builder: (context) => WellbeingCheck(Pedometer.stepCountStream
+                .map((stepCount) => stepCount.steps))));
         break;
       case NUDGE_PAYLOAD:
         await navigatorKey.currentState

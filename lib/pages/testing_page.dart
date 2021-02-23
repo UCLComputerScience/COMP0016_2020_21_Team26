@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -29,8 +31,11 @@ class TestingPage extends StatelessWidget {
             child: Text("Example Nudge"),
           ),
           ElevatedButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WellbeingCheck())),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => WellbeingCheck(
+                          Pedometer.stepCountStream.map((sc) => sc.steps)))),
               child: Text("Wellbeing Check Screen")),
           ElevatedButton(
             onPressed: () async {
@@ -49,6 +54,21 @@ class TestingPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () => UserWellbeingDB().delete(),
             child: Text("Reset Wellbeing Data"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final num = Random().nextInt(999);
+              return FriendDB().insertWithData(
+                name: "Friend $num",
+                identifier: "id $num",
+                publicKey: "key $num",
+                latestData: null,
+                sentActiveGoal: 0,
+                read: null,
+                currentStepsGoal: null,
+              );
+            },
+            child: Text("Generate Random Friend"),
           )
         ]),
       ),
