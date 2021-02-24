@@ -431,6 +431,14 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ));
 
+  Future<Null> _pushGoalPage(BuildContext context, Friend friend) {
+    return Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                SendNudgePage(friend, _scaffoldState.currentState)));
+  }
+
   Widget getListTile(BuildContext context, Friend friend) {
     final sendOptionsDialog = SimpleDialog(
       title: const Text("Choose what to send"),
@@ -447,15 +455,22 @@ class SharingPageState extends State<SharingPage> {
           onPressed: () {
             Navigator.pop(context);
             if (friend.sentActiveGoal == 1) {
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content:
-                      const Text("Their previous goal is still in progress.")));
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text(
+                            'You have already sent a goal, sending another will delete their previous. Continue?'),
+                        actions: [
+                          TextButton(
+                              child: Text('No'),
+                              onPressed: () => Navigator.pop(context)),
+                          TextButton(
+                              child: Text('Yes'),
+                              onPressed: () => _pushGoalPage(context, friend)),
+                        ],
+                      ));
             } else {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SendNudgePage(friend, _scaffoldState.currentState)));
+              _pushGoalPage(context, friend);
             }
           },
         ),

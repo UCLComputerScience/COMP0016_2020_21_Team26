@@ -481,10 +481,11 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
-        done: !doneTapped ? const Text('Done',
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color.fromARGB(255, 182, 125, 226)))
+        done: !doneTapped
+            ? const Text('Done',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 182, 125, 226)))
             : CircularProgressIndicator(),
         onChange: (int _) => _dismisKeyboard(),
         dotsDecorator: const DotsDecorator(
