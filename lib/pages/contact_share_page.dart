@@ -13,16 +13,13 @@ class ContactSharePage extends StatefulWidget {
 }
 
 class _ContactSharePageState extends State<ContactSharePage> {
-  List<Contact> _contacts;
-  List<bool> _selected;
+  List<ContactSelection> _contactSelection;
 
   /// send sms to currently selected contacts.
   Future<Null> _sendToSelected() async {
-    final List<String> contactList = _contacts
-        .asMap()
-        .entries
-        .where((element) => _selected[element.key])
-        .map((e) => e.value.phones.first.value)
+    final List<String> contactList = _contactSelection
+        .where((selection) => selection.selected)
+        .map((e) => e.contact.phones.first.value)
         .toList(growable: false);
 
     if (await canSendSMS()) {
@@ -40,12 +37,12 @@ class _ContactSharePageState extends State<ContactSharePage> {
       : CircleAvatar(child: Text(c.initials()));
 
   void _updateAvatars() async {
-    _contacts.forEach((contact) async {
+    _contactSelection.forEach((contactSelection) async {
       final avatar =
-          await ContactsService.getAvatar(contact, photoHighRes: false);
+          await ContactsService.getAvatar(contactSelection.contact, photoHighRes: false);
       if (avatar != null) {
         setState(() {
-          contact.avatar = avatar;
+          contactSelection.contact.avatar = avatar;
         });
       }
     });
@@ -68,26 +65,23 @@ class _ContactSharePageState extends State<ContactSharePage> {
           builder: (context, futureData) {
             if (futureData.hasData) {
               List<Contact> contacts = futureData.data.toList(growable: false);
-              if (_contacts == null || contacts.length != _contacts.length) {
+              if (_contactSelection == null || contacts.length != _contactSelection.length) {
                 // contacts must have updated
-                _contacts = contacts;
+                _contactSelection = contacts.map((contact) => ContactSelection(contact));
                 _updateAvatars();
-                _selected = List<bool>.generate(
-                    contacts.length, (index) => false,
-                    growable: false);
               }
 
               return ListView.builder(
-                  itemCount: contacts.length,
+                  itemCount: _contactSelection.length,
                   itemBuilder: (context, i) => CheckboxListTile(
-                        title: Text(contacts[i].displayName != null
-                            ? contacts[i].displayName
-                            : contacts[i].givenName),
+                        title: Text(_contactSelection[i].contact.displayName != null
+                            ? _contactSelection[i].contact.displayName
+                            : _contactSelection[i].contact.givenName),
                         secondary: _getAvatar(contacts[i]),
-                        selected: _selected[i],
-                        value: _selected[i],
+                        selected: _contactSelection[i].selected,
+                        value: _contactSelection[i].selected,
                         onChanged: (bool value) =>
-                            setState(() => _selected[i] = value),
+                            setState(() => _contactSelection[i].selected = value),
                       ));
             } else if (futureData.hasError) {
               print(futureData.error);
@@ -101,4 +95,11 @@ class _ContactSharePageState extends State<ContactSharePage> {
       floatingActionButton: fab,
     );
   }
+}
+
+class ContactSelection {
+  final Contact contact;
+  bool selected = false;
+
+  ContactSelection(this.contact);
 }
