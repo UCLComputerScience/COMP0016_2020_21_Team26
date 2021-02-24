@@ -38,8 +38,8 @@ class _ContactSharePageState extends State<ContactSharePage> {
 
   void _updateAvatars() async {
     _contactSelection.forEach((contactSelection) async {
-      final avatar =
-          await ContactsService.getAvatar(contactSelection.contact, photoHighRes: false);
+      final avatar = await ContactsService.getAvatar(contactSelection.contact,
+          photoHighRes: false);
       if (avatar != null) {
         setState(() {
           contactSelection.contact.avatar = avatar;
@@ -65,23 +65,27 @@ class _ContactSharePageState extends State<ContactSharePage> {
           builder: (context, futureData) {
             if (futureData.hasData) {
               List<Contact> contacts = futureData.data.toList(growable: false);
-              if (_contactSelection == null || contacts.length != _contactSelection.length) {
+              if (_contactSelection == null ||
+                  contacts.length != _contactSelection.length) {
                 // contacts must have updated
-                _contactSelection = contacts.map((contact) => ContactSelection(contact));
+                _contactSelection = contacts
+                    .map((contact) => ContactSelection(contact))
+                    .toList();
                 _updateAvatars();
               }
 
               return ListView.builder(
                   itemCount: _contactSelection.length,
                   itemBuilder: (context, i) => CheckboxListTile(
-                        title: Text(_contactSelection[i].contact.displayName != null
-                            ? _contactSelection[i].contact.displayName
-                            : _contactSelection[i].contact.givenName),
+                        title: Text(
+                            _contactSelection[i].contact.displayName != null
+                                ? _contactSelection[i].contact.displayName
+                                : _contactSelection[i].contact.givenName),
                         secondary: _getAvatar(contacts[i]),
                         selected: _contactSelection[i].selected,
                         value: _contactSelection[i].selected,
-                        onChanged: (bool value) =>
-                            setState(() => _contactSelection[i].selected = value),
+                        onChanged: (bool value) => setState(
+                            () => _contactSelection[i].selected = value),
                       ));
             } else if (futureData.hasError) {
               print(futureData.error);
@@ -91,6 +95,18 @@ class _ContactSharePageState extends State<ContactSharePage> {
           }),
       appBar: AppBar(
         title: Text("Select contacts"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            onPressed: () => showSearch(
+                    context: context,
+                    delegate: ContactSelectionSearch(_contactSelection))
+                .then((_) => setState(() {})),
+          ),
+        ],
       ),
       floatingActionButton: fab,
     );
@@ -102,4 +118,65 @@ class ContactSelection {
   bool selected = false;
 
   ContactSelection(this.contact);
+}
+
+class ContactSelectionSearch extends SearchDelegate<ContactSelection> {
+  final List<ContactSelection> _contactSelection;
+
+  ContactSelectionSearch(this._contactSelection);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () => query = '',
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () => close(context, null),
+    );
+  }
+
+  bool _matchesQuery(Contact contact, String q) {
+    q = q.toLowerCase();
+    return (contact.displayName != null &&
+            contact.displayName.toLowerCase().contains(q)) ||
+        (contact.givenName != null &&
+            contact.givenName.toLowerCase().contains(q));
+  }
+
+  Widget _getStatefulListView() => StatefulBuilder(
+        builder: (context, StateSetter setState) {
+          final items = _contactSelection
+              .where((selection) => _matchesQuery(selection.contact, query))
+              .toList();
+          return ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, i) => CheckboxListTile(
+                    title: Text(items[i].contact.displayName != null
+                        ? items[i].contact.displayName
+                        : items[i].contact.givenName),
+                    selected: items[i].selected,
+                    value: items[i].selected,
+                    onChanged: (bool value) =>
+                        setState(() => items[i].selected = value),
+                  ));
+        },
+      );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _getStatefulListView();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _getStatefulListView();
+  }
 }
