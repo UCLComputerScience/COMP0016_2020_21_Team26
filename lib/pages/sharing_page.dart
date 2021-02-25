@@ -466,7 +466,10 @@ class SharingPageState extends State<SharingPage> {
                               onPressed: () => Navigator.pop(context)),
                           TextButton(
                               child: Text('Yes'),
-                              onPressed: () => _pushGoalPage(context, friend)),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _pushGoalPage(context, friend);
+                              }),
                         ],
                       ));
             } else {
