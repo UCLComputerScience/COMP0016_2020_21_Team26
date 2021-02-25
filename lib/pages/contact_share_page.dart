@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sms/flutter_sms.dart';
@@ -36,16 +38,20 @@ class _ContactSharePageState extends State<ContactSharePage> {
         )
       : CircleAvatar(child: Text(c.initials()));
 
+  /// updates the avatars (if on Android:)
+  /// https://github.com/lukasgit/flutter_contacts/issues/155
   void _updateAvatars() async {
-    _contactSelection.forEach((contactSelection) async {
-      final avatar = await ContactsService.getAvatar(contactSelection.contact,
-          photoHighRes: false);
-      if (avatar != null) {
-        setState(() {
-          contactSelection.contact.avatar = avatar;
-        });
-      }
-    });
+    if (Platform.isAndroid) {
+      _contactSelection.forEach((contactSelection) async {
+        final avatar = await ContactsService.getAvatar(contactSelection.contact,
+            photoHighRes: false);
+        if (avatar != null) {
+          setState(() {
+            contactSelection.contact.avatar = avatar;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -61,7 +67,7 @@ class _ContactSharePageState extends State<ContactSharePage> {
 
     return Scaffold(
       body: FutureBuilder(
-          future: ContactsService.getContacts(withThumbnails: false),
+          future: ContactsService.getContacts(withThumbnails: Platform.isIOS),
           builder: (context, futureData) {
             if (futureData.hasData) {
               List<Contact> contacts = futureData.data.toList(growable: false);
