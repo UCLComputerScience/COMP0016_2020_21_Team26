@@ -6,18 +6,19 @@ import 'package:nudge_me/pages/sharing_page.dart';
 
 import '../widget_test.dart';
 
+final Friend exampleFriend = Friend(
+  id: 0,
+  name: 'ExampleName',
+  identifier: 'ExampleId',
+  publicKey: 'ExamplePubKey',
+  latestData: null,
+  read: null,
+  currentStepsGoal: null,
+  sentActiveGoal: 0,
+  initialStepCount: null,
+);
 final List<Friend> friends = [
-  Friend(
-    id: 0,
-    name: 'ExampleName',
-    identifier: 'ExampleId',
-    publicKey: 'ExamplePubKey',
-    latestData: null,
-    read: null,
-    currentStepsGoal: null,
-    sentActiveGoal: 0,
-    initialStepCount: null,
-  ),
+  exampleFriend,
 ];
 
 void main() {
@@ -41,7 +42,9 @@ void main() {
           findsOneWidget);
       expect(find.byType(SliverList), findsNothing);
     });
-    testWidgets('shows list with 1 or more friends', (WidgetTester tester) async {
+
+    testWidgets('shows list with 1 or more friends',
+        (WidgetTester tester) async {
       final mockedFriendDB = MockedFriendDB();
       when(mockedFriendDB.getFriends())
           .thenAnswer((realInvocation) => Future.value(friends));
@@ -56,11 +59,27 @@ void main() {
 
       expect(
           find.byWidgetPredicate((widget) =>
-          widget is RichText &&
+              widget is RichText &&
               widget.text.toPlainText().contains('When you both have NudgeMe')),
           findsNothing);
       expect(find.byType(SliverList), findsOneWidget);
     });
+  });
+
+  testWidgets('hides button when scrolled down', (WidgetTester tester) async {
+    final mockedFriendDB = MockedFriendDB();
+    when(mockedFriendDB.getFriends()).thenAnswer((realInvocation) =>
+        Future.value(List.generate(20, (i) => exampleFriend)));
+    when(mockedFriendDB.empty)
+        .thenAnswer((realInvocation) => Future.value(false));
+
+    await tester
+        .pumpWidget(wrapAppProvider(SharingPage(), friendDB: mockedFriendDB));
+    await tester.pumpAndSettle();
+    await tester.drag(find.text('My Identity \nCode'), Offset(0.0, -700.0));
+    await tester.pumpAndSettle();
+
+    expect(find.text('My Identity \nCode'), findsNothing);
   });
 }
 
