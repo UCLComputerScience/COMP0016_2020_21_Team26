@@ -8,10 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widget_test.dart';
 
-void main() {
-  // NOTE: update this if the number of pages in intro screen changes
-  const numberOfPages = 6;
+// NOTE: update this if the number of pages in intro screen changes
+const numberOfPages = 6;
 
+void main() {
   testWidgets('Swiping switches page', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(IntroScreen()));
 
