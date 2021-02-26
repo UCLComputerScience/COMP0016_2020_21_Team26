@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sms/flutter_sms.dart';
@@ -13,16 +15,13 @@ class ContactSharePage extends StatefulWidget {
 }
 
 class _ContactSharePageState extends State<ContactSharePage> {
-  List<Contact> _contacts;
-  List<bool> _selected;
+  List<ContactSelection> _contactSelection;
 
   /// send sms to currently selected contacts.
   Future<Null> _sendToSelected() async {
-    final List<String> contactList = _contacts
-        .asMap()
-        .entries
-        .where((element) => _selected[element.key])
-        .map((e) => e.value.phones.first.value)
+    final List<String> contactList = _contactSelection
+        .where((selection) => selection.selected)
+        .map((e) => e.contact.phones.first.value)
         .toList(growable: false);
 
     if (await canSendSMS()) {
@@ -39,16 +38,20 @@ class _ContactSharePageState extends State<ContactSharePage> {
         )
       : CircleAvatar(child: Text(c.initials()));
 
+  /// updates the avatars (if on Android:)
+  /// https://github.com/lukasgit/flutter_contacts/issues/155
   void _updateAvatars() async {
-    _contacts.forEach((contact) async {
-      final avatar =
-          await ContactsService.getAvatar(contact, photoHighRes: false);
-      if (avatar != null) {
-        setState(() {
-          contact.avatar = avatar;
-        });
-      }
-    });
+    if (Platform.isAndroid) {
+      _contactSelection.forEach((contactSelection) async {
+        final avatar = await ContactsService.getAvatar(contactSelection.contact,
+            photoHighRes: false);
+        if (avatar != null) {
+          setState(() {
+            contactSelection.contact.avatar = avatar;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -64,30 +67,31 @@ class _ContactSharePageState extends State<ContactSharePage> {
 
     return Scaffold(
       body: FutureBuilder(
-          future: ContactsService.getContacts(withThumbnails: false),
+          future: ContactsService.getContacts(withThumbnails: Platform.isIOS),
           builder: (context, futureData) {
             if (futureData.hasData) {
               List<Contact> contacts = futureData.data.toList(growable: false);
-              if (_contacts == null || contacts.length != _contacts.length) {
+              if (_contactSelection == null ||
+                  contacts.length != _contactSelection.length) {
                 // contacts must have updated
-                _contacts = contacts;
+                _contactSelection = contacts
+                    .map((contact) => ContactSelection(contact))
+                    .toList();
                 _updateAvatars();
-                _selected = List<bool>.generate(
-                    contacts.length, (index) => false,
-                    growable: false);
               }
 
               return ListView.builder(
-                  itemCount: contacts.length,
+                  itemCount: _contactSelection.length,
                   itemBuilder: (context, i) => CheckboxListTile(
-                        title: Text(contacts[i].displayName != null
-                            ? contacts[i].displayName
-                            : contacts[i].givenName),
+                        title: Text(
+                            _contactSelection[i].contact.displayName != null
+                                ? _contactSelection[i].contact.displayName
+                                : _contactSelection[i].contact.givenName),
                         secondary: _getAvatar(contacts[i]),
-                        selected: _selected[i],
-                        value: _selected[i],
-                        onChanged: (bool value) =>
-                            setState(() => _selected[i] = value),
+                        selected: _contactSelection[i].selected,
+                        value: _contactSelection[i].selected,
+                        onChanged: (bool value) => setState(
+                            () => _contactSelection[i].selected = value),
                       ));
             } else if (futureData.hasError) {
               print(futureData.error);
@@ -97,8 +101,88 @@ class _ContactSharePageState extends State<ContactSharePage> {
           }),
       appBar: AppBar(
         title: Text("Select contacts"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            onPressed: () => showSearch(
+                    context: context,
+                    delegate: ContactSelectionSearch(_contactSelection))
+                .then((_) => setState(() {})),
+          ),
+        ],
       ),
       floatingActionButton: fab,
     );
+  }
+}
+
+class ContactSelection {
+  final Contact contact;
+  bool selected = false;
+
+  ContactSelection(this.contact);
+}
+
+class ContactSelectionSearch extends SearchDelegate<ContactSelection> {
+  final List<ContactSelection> _contactSelection;
+
+  ContactSelectionSearch(this._contactSelection);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () => query = '',
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () => close(context, null),
+    );
+  }
+
+  bool _matchesQuery(Contact contact, String q) {
+    q = q.toLowerCase();
+    return (contact.displayName != null &&
+            contact.displayName.toLowerCase().contains(q)) ||
+        (contact.givenName != null &&
+            contact.givenName.toLowerCase().contains(q));
+  }
+
+  Widget _getStatefulListView() => StatefulBuilder(
+        builder: (context, StateSetter setState) {
+          final items = _contactSelection
+              .where((selection) => _matchesQuery(selection.contact, query))
+              .toList();
+          return ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, i) => CheckboxListTile(
+                    title: Text(items[i].contact.displayName != null
+                        ? items[i].contact.displayName
+                        : items[i].contact.givenName),
+                    selected: items[i].selected,
+                    value: items[i].selected,
+                    onChanged: (bool value) =>
+                        setState(() => items[i].selected = value),
+                  ));
+        },
+      );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _getStatefulListView();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _getStatefulListView();
   }
 }
