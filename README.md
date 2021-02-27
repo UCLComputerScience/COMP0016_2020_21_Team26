@@ -45,11 +45,11 @@ something like this:
 
 ``` json
 [
-{'week': 1, 'score': 8, 'steps': 1005},
-{'week': 2, 'score': 9, 'steps': 12300},
-{'week': 3, 'score': 7, 'steps': 105},
-{'week': 4, 'score': 2, 'steps': 200},
-{'week': 5, 'score': 3, 'steps': 300},
+{"week": 1, "score": 8, "steps": 1005},
+{"week": 2, "score": 9, "steps": 12300},
+{"week": 3, "score": 7, "steps": 105},
+{"week": 4, "score": 2, "steps": 200},
+{"week": 5, "score": 3, "steps": 300},
 ]
 ```
 (Using a dictionary instead of an array because we may want their week number.)
@@ -66,11 +66,11 @@ There are two types of messages related to nudges: a new nudge, or an update ind
 goal of the nudge has been met.
 
 ``` json
-{'type': 'nudge-new', 'goal': 7000},
+{"type": "nudge-new", "goal": 7000},
 ```
 
 ``` json
-{'type': 'nudge-completed', 'goal': 8400},
+{"type": "nudge-completed", "goal": 8400},
 ```
 
 For now, clients might not need to encrypt, as we are only sending step goals, and
