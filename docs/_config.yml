@@ -11,7 +11,7 @@ description: Development blog for NudgeMe.
 # NOTE: base theme seems to be fixed
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
-avatar: /images/NudgeMeLogo.png
+avatar: https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/images/NudgeMeLogo.png
 
 #
 # Flags below are optional
