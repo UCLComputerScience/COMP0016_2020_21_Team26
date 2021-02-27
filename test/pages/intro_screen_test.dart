@@ -33,7 +33,7 @@ void main() {
 
   testWidgets('Adds first checkup to DB and updates prefs',
       (WidgetTester tester) async {
-    final mockedDB = MockedDB();
+    final mockedDB = _MockedDB();
     final supportCode = "GP";
     final postcode = "M11";
     SharedPreferences.setMockInitialValues({});
@@ -69,7 +69,7 @@ void main() {
 
   testWidgets('Does not add to DB or prefs if postcode missing',
       (WidgetTester tester) async {
-    final mockedDB = MockedDB();
+    final mockedDB = _MockedDB();
     final supportCode = "GP";
     SharedPreferences.setMockInitialValues({});
 
@@ -101,4 +101,4 @@ void main() {
   });
 }
 
-class MockedDB extends Mock implements UserWellbeingDB {}
+class _MockedDB extends Mock implements UserWellbeingDB {}

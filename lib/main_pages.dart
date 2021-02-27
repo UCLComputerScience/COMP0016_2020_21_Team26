@@ -82,7 +82,7 @@ class _MainPagesState extends State<MainPages> {
   Widget build(BuildContext context) {
     final pages = [
       WellbeingPage(),
-      HomePage(),
+      HomePage(Pedometer.stepCountStream.map((event) => event.steps)),
       SharingPage(),
       SettingsPage(),
       TestingPage(),
