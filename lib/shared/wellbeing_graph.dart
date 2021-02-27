@@ -85,8 +85,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 10.0, 30, 0),
                 child: Text(
-                    "Wellbeing scores and steps are plotted on the same graph. "
-                    "Wellbeing are represented by the purple bars and the "
+                    "Wellbeing levels and steps are plotted on the same graph. "
+                    "Wellbeing is represented by the purple bars and the "
                     "left axis. Steps are represented by the blue bars and "
                     "the right axis.",
                     style: tutorialTextStyle)),
@@ -116,7 +116,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 30, 180.0),
                 child: Text(
-                    "The share button allows you to save or share your graph.",
+                    "The share button allows you to save or share your graph as a PDF.",
                     style: Theme.of(context).textTheme.subtitle2))
           ])
         ],

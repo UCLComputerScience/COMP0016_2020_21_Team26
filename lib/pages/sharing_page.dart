@@ -256,7 +256,7 @@ class SharingPageState extends State<SharingPage> {
                     text: new TextSpan(children: [
                       new TextSpan(
                           text: "With NudgeMe, caring is sharing. \n\n" +
-                              "Let people in your care network know how you are. Do them by texting them a link to download NudgeMe.\n",
+                              "Let people in your care network know how you are. You can start this process by texting them a link to download NudgeMe.\n",
                           style: Theme.of(context).textTheme.bodyText2),
                     ]),
                     textAlign: TextAlign.center),
@@ -347,7 +347,7 @@ class SharingPageState extends State<SharingPage> {
               TextSpan(children: [
                 TextSpan(
                     text:
-                        "\nView other people’s wellbeing and diaries and nudges with the ",
+                        "\nView your network’s wellbeing and diaries and nudges with the ",
                     style: Theme.of(context).textTheme.bodyText2),
                 TextSpan(
                     text: "View button.",
