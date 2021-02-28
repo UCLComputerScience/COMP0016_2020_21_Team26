@@ -1,8 +1,9 @@
 ---
 layout: post
-author: Chris Tomy
-title: Circular Progress with an Image, using Custom Painter
+title: Flutter CustomPainter - Progress Indicator with an Image
 ---
+
+_Written by Chris Tomy._
 
 # Introduction
 
@@ -236,6 +237,8 @@ Container(
 ```
 
 Here is how we use it:
-![
-Video of circular progress.
-](https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/videos/progress_trimmed.mov)
+
+<video width="320" height="320" controls>
+  <source src="https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/videos/progress_trimmed.mov" 
+  type="video/mp4">
+</video>
