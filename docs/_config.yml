@@ -29,7 +29,7 @@ twitter_username:
 github_username: UCLComputerScience
 
 # Build settings
-remote_theme: jekyll/minima
+theme: minima
 plugins:
   - jekyll-feed
 
