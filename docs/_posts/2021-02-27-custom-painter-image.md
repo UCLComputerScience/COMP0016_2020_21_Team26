@@ -38,14 +38,14 @@ i.e. you have watched [this 5 minute video](https://www.youtube.com/watch?v=vvI_
 # General Approach
 
 The idea would be to 
-1. draw two circles with different radii $r_1$ and $r_2$, $r_1 > r_2$
-about some center point $(x, y)$. They should have different colors.
-2. draw an arc (or circle sector) about $(x, y)$ with angle $progress*2\pi$ radians 
-and radius $r_1$. This should have another color.
-3. assuming the image is already correctly sized, rotate it $-1*progress*2\pi$. This
+1. draw two circles with different radii `r_1` and `r_2`, `r_1 > r_2`
+about some center point `(x, y)`. They should have different colors.
+2. draw an arc (or circle sector) about `(x, y)` with angle `progress*2\pi` radians 
+and radius `r_1`. This should have another color.
+3. assuming the image is already correctly sized, rotate it `-1*progress*2\pi`. This
 is negative because the circle/progress increases anticlockwise.
-4. place the image at $((r_1+r_2)/2, -1*progress*2\pi)$ in polar coordinates, 
-about $(x,y)$ and with the polar axis pointing upwards.
+4. place the image at `((r_1+r_2)/2, -1*progress*2\pi)` in polar coordinates, 
+about `(x,y)` and with the polar axis pointing upwards.
 
 I use radians for all angles.
 
@@ -238,7 +238,10 @@ Container(
 
 Here is how we use it:
 
-<video width="320" height="320" controls>
+<video controls>
   <source src="https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/videos/progress_trimmed.mov" 
   type="video/mp4">
 </video>
+
+I've used a stack and placed the progress fraction as a percentage on top of
+the `Container` holding the `CustomPaint`.
