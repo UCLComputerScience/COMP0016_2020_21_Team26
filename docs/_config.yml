@@ -29,7 +29,7 @@ twitter_username:
 github_username: UCLComputerScience
 
 # Build settings
-theme: hacker
+theme: minima
 plugins:
   - jekyll-feed
 
