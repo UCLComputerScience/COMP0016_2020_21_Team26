@@ -24,12 +24,12 @@ description: >- # this means to ignore newlines until "baseurl:"
   Team 26's development blog for NudgeMe, a project for COMP0016.
   NudgeMe is a privacy-focused wellbeing app.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/" # the base hostname & protocol for your site, e.g. http://example.com
+url: # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
 github_username: UCLComputerScience
 
 # Build settings
-theme: minima
+theme: hacker
 plugins:
   - jekyll-feed
 
