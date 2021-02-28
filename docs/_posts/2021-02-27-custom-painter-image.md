@@ -138,6 +138,8 @@ Now, let's add steps 1 & 2 to `paint`:
 Note that generally, *order matters* when using any method on `canvas`.
 So drawing the arc after the circle will place the arc on top of the circle.
 
+Here's the rest of the code for the `paint` function, commented in detail:
+
 ``` dart
     @override
     void paint(ui.Canvas canvas, ui.Size size) {
@@ -149,42 +151,68 @@ So drawing the arc after the circle will place the arc on top of the circle.
         // target determines the resize. 0.15 means width of image will be 15% of the 
         // of the canvas width:
         final target = 0.15; 
+        // c is the value s.t. c*image_width = target*canvas_width
         final c = (target * size.width) / marker.width;
         // the middle of both the previous radii:
         final midRadius = (radius + innerRadius) / 2; 
 
-        // values to translate by, to get image onto the middle stripe
+        // x, y are values to translate by to get image onto the middle of the 
+        // ring. I use some basic trigonometry to convert the polar representation
+        // to cartesian. There may be better ways of doing this, but this is 
+        // simple, and easier to understand.
         double x, y;
-        if (completed <= 0.25) {
-        // four quadrants
-        final theta = completed * 2 * pi;
-        x = -midRadius * sin(theta);
-        y = -midRadius * cos(theta);
+        // depending on the four quadrants:
+        if (completed <= 0.25) { 
+            // In this case, we know it must land on the first quarter of the
+            // diameter of the 'circle' we're using as a reference point, with
+            // radius (r_1 + r_2)/2.
+            // Therefore, we negate the x and y values, since we're working
+            // relative to the center.
+            final theta = completed * 2 * pi;
+            x = -midRadius * sin(theta);
+            y = -midRadius * cos(theta);
         } else if (completed <= 0.5) {
-        final theta = completed * 2 * pi - 0.25 * 2 * pi;
-        x = -midRadius * cos(theta);
-        y = midRadius * sin(theta);
+            final theta = completed * 2 * pi - 0.25 * 2 * pi;
+            x = -midRadius * cos(theta);
+            y = midRadius * sin(theta);
         } else if (completed <= 0.75) {
-        final theta = completed * 2 * pi - 0.5 * 2 * pi;
-        x = midRadius * sin(theta);
-        y = midRadius * cos(theta);
+            final theta = completed * 2 * pi - 0.5 * 2 * pi;
+            x = midRadius * sin(theta);
+            y = midRadius * cos(theta);
         } else {
-        final theta = completed * 2 * pi - 0.75 * 2 * pi;
-        x = midRadius * cos(theta);
-        y = -midRadius * sin(theta);
+            final theta = completed * 2 * pi - 0.75 * 2 * pi;
+            x = midRadius * cos(theta);
+            y = -midRadius * sin(theta);
         }
 
+        // the overall imageOffset is the sum of two offsets since one is
+        // to move the image onto the middle ring, and the other is to shift the image
+        // midpoint onto the middle ring, since we work in terms of the top-left
+        // corner by default.
         final imageOffset = center
-                .scale(1 / c, 1 / c)
+                .scale(1 / c, 1 / c) // we have to reverse the scaling done, using 1 / c
                 .translate(-marker.width / 2, -marker.height / 2) +
-            Offset(x, y).scale(1 / c, 1 / c);
+            Offset(x, y).scale(1 / c, 1 / c); // here we use the x, y
 
-        canvas.scale(c);
+        // note that canvas scales/translations/etc. affect any future shapes, not 
+        // the ones currently drawn
+
+        // we resize the image first, this is why we needed to reverse the scaling,
+        // when defining the image offsets:
+        canvas.scale(c); 
+
+        // We want to rotate the image about it's midpoint, which won't happen by 
+        // default. In general to rotate some point A about point B, we shift our 
+        // center point to point B and perform the rotatation, then reverse the shift. 
+        // This is what I do here:
         canvas.translate(
             imageOffset.dx + marker.width / 2, imageOffset.dy + marker.height / 2);
         canvas.rotate(-2 * completed * pi);
         canvas.translate(-imageOffset.dx - marker.width / 2,
             -imageOffset.dy - marker.height / 2);
+
+        // finally we draw the image at the appropriate point, applying the previous 
+        // canvas scales and translation(s):
         canvas.drawImage(marker, imageOffset, Paint());
     }
 ```
