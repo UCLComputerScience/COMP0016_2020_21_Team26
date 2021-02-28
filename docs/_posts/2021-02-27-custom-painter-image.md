@@ -38,7 +38,7 @@ i.e. you have watched [this 5 minute video](https://www.youtube.com/watch?v=vvI_
 # General Approach
 
 The idea would be to 
-1. draw two circles with different radii `r_1` and `r_2`, `r_1 > r_2`
+1. draw two circles with different radii `r_1` and `r_2` (s.t. `r_1 > r_2`)
 about some center point `(x, y)`. They should have different colors.
 2. draw an arc (or circle sector) about `(x, y)` with angle `progress*2\pi` radians 
 and radius `r_1`. This should have another color.
@@ -238,7 +238,7 @@ Container(
 
 Here is how we use it:
 
-<video controls>
+<video height="800" width="600" controls>
   <source src="https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/videos/progress_trimmed.mov" 
   type="video/mp4">
 </video>
