@@ -38,13 +38,13 @@ i.e. you have watched [this 5 minute video](https://www.youtube.com/watch?v=vvI_
 # General Approach
 
 The idea would be to 
-1. draw two circles with different radii `r_1` and `r_2` (s.t. `r_1 > r_2`)
+1. Draw two circles with different radii `r_1` and `r_2` (s.t. `r_1 > r_2`)
 about some center point `(x, y)`. They should have different colors.
-2. draw an arc (or circle sector) about `(x, y)` with angle `progress*2\pi` radians 
+2. Draw an arc (or circle sector) about `(x, y)` with angle `progress*2\pi` radians
 and radius `r_1`. This should have another color.
-3. assuming the image is already correctly sized, rotate it `-1*progress*2\pi`. This
+3. Assuming the image is already correctly sized, rotate it `-1*progress*2\pi`. This
 is negative because the circle/progress increases anticlockwise.
-4. place the image at `((r_1+r_2)/2, -1*progress*2\pi)` in polar coordinates, 
+4. Place the image at `((r_1+r_2)/2, -1*progress*2\pi)` in polar coordinates,
 about `(x,y)` and with the polar axis pointing upwards.
 
 I use radians for all angles.
