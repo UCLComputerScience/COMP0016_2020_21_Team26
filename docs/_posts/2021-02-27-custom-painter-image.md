@@ -21,7 +21,11 @@ progress is actually for. This will allow us to reuse it if needed.)
 
 ## Without CustomPainter?
 
-It might be possible to do this without a CustomPainter, instead just carefully
+If your use case is simple, you could use `CircularProgressIndicator`, which
+expects monotonically increasing values from 0.0 to 1.0. However, there isn't
+a convenient way to display an image at the end of the bar.
+
+It might be possible to do it anyway without a CustomPainter, instead just carefully
 laying and positioning widgets on top of each other, but CustomPainter is better designed
 for controlling the size of what we ultimately want to create.
 
@@ -216,3 +220,22 @@ Here's the rest of the code for the `paint` function, commented in detail:
         canvas.drawImage(marker, imageOffset, Paint());
     }
 ```
+
+Now that we've implemented our own `CustomPainter`, we just need to wrap it in a
+`CustomPaint` and a fixed size widget to use it. For example:
+
+``` dart
+Container(
+    width: 300,
+    height: 300,
+    child: CustomPaint(
+    painter:
+        StepGoalPainter(progress, imageMarker),
+    ),
+),
+```
+
+Here is how we use it:
+![
+Video of circular progress.
+](https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/videos/progress_trimmed.mov)
