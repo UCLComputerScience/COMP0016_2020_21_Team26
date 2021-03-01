@@ -21,24 +21,26 @@ class _WellbeingCircleState extends State<WellbeingCircle> {
     super.initState();
 
     // it must be delayed by some amount for it to animate
-    Future.delayed(Duration(milliseconds: 100), () => setState(() => _currScore = widget.score));
+    Future.delayed(Duration(milliseconds: 100),
+        () => setState(() => _currScore = widget.score));
   }
 
   @override
   Widget build(BuildContext context) {
     // subtracted 2 from score to allow space for larger gradient
-    final double purpleFraction = (_currScore == null ? 10.0 : _currScore - 2) / 10.0;
+    final double purpleFraction =
+        (_currScore == null ? 10.0 : _currScore - 2) / 10.0;
     final double blueStartPoint =
         purpleFraction + 0.4 <= 1 ? purpleFraction + 0.4 : 1;
 
     final boxShadows = [
-          // shadow effect around the circle
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            spreadRadius: 1,
-            blurRadius: 3,
-          ),
-        ];
+      // shadow effect around the circle
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.6),
+        spreadRadius: 1,
+        blurRadius: 3,
+      ),
+    ];
 
     final bgCircle = AnimatedContainer(
       duration: Duration(milliseconds: 900),
