@@ -181,17 +181,6 @@ class _HomePageState extends State<HomePage> {
           }
           return CircularProgressIndicator();
         });
-    final unreadMessages = FutureBuilder(
-        future: Provider.of<FriendDB>(context).getUnreadCount(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Text(snapshot.data.toString());
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text('Error');
-          }
-          return CircularProgressIndicator();
-        });
 
     final contentColumn = Column(children: [
       Text(
