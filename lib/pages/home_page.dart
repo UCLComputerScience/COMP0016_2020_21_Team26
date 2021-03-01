@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
-import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:pedometer/pedometer.dart';
