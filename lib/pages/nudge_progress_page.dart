@@ -118,6 +118,7 @@ class StepGoalPainter extends CustomPainter {
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
     assert(size.isFinite); // we want a finite canvas
+    assert(!completed.isNaN);
 
     Offset center = size.center(Offset.zero);
     final fraction = completed.clamp(0, 1);

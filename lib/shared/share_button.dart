@@ -17,7 +17,7 @@ class ShareButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
+    return OutlinedButton(
         onPressed: _share,
         child: Icon(
           Icons.share,

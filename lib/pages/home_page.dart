@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
 
   void showTutorial() async {
     if (!(await _isHomeTutorialDone())) {
-      Timer(Duration(milliseconds: 500), () => showCoachMarkWB());
+      Timer(Duration(milliseconds: 700), () => showCoachMarkWB());
     }
   }
 

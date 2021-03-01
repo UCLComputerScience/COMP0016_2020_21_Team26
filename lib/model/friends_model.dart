@@ -180,6 +180,17 @@ class FriendDB extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// deletes a [Friend] from the database, the friend.id property must not be
+  /// null
+  Future<Null> deleteFriend(Friend friend) async {
+    assert(friend.id != null);
+
+    final db = await database;
+
+    db.delete(_tableName, where: '${_columns[0]} = ?', whereArgs: [friend.id]);
+    notifyListeners();
+  }
+
   void delete() async {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));

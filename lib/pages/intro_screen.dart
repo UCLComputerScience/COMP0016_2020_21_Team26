@@ -100,6 +100,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     setState(() {
       doneTapped = true;
     });
+    _dismisKeyboard(); // to avoid some rendering issues
 
     _wbCheckNotifTime = DateTime(
         2020, 1, _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
@@ -480,17 +481,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
-        done: const Text('Done',
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color.fromARGB(255, 182, 125, 226))),
-        onChange: (int _) {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            // unfocusing dismisses the keyboard
-            currentFocus.unfocus();
-          }
-        },
+        done: !doneTapped
+            ? const Text('Done',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 182, 125, 226)))
+            : CircularProgressIndicator(),
+        onChange: (int _) => _dismisKeyboard(),
         dotsDecorator: const DotsDecorator(
             size: Size(2, 2.5),
             color: Color(0xFFBDBDBD),
@@ -498,6 +495,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             activeSize: Size(3, 3.5),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
+  }
+
+  void _dismisKeyboard() {
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      // unfocusing dismisses the keyboard
+      currentFocus.unfocus();
+    }
   }
 
   void dispose() {
