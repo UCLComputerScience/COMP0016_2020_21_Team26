@@ -124,7 +124,6 @@ class SharingPageState extends State<SharingPage> {
         child: Text("Share identity link",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white)));
-    //child: Icon(Icons.share, size: 40, color: Colors.white));
     final contactShareButton = OutlinedButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(
