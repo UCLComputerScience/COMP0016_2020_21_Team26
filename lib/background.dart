@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:cron/cron.dart';
 import 'package:flutter/foundation.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
+import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/notification.dart';
+import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
@@ -15,6 +19,8 @@ import 'package:http/http.dart' as http;
 const PEDOMETER_CHECK_KEY = "pedometer_check";
 const REFRESH_FRIEND_KEY = "refresh_friend_data";
 const NUDGE_CHECK_KEY = "nudge_check";
+
+ScheduledTask publishTask;
 
 /// inits the [Workmanager] and registers a background task to track steps
 /// and refresh friend data
@@ -183,4 +189,68 @@ Future<Null> _handleGoalCompleted(Friend friend) async {
   });
 
   await FriendDB().updateGoalFromFriend(friend.identifier, null, null);
+}
+
+void schedulePublish() {
+  final day = DateTime.monday;
+  final hour = 12;
+  final minute = 0;
+
+  // This may help: https://crontab.guru/
+  publishTask =
+      Cron().schedule(Schedule.parse("$minute $hour * * $day"), () async {
+    if (!await UserWellbeingDB().empty) {
+      // publish if there is at least one wellbeing item saved
+      _publishData();
+    }
+  });
+}
+
+void cancelPublish() {
+  publishTask.cancel();
+  publishTask = null;
+}
+
+void _publishData() async {
+  final items = await UserWellbeingDB().getLastNWeeks(1);
+  final item = items[0];
+  final int anonScore = _anonymizeScore(item.wellbeingScore);
+  // int1/int2 is a double in dart
+  final double normalizedSteps =
+      (item.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0;
+  final double errorRate = (normalizedSteps > anonScore)
+      ? normalizedSteps - anonScore
+      : anonScore - normalizedSteps;
+
+  final body = jsonEncode({
+    "postCode": item.postcode,
+    "wellbeingScore": anonScore,
+    "weeklySteps": item.numSteps,
+    // TODO: Maybe change error rate to double
+    //       & confirm the units.
+    "errorRate": errorRate.truncate(),
+    "supportCode": item.supportCode,
+    "date_sent": item.date,
+  });
+
+  print("Sending body $body");
+  http
+      .post(BASE_URL + "/add-wellbeing-record",
+          headers: {"Content-Type": "application/json"}, body: body)
+      .then((response) {
+    print("Reponse status: ${response.statusCode}");
+    print("Reponse body: ${response.body}");
+    final asJson = jsonDecode(response.body);
+    // could be null:
+    if (asJson['success'] != true) {
+      print("Something went wrong.");
+    }
+  });
+}
+
+/// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
+/// time since there's a chance it could just pick the true score anyway
+int _anonymizeScore(double score) {
+  final random = Random();
+  return (random.nextInt(100) > 69) ? random.nextInt(11) : score.truncate();
 }
