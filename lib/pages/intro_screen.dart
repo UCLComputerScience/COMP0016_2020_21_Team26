@@ -1,10 +1,6 @@
-import 'dart:convert';
-import 'dart:math';
 import 'package:clock/clock.dart';
 import 'package:flutter/gestures.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -12,7 +8,6 @@ import 'package:nudge_me/background.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/main_pages.dart';
-import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
@@ -47,6 +42,9 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   int _wbCheckNotifMinute = 0;
   DateTime _wbCheckNotifTime;
 
+  /// true if done was tapped with valid input
+  bool doneTapped = false;
+
   void setInitialWellbeing(
       double _currentSliderValue, String postcode, String suppCode) async {
     final dateString = clock.now().toIso8601String().substring(0, 10);
@@ -64,8 +62,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
-    String _wbCheckTimeString = _wbCheckNotifTime.toIso8601String();
-    prefs.setString('wb_notif_time', _wbCheckTimeString);
+    String _wbCheckNotifString = _wbCheckNotifTime.toIso8601String();
+    prefs.setString('wb_notif_time', _wbCheckNotifString);
 
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
@@ -89,7 +87,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         content: Text("Invalid postcode or support code."),
       ));
       return;
+    } else if (doneTapped) {
+      // this check is needed so we don't perform multiple setups
+      // in case they tap multiple times
+      return;
     }
+    setState(() {
+      doneTapped = true;
+    });
+    _dismisKeyboard(); // to avoid some rendering issues
 
     _wbCheckNotifTime = DateTime(
         2020, 1, _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
@@ -119,71 +125,15 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     scheduleCheckup(_wbCheckNotifTime.day,
         Time(_wbCheckNotifTime.hour, _wbCheckNotifTime.minute));
     if (_currentSwitchValue) {
-      schedulePublish(DateTime.monday, 12, 0);
+      schedulePublish();
     }
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
 
-    /// NOTE: may be a problem if the user immediately goes to the friend page
-    /// and checks their QR code - their identity may not have been generated yet.
-    setupCrypto();
+    await setupCrypto();
 
     // only start tracking steps after user has done setup
     initBackground();
-  }
-
-  void schedulePublish(int day, int hour, int minute) {
-    // This may help: https://crontab.guru/
-    Cron().schedule(Schedule.parse("$minute $hour * * $day"), () async {
-      if (!await Provider.of<UserWellbeingDB>(context).empty) {
-        // publish if there is at least one wellbeing item saved
-        _publishData();
-      }
-    });
-  }
-
-  /// Lies 30% of the time. Okay technically it lies 3/10 * 10/11 = 3/11 of the
-  /// time since there's a chance it could just pick the true score anyway
-  int anonymizeScore(double score) {
-    final random = Random();
-    return (random.nextInt(100) > 69) ? random.nextInt(11) : score.truncate();
-  }
-
-  void _publishData() async {
-    final items = await Provider.of<UserWellbeingDB>(context).getLastNWeeks(1);
-    final item = items[0];
-    final int anonScore = anonymizeScore(item.wellbeingScore);
-    // int1/int2 is a double in dart
-    final double normalizedSteps =
-        (item.numSteps / RECOMMENDED_STEPS_IN_WEEK) * 10.0;
-    final double errorRate = (normalizedSteps > anonScore)
-        ? normalizedSteps - anonScore
-        : anonScore - normalizedSteps;
-
-    final body = jsonEncode({
-      "postCode": item.postcode,
-      "wellbeingScore": anonScore,
-      "weeklySteps": item.numSteps,
-      // TODO: Maybe change error rate to double
-      //       & confirm the units.
-      "errorRate": errorRate.truncate(),
-      "supportCode": item.supportCode,
-      "date_sent": item.date,
-    });
-
-    print("Sending body $body");
-    http
-        .post(BASE_URL + "/add-wellbeing-record",
-            headers: {"Content-Type": "application/json"}, body: body)
-        .then((response) {
-      print("Reponse status: ${response.statusCode}");
-      print("Reponse body: ${response.body}");
-      final asJson = jsonDecode(response.body);
-      // could be null:
-      if (asJson['success'] != true) {
-        print("Something went wrong.");
-      }
-    });
   }
 
   PageViewModel _getWBCheckNotificationPage(
@@ -472,17 +422,13 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
         showSkipButton: false,
         next: const Icon(Icons.arrow_forward,
             color: Color.fromARGB(255, 182, 125, 226)),
-        done: const Text('Done',
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color.fromARGB(255, 182, 125, 226))),
-        onChange: (int _) {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            // unfocusing dismisses the keyboard
-            currentFocus.unfocus();
-          }
-        },
+        done: !doneTapped
+            ? const Text('Done',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 182, 125, 226)))
+            : CircularProgressIndicator(),
+        onChange: (int _) => _dismisKeyboard(),
         dotsDecorator: const DotsDecorator(
             size: Size(2, 2.5),
             color: Color(0xFFBDBDBD),
@@ -490,6 +436,14 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
             activeSize: Size(3, 3.5),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
+  }
+
+  void _dismisKeyboard() {
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      // unfocusing dismisses the keyboard
+      currentFocus.unfocus();
+    }
   }
 
   void dispose() {

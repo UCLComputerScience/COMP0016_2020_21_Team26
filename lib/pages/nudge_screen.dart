@@ -17,7 +17,7 @@ class NudgeScreen extends StatelessWidget {
               ),
               Text(
                 "Would you like to let your care network how you are? "
-                "If yes, click the share button at the bottom of the screen.",
+                "If yes, click the share button in the top right of the screen.",
                 textAlign: TextAlign.center,
               ),
               Divider(),

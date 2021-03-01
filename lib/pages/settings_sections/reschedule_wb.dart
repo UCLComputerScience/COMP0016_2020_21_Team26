@@ -37,6 +37,15 @@ class _NotificationSelectorState extends State<NotificationSelector> {
     });
   }
 
+  void _updateWbCheckNotifTime(int _wbCheckNotifDay, int _wbCheckNotifHour,
+      int _wbCheckNotifMinute) async {
+    DateTime _wbCheckNotifTime = DateTime(
+        2020, 1, _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
+    String _wbCheckNotifString = _wbCheckNotifTime.toIso8601String();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('wb_notif_time', _wbCheckNotifString);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -146,8 +155,9 @@ class _NotificationSelectorState extends State<NotificationSelector> {
                   _wbCheckNotifMinute != null) {
                 rescheduleCheckup(_wbCheckNotifDay,
                     Time(_wbCheckNotifHour, _wbCheckNotifMinute));
+                _updateWbCheckNotifTime(
+                    _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
                 String wbCheckNotifDayName = days[_wbCheckNotifDay - 1];
-
                 Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text(
                         "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:${_wbCheckNotifMinute.toString().padLeft(2, "0")}")));

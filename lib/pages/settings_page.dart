@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/pages/settings_sections/change_postcode.dart';
 import 'package:nudge_me/pages/settings_sections/change_suppcode.dart';
 import 'package:nudge_me/pages/settings_sections/reschedule_wb.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final settingsWidget = SettingsList(
@@ -49,7 +55,20 @@ class SettingsPage extends StatelessWidget {
               );
             },
           )
-        ])
+        ]),
+        SettingsSection(
+          title: 'Data & Privacy',
+          tiles: [
+            SettingsTile.switchTile(
+              title: 'Share Data',
+              subtitle: 'Send anonymized data.',
+              leading: Icon(Icons.send),
+              switchValue: publishTask != null,
+              onToggle: (bool value) =>
+                  setState(() => value ? schedulePublish() : cancelPublish()),
+            )
+          ],
+        ),
       ],
     );
 

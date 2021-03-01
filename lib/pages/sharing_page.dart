@@ -3,13 +3,16 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
-import 'package:highlighter_coachmark/highlighter_coachmark.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:nudge_me/background.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/main_pages.dart';
 import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/contact_share_page.dart';
+import 'package:nudge_me/pages/nudge_progress_page.dart';
+import 'package:nudge_me/pages/send_nudge_page.dart';
 import 'package:nudge_me/shared/friend_graph.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pointycastle/pointycastle.dart' as pointyCastle;
@@ -55,7 +58,7 @@ Future<bool> getLatest([BuildContext ctx]) async {
         String decrypted = encrypter.decrypt64(encrypted);
         message['data'] = decrypted;
       }
-      await friendDB.updateData(messages);
+      await friendDB.updateWellbeingData(messages);
     }
 
     // If any of the messages are from a friend, there is new data:
@@ -75,63 +78,59 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  GlobalKey _networkButtonsTutorialKey = GlobalObjectKey("support_network");
+  GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
 
   @override
   void initState() {
     super.initState();
 
-    getLatest();
+    _networkRefresh();
   }
 
-  ///function to show the only slide of the tutorial, explaining the support network page
-  void showCoachMarkButtons(int duration) {
-    CoachMark coachMarkHeading = CoachMark();
-    RenderBox target =
-        _networkButtonsTutorialKey.currentContext.findRenderObject();
-    Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-    markRect = Rect.fromCircle(
-        center: markRect.center, radius: markRect.longestSide * 0.6);
-    coachMarkHeading.show(
-        targetContext: _networkButtonsTutorialKey.currentContext,
-        markRect: markRect,
-        children: [
-          Center(
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 200),
-                  child: Text(
-                      "Share a link to add people to your support network using the buttons on the left.\n\n" +
-                          "Scan each other's QR codes to be added to each other's support networks using the buttons on the right.",
-                      style: Theme.of(context).textTheme.subtitle2)))
-        ],
-        duration: Duration(seconds: duration),
-        onClose: () {});
+  Future<Null> _networkRefresh() async {
+    // no point checking back-end if no friends in network
+    if (!await Provider.of<FriendDB>(context, listen: false).empty) {
+      getLatest();
+      checkIfGoalsCompleted();
+      refreshNudge(false);
+    }
   }
 
   /// gets the friends list using provider.
   Future<List<Friend>> _getFriendsList(BuildContext context) =>
       Provider.of<FriendDB>(context).getFriends();
 
-  Widget _getShareLinkButtons(String identifier, String pubKey) {
-    // sends user to our website, which should redirect them to the
-    // nudgeme://... custom scheme (since many apps don't recognise them as
-    // links by default, we redirect them manually).
+  /// Get message used to add friends.
+  ///
+  /// sends user to our website, which should redirect them to the
+  /// nudgeme://... custom scheme (since many apps don't recognise them as
+  /// links by default, we redirect them manually).
+  Future<String> _getShareMessage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final identifier = prefs.getString(USER_IDENTIFIER_KEY);
+    final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
     final url = "$BASE_URL/add-friend?"
         "identifier=${Uri.encodeComponent(identifier)}"
         "&pubKey=${Uri.encodeComponent(pubKey)}";
-    final message = "Add me on NudgeMe by clicking this:\n$url";
+    return "Add me on NudgeMe by clicking this:\n$url";
+  }
+
+  List<Widget> _getShareLinkButtons() {
     final shareButton = OutlinedButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(
                 Theme.of(context).primaryColor)),
-        onPressed: () => Share.share(message),
-        child: Icon(Icons.share, size: 40, color: Colors.white));
+        onPressed: () async => Share.share(await _getShareMessage()),
+        child: Text("Share identity link",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white)));
     final contactShareButton = OutlinedButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(
                 Theme.of(context).primaryColor)),
         onPressed: () async {
           if (await Permission.contacts.request().isGranted) {
+            final message = await _getShareMessage();
             return Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -145,31 +144,59 @@ class SharingPageState extends State<SharingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white)));
 
-    return Column(children: [shareButton, contactShareButton]);
+    return [shareButton, contactShareButton];
   }
 
   Widget _getQRCode(String identifier, String pubKey) {
-    return SingleChildScrollView(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 200,
-          height: 200,
-          child: QrImage(
-            data: "$identifier\n$pubKey",
-            version: QrVersions.auto,
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-      ],
-    ));
+    return Container(
+      width: 200,
+      height: 200,
+      child: QrImage(
+        data: "$identifier\n$pubKey",
+        version: QrVersions.auto,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final friendsList = _getFriendsList(context);
+
+    return Scaffold(
+      key: _scaffoldState,
+      body: FutureBuilder(
+        future: friendsList,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final List<Friend> friends = snapshot.data;
+            friends.sort();
+            return _getLoadedPage(context, friends);
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text("Error when retrieving network.");
+          }
+          return LinearProgressIndicator();
+        },
+      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    );
+  }
+
+  Widget _getLoadedPage(BuildContext context, List<Friend> friends) {
+    final scanCodeButton = OutlinedButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+                Theme.of(context).accentColor)),
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                // NOTE: not using the new context 'ctx'
+                builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
+        child: Text(
+          'Scan code to\n add to network',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white),
+        ));
     final showKeyButton = OutlinedButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(
@@ -203,9 +230,7 @@ class SharingPageState extends State<SharingPage> {
                         print(data.error);
                         return Text("Couldn't get data.");
                       }
-                      return Row(children: [
-                        Expanded(child: LinearProgressIndicator())
-                      ]);
+                      return LinearProgressIndicator();
                     },
                   ),
                   actions: [
@@ -219,39 +244,10 @@ class SharingPageState extends State<SharingPage> {
         child: Text(
           'My Identity \nCode',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ));
-
-    final shareLinkButtons = FutureBuilder(
-      future: SharedPreferences.getInstance(),
-      builder: (context, data) {
-        if (data.hasData) {
-          final SharedPreferences prefs = data.data;
-          final identifier = prefs.getString(USER_IDENTIFIER_KEY);
-          final pubKey = prefs.getString(RSA_PUBLIC_PEM_KEY);
-          return _getShareLinkButtons(identifier, pubKey);
-        } else if (data.hasError) {
-          print(data.error);
-          return Text("Couldn't get link.");
-        }
-        return LinearProgressIndicator();
-      },
-    );
-
-    final scanCodeButton = OutlinedButton(
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-                Theme.of(context).accentColor)),
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                // NOTE: not using the new context 'ctx'
-                builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
-        child: Text(
-          'Scan code to\n add to network',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Colors.white),
-        ));
+    final shareLinkButtons = _getShareLinkButtons();
+    final buttons = shareLinkButtons + [showKeyButton, scanCodeButton];
 
     final noFriendsWidget = Column(children: [
       Center(
@@ -262,7 +258,7 @@ class SharingPageState extends State<SharingPage> {
                     text: new TextSpan(children: [
                       new TextSpan(
                           text: "With NudgeMe, caring is sharing. \n\n" +
-                              "Let people in your care network know how you are. Do them by texting them a link to download NudgeMe.\n",
+                              "Let people in your care network know how you are. You can start this process by texting them a link to download NudgeMe.\n",
                           style: Theme.of(context).textTheme.bodyText2),
                     ]),
                     textAlign: TextAlign.center),
@@ -277,7 +273,8 @@ class SharingPageState extends State<SharingPage> {
                     textAlign: TextAlign.center),
                 SizedBox(height: 20)
               ]))),
-      shareLinkButtons,
+      shareLinkButtons[0],
+      shareLinkButtons[1],
       SizedBox(height: 20),
       Center(
           child: Padding(
@@ -310,141 +307,111 @@ class SharingPageState extends State<SharingPage> {
                   textAlign: TextAlign.center))),
       SizedBox(height: 5),
       showKeyButton,
-      scanCodeButton
+      scanCodeButton,
     ]);
+    final friendsDescription = Padding(
+        padding: EdgeInsets.fromLTRB(5, 65, 5, 0),
+        child: RichText(
+            text: new TextSpan(children: [
+              TextSpan(
+                  text: "With NudgeMe, caring is sharing. \n\n",
+                  style: Theme.of(context).textTheme.bodyText2),
+              TextSpan(
+                  text:
+                      "Let people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n",
+                  style: Theme.of(context).textTheme.bodyText2),
+              TextSpan(children: [
+                TextSpan(
+                    text: "Click the ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "send button below ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+                TextSpan(
+                    text: "to ", style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "share your wellbeing diary ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+                TextSpan(
+                    text: "with your network or to ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "send a nudge. ",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+              ]),
+              TextSpan(
+                  text:
+                      "Sending a nudge to someone in your care network allows you to set them a steps goal. ",
+                  style: Theme.of(context).textTheme.bodyText2),
+              TextSpan(children: [
+                TextSpan(
+                    text:
+                        "\nView your network’s wellbeing and diaries and nudges with the ",
+                    style: Theme.of(context).textTheme.bodyText2),
+                TextSpan(
+                    text: "View button.",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black))
+              ]),
+              TextSpan(
+                  text: "\n\nPull down to reload.",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black)),
+            ]),
+            textAlign: TextAlign.center));
 
-    final friendsDescription = Center(
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Column(children: [
-              RichText(
-                  text: new TextSpan(children: [
-                    TextSpan(
-                        text: "With NudgeMe, caring is sharing. \n\n",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(
-                        text:
-                            "Let people in your care network know how you are to start meaningful and helpful conversations about wellbeing. \n\n",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(children: [
-                      TextSpan(
-                          text: "Click the ",
-                          style: Theme.of(context).textTheme.bodyText2),
-                      TextSpan(
-                          text: "send button below ",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                      TextSpan(
-                          text: "to ",
-                          style: Theme.of(context).textTheme.bodyText2),
-                      TextSpan(
-                          text: "share your wellbeing diary ",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                      TextSpan(
-                          text: "with your network or to ",
-                          style: Theme.of(context).textTheme.bodyText2),
-                      TextSpan(
-                          text: "send a nudge. ",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                    ]),
-                    TextSpan(
-                        text:
-                            "Sending a nudge to someone in your care network allows you to set them a steps goal. ",
-                        style: Theme.of(context).textTheme.bodyText2),
-                    TextSpan(children: [
-                      TextSpan(
-                          text:
-                              "\nView other people’s wellbeing and diaries and nudges with the ",
-                          style: Theme.of(context).textTheme.bodyText2),
-                      TextSpan(
-                          text: "View button.",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black))
-                    ]),
-                    TextSpan(
-                        text: "\n\nPull down to reload.",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
-                  ]),
-                  textAlign: TextAlign.center)
-            ])));
-    final friendsList = _getFriendsList(context);
-    final friendsListWidget = FutureBuilder(
-        future: friendsList,
-        builder: (ctx, data) {
-          if (data.hasData) {
-            final List<Friend> friends = data.data;
-            // sort so unread moves to the top
-            friends.sort();
-            return Expanded(
-                child: LiquidPullToRefresh(
-                    onRefresh: () async => getLatest(),
-                    child: ListView.builder(
-                      padding: kMaterialListPadding,
-                      itemCount: friends.length,
-                      itemBuilder: (ctx, i) => getListTile(ctx, friends[i]),
-                    )));
-          }
-          return Expanded(child: CircularProgressIndicator());
-        });
-    final friendsButtonsWidget = Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        key: _networkButtonsTutorialKey,
-        children: [
-          shareLinkButtons,
-          SizedBox(width: 20),
-          IconButton(
-              //help button
-              icon: Icon(Icons.info_outline,
-                  color: Theme.of(context).primaryColor),
-              onPressed: () {
-                showCoachMarkButtons(20);
-              }),
-          SizedBox(width: 20),
-          Column(children: [showKeyButton, scanCodeButton])
-        ]);
-
-    final friendsWidget = FutureBuilder(
-        future: friendsList,
-        builder: (ctx, data) {
-          final List<Friend> friends = data.data;
-          return !data.hasData || friends.length == 0
-              ? noFriendsWidget
-              : Flexible(
-                  child: Column(children: [
-                  friendsDescription,
-                  friendsListWidget,
-                  friendsButtonsWidget,
-                  SizedBox(height: 10)
-                ]));
-        });
-
-    return Scaffold(
-      body: Column(
-        children: [
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-              child: Text("Support Network",
-                  style: Theme.of(context).textTheme.headline1,
-                  textAlign: TextAlign.center),
+    return friends.length == 0
+        ? noFriendsWidget
+        : LiquidPullToRefresh(
+            //showChildOpacityTransition: false,
+            onRefresh: () => getLatest(),
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  pinned: true,
+                  backgroundColor: Colors.white,
+                  expandedHeight: 350,
+                  title: Text(
+                    "Support Network",
+                    style: Theme.of(context).textTheme.headline1,
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: friendsDescription,
+                    collapseMode: CollapseMode.none,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Divider(),
+                ),
+                // arranges buttons in a grid
+                SliverPadding(
+                  padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                  sliver: SliverGrid.count(
+                    childAspectRatio: 3,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                    crossAxisCount: 2,
+                    children: buttons,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Divider(),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                      (context, i) => getListTile(context, friends[i]),
+                      childCount: friends.length),
+                ),
+              ],
             ),
-          ]),
-          SizedBox(height: 10),
-          friendsWidget
-        ],
-      ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    );
+          );
   }
 
-  Widget getListTile(BuildContext ctx, Friend friend) {
-    final sendButton = ElevatedButton(
-      onPressed: () => showDialog(
+  void _showWellbeingSendDialog(BuildContext context, Friend friend) =>
+      showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
                 title: Text("Send data?"),
@@ -459,15 +426,63 @@ class SharingPageState extends State<SharingPage> {
                   ),
                   TextButton(
                       child: Text('Yes'),
-                      onPressed: () async {
+                      onPressed: () {
                         Navigator.pop(context);
                         _sendWellbeingData(context, friend);
                       }),
                 ],
-              )),
-      child: Text("Send"),
+              ));
+
+  Future<Null> _pushGoalPage(BuildContext context, Friend friend) {
+    return Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                SendNudgePage(friend, _scaffoldState.currentState)));
+  }
+
+  Widget getListTile(BuildContext context, Friend friend) {
+    final sendOptionsDialog = SimpleDialog(
+      title: const Text("Choose what to send"),
+      children: [
+        SimpleDialogOption(
+          child: const Text("📮 Send Your Wellbeing Data"),
+          onPressed: () {
+            Navigator.pop(context);
+            _showWellbeingSendDialog(context, friend);
+          },
+        ),
+        SimpleDialogOption(
+          child: Text("⏱ Set ${friend.name} a Step Goal"),
+          onPressed: () {
+            Navigator.pop(context);
+            if (friend.sentActiveGoal == 1) {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text(
+                            'You have already sent a goal, sending another will delete their previous. Continue?'),
+                        actions: [
+                          TextButton(
+                              child: Text('No'),
+                              onPressed: () => Navigator.pop(context)),
+                          TextButton(
+                              child: Text('Yes'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _pushGoalPage(context, friend);
+                              }),
+                        ],
+                      ));
+            } else {
+              _pushGoalPage(context, friend);
+            }
+          },
+        ),
+      ],
     );
-    final onView = () {
+
+    final onViewWellbeing = () {
       Provider.of<FriendDB>(context, listen: false).setRead(friend.identifier);
       return showDialog(
           context: context,
@@ -483,31 +498,74 @@ class SharingPageState extends State<SharingPage> {
                 ],
               ));
     };
+    final viewOptionsDialog = SimpleDialog(
+      title: const Text("Choose what to view"),
+      children: [
+        SimpleDialogOption(
+          child: Text("📊 Wellbeing Data from ${friend.name}"),
+          onPressed: onViewWellbeing,
+        ),
+        SimpleDialogOption(
+          child: Text("🚶 Step Goal from ${friend.name}"),
+          onPressed: () {
+            Navigator.pop(context);
+            if (friend.currentStepsGoal != null) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NudgeProgressPage(friend)));
+            } else {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text("${friend.name} has not sent you any goal yet.")));
+            }
+          },
+        )
+      ],
+    );
+
+    final onView = () =>
+        showDialog(context: context, builder: (context) => viewOptionsDialog);
+    final viewButton = OutlinedButton(onPressed: onView, child: Text("View"));
+
     // friend.read might be null
     final unread = friend.read == 0;
-    return ListTile(
-      leading: unread ? Icon(Icons.message) : Icon(Icons.person),
-      selected: unread,
-      title: Text(friend.name),
-      onTap: onView,
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          OutlinedButton(
-            child: Text("View"),
-            onPressed: onView,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          sendButton,
-        ],
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      child: ListTile(
+        leading: unread ? Icon(Icons.message) : Icon(Icons.person),
+        selected: unread,
+        title: Text(friend.name),
+        onTap: onView,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            viewButton,
+            SizedBox(
+              width: 5,
+            ),
+            ElevatedButton(
+                onPressed: () => showDialog(
+                    context: context, builder: (context) => sendOptionsDialog),
+                child: const Text("Send")),
+          ],
+        ),
       ),
+      actions: [
+        IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () => Provider.of<FriendDB>(context, listen: false)
+              .deleteFriend(friend),
+        )
+      ],
     );
   }
 
   Future<void> _sendWellbeingData(BuildContext context, Friend friend) async {
-    final friendKey = Provider.of<FriendDB>(context).getKey(friend.identifier);
+    final friendKey =
+        RSAKeyParser().parse(friend.publicKey) as pointyCastle.RSAPublicKey;
 
     final List<WellbeingItem> items = await UserWellbeingDB().getLastNWeeks(5);
     final List<Map<String, int>> mapped = items
@@ -519,7 +577,7 @@ class SharingPageState extends State<SharingPage> {
         .toList(growable: false);
     final jsonString = json.encode(mapped);
 
-    final encrypter = Encrypter(RSA(publicKey: await friendKey));
+    final encrypter = Encrypter(RSA(publicKey: friendKey));
     final data = encrypter.encrypt(jsonString).base64;
 
     final prefs = await SharedPreferences.getInstance();

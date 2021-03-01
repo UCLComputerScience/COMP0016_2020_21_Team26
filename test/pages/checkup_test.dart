@@ -13,10 +13,12 @@ void main() {
   testWidgets('Slider and button present', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 0});
+    final fakeStepStream = Stream.fromIterable([0]);
 
     await tester.pumpWidget(wrapAppProvider(
-      WellbeingCheck(),
+      WellbeingCheck(fakeStepStream),
     ));
+    await tester.pumpAndSettle();
 
     final buttonFind = find.byType(ElevatedButton);
     final sliderFind = find.byType(Slider);
@@ -29,11 +31,13 @@ void main() {
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 0});
     final mockedDB = MockedDB();
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
+    final fakeStepStream = Stream.fromIterable([0]);
 
     await tester.pumpWidget(wrapAppProvider(
-      WellbeingCheck(),
+      WellbeingCheck(fakeStepStream),
       wbDB: mockedDB,
     ));
+    await tester.pumpAndSettle();
 
     // should be at score of 10 after dragging
     await tester.drag(find.byType(Slider), Offset(500.0, 0.0));
@@ -57,8 +61,11 @@ void main() {
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 6666});
     final mockedDB = MockedDB();
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
+    final fakeStepStream = Stream.fromIterable([0]);
 
-    await tester.pumpWidget(wrapAppProvider(WellbeingCheck(), wbDB: mockedDB));
+    await tester.pumpWidget(
+        wrapAppProvider(WellbeingCheck(fakeStepStream), wbDB: mockedDB));
+    await tester.pumpAndSettle();
 
     // should be at score of 10 after dragging
     await tester.drag(find.byType(Slider), Offset(500.0, 0.0));

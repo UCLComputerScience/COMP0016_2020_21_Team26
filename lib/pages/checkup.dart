@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/notification.dart';
-import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clock/clock.dart';
 
 class WellbeingCheck extends StatelessWidget {
+  final Stream<int> stepValueStream;
+
+  const WellbeingCheck(this.stepValueStream);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,13 +23,17 @@ class WellbeingCheck extends StatelessWidget {
               Text("Wellbeing Check",
                   style: Theme.of(context).textTheme.headline1),
               SizedBox(height: 30),
-              WellbeingCheckWidgets(),
+              WellbeingCheckWidgets(stepValueStream),
             ]))),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
   }
 }
 
 class WellbeingCheckWidgets extends StatefulWidget {
+  final Stream<int> stepValueStream;
+
+  const WellbeingCheckWidgets(this.stepValueStream);
+
   @override
   _WellbeingCheckWidgetsState createState() => _WellbeingCheckWidgetsState();
 }
@@ -34,46 +41,10 @@ class WellbeingCheckWidgets extends StatefulWidget {
 class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
   double _currentSliderValue = 0;
 
-  StreamSubscription<StepCount> _subscription;
-
   // widget records the last weeks & current step total. The difference is
   // the actual step count for the week.
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
-  int _currentTotalSteps = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _startListening();
-  }
-
-  void _startListening() {
-    Stream<StepCount> stream = Pedometer.stepCountStream;
-    _subscription = stream.listen(
-      _onStepCount,
-      onError: _onError,
-      onDone: _onDone,
-      cancelOnError: true,
-    );
-  }
-
-  void _onStepCount(StepCount value) async =>
-      setState(() => _currentTotalSteps = value.steps);
-
-  void _onError(error) => print("Flutter Pedometer Error: $error");
-
-  void _onDone() => print("Finished pedometer tracking");
-
-  @override
-  void dispose() {
-    _stopListening();
-    super.dispose();
-  }
-
-  void _stopListening() {
-    _subscription.cancel();
-  }
 
   Future<String> _getPostcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -118,21 +89,84 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
 
   @override
   Widget build(BuildContext context) {
+    final slider = Slider(
+      value: _currentSliderValue,
+      min: 0,
+      max: 10,
+      divisions: 10,
+      label: _currentSliderValue.round().toString(),
+      activeColor: Theme.of(context).primaryColor,
+      inactiveColor: Color.fromARGB(189, 189, 189, 255),
+      onChanged: (double value) {
+        setState(() {
+          _currentSliderValue = value;
+        });
+      },
+    );
+
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      Text("Your steps this week:",
-          style: Theme.of(context).textTheme.bodyText1),
       FutureBuilder(
         future: _lastTotalStepsFuture,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final int lastTotalSteps = snapshot.data;
-            final thisWeeksSteps =
-                _getActualSteps(_currentTotalSteps, lastTotalSteps);
-            return Text(thisWeeksSteps.toString(),
-                style: TextStyle(
-                    fontFamily: 'Rosario',
-                    fontSize: 25,
-                    color: Theme.of(context).accentColor));
+            return StreamBuilder(
+              stream: widget.stepValueStream,
+              builder: (context, streamSnapshot) {
+                if (streamSnapshot.hasData) {
+                  final currentTotalSteps = streamSnapshot.data;
+                  final thisWeeksSteps =
+                      _getActualSteps(currentTotalSteps, lastTotalSteps);
+                  return Column(
+                    children: [
+                      Text("Your steps this week:",
+                          style: Theme.of(context).textTheme.bodyText1),
+                      Text(thisWeeksSteps.toString(),
+                          style: TextStyle(
+                              fontFamily: 'Rosario',
+                              fontSize: 25,
+                              color: Theme.of(context).accentColor)),
+                      SizedBox(height: 40),
+                      Text("How did you feel this week?",
+                          style: Theme.of(context).textTheme.bodyText1),
+                      Container(child: slider, width: 300.0),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                          onPressed: () async {
+                            final dateString = // get date with fakeable clock
+                                clock.now().toIso8601String().substring(0, 10);
+
+                            await Provider.of<UserWellbeingDB>(context,
+                                    listen: false)
+                                .insertWithData(
+                                    date: dateString,
+                                    postcode: await _getPostcode(),
+                                    wellbeingScore: _currentSliderValue,
+                                    numSteps: thisWeeksSteps,
+                                    supportCode: await _getSupportCode());
+                            SharedPreferences.getInstance().then((value) =>
+                                value.setInt(
+                                    PREV_STEP_COUNT_KEY, currentTotalSteps));
+
+                            Navigator.pop(context);
+
+                            _checkWellbeing(
+                                2); // nudges if scores dropped twice
+                          },
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Theme.of(context).primaryColor)),
+                          child: const Text('Done',
+                              style: TextStyle(fontFamily: 'Rosario')))
+                    ],
+                  );
+                } else if (streamSnapshot.hasError) {
+                  print(streamSnapshot.error);
+                  return Text('Could not retrieve step count.');
+                }
+                return LinearProgressIndicator();
+              },
+            );
           } else if (snapshot.hasError) {
             print(snapshot.error);
             return Text("Something went wrong...",
@@ -144,51 +178,6 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
           return CircularProgressIndicator();
         },
       ),
-      SizedBox(height: 40),
-      Text("How did you feel this week?",
-          style: Theme.of(context).textTheme.bodyText1),
-      Container(
-          child: Slider(
-            value: _currentSliderValue,
-            min: 0,
-            max: 10,
-            divisions: 10,
-            label: _currentSliderValue.round().toString(),
-            activeColor: Theme.of(context).primaryColor,
-            inactiveColor: Color.fromARGB(189, 189, 189, 255),
-            onChanged: (double value) {
-              setState(() {
-                _currentSliderValue = value;
-              });
-            },
-          ),
-          width: 300.0),
-      SizedBox(height: 10),
-      ElevatedButton(
-          onPressed: () async {
-            final lastTotalSteps = await _lastTotalStepsFuture;
-            final dateString = // get date with fakeable clock
-                clock.now().toIso8601String().substring(0, 10);
-
-            await Provider.of<UserWellbeingDB>(context, listen: false)
-                .insertWithData(
-                    date: dateString,
-                    postcode: await _getPostcode(),
-                    wellbeingScore: _currentSliderValue,
-                    numSteps:
-                        _getActualSteps(_currentTotalSteps, lastTotalSteps),
-                    supportCode: await _getSupportCode());
-            SharedPreferences.getInstance().then((value) =>
-                value.setInt(PREV_STEP_COUNT_KEY, _currentTotalSteps));
-
-            Navigator.pop(context);
-
-            _checkWellbeing(2); // nudges if scores dropped twice
-          },
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                  Theme.of(context).primaryColor)),
-          child: const Text('Done', style: TextStyle(fontFamily: 'Rosario')))
     ]);
   }
 }

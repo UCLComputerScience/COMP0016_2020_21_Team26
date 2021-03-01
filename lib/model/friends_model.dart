@@ -1,6 +1,4 @@
-import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
-import 'package:pointycastle/pointycastle.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
@@ -15,7 +13,10 @@ const _columns = [
   "identifier",
   "publicKey",
   "latestData",
-  "read"
+  "read",
+  "currentStepsGoal", // columns related to p2p nudging:
+  "sentActiveGoal",
+  "initialStepCount"
 ];
 
 class FriendDB extends ChangeNotifier {
@@ -42,13 +43,19 @@ class FriendDB extends ChangeNotifier {
     publicKey: String,
     latestData: String,
     read: int,
+    currentStepsGoal: int,
+    sentActiveGoal: int,
+    initialStepCount: int,
   }) async {
+    assert(sentActiveGoal != null);
     return insert(Friend(
       name: name,
       identifier: identifier,
       publicKey: publicKey,
       latestData: latestData,
       read: read,
+      currentStepsGoal: currentStepsGoal,
+      sentActiveGoal: sentActiveGoal,
     ));
   }
 
@@ -61,22 +68,10 @@ class FriendDB extends ChangeNotifier {
     return itemList;
   }
 
-  /// get the public key associated with the [Friend] 'identifier'
-  Future<RSAPublicKey> getKey(String identifier) async {
-    final db = await database;
-    List<Map> friendMaps = await db.query(_tableName,
-        columns: [_columns[3]],
-        where: '${_columns[2]} = ?',
-        whereArgs: [identifier]);
-    assert(friendMaps.length == 1);
-    final String keyString = friendMaps[0][_columns[3]];
-    return RSAKeyParser().parse(keyString) as RSAPublicKey;
-  }
-
   /// updates the latest data for all the identifiers in messages.
   /// each message should have an 'identifier_from' and 'data' index
   /// that points to their respective string values.
-  Future<void> updateData(List<dynamic> messages) async {
+  Future<void> updateWellbeingData(List<dynamic> messages) async {
     final db = await database;
     final batch = db.batch();
     for (var message in messages) {
@@ -119,6 +114,76 @@ class FriendDB extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// updates the flag that indicates if a nudge/goal has been sent and is active
+  /// for the friend denoted by identifier
+  Future<Null> updateActiveNudge(String identifier, bool isActive) async {
+    final db = await database;
+
+    final val = isActive ? 1 : 0;
+    db.update(_tableName, {_columns[7]: val},
+        where: '${_columns[2]} = ?', whereArgs: [identifier]);
+    notifyListeners();
+  }
+
+  /// Updates the step goal from friend (denoted by identifier).
+  /// stepGoal could be null.
+  Future<Null> updateGoalFromFriend(
+      String identifier, int stepGoal, int currentTotalStepCount) async {
+    final db = await database;
+
+    db.update(
+        _tableName, {_columns[6]: stepGoal, _columns[8]: currentTotalStepCount},
+        where: '${_columns[2]} = ?', whereArgs: [identifier]);
+    notifyListeners();
+  }
+
+  Future<String> getName(String identifier) async {
+    final db = await database;
+
+    List<Map> maps = await db.query(_tableName,
+        columns: [_columns[1]],
+        where: '${_columns[2]} = ?',
+        whereArgs: [identifier]);
+
+    assert(maps.length == 1);
+    return maps[0][_columns[1]];
+  }
+
+  Future<int> getInitialStepCount(String identifier) async {
+    final db = await database;
+
+    List<Map> maps = await db.query(_tableName,
+        columns: [_columns[8]],
+        where: '${_columns[2]} = ?',
+        whereArgs: [identifier]);
+
+    assert(maps.length == 1);
+    return maps[0][_columns[8]];
+  }
+
+  Future<Null> updateInitialStepCount(String identifier, int newVal) async {
+    final db = await database;
+
+    db.update(
+      _tableName,
+      {_columns[8]: newVal},
+      where: '${_columns[2]} = ?',
+      whereArgs: [identifier],
+    );
+    notifyListeners();
+  }
+
+  /// deletes a [Friend] from the database, the friend.id property must not be
+  /// null
+  Future<Null> deleteFriend(Friend friend) async {
+    assert(friend.id != null);
+
+    final db = await database;
+
+    db.delete(_tableName, where: '${_columns[0]} = ?', whereArgs: [friend.id]);
+    notifyListeners();
+  }
+
   void delete() async {
     final base = await getDatabasesPath();
     deleteDatabase(join(base, _dbName));
@@ -155,7 +220,10 @@ class FriendDB extends ChangeNotifier {
       ${_columns[2]} TEXT NOT NULL,
       ${_columns[3]} TEXT NOT NULL,
       ${_columns[4]} TEXT,
-      ${_columns[5]} INTEGER
+      ${_columns[5]} INTEGER,
+      ${_columns[6]} INTEGER,
+      ${_columns[7]} INTEGER NOT NULL,
+      ${_columns[8]} INTEGER
     )
       ''');
   }
@@ -174,6 +242,14 @@ class Friend implements Comparable {
   /// 0 if unread, otherwise 1
   int read;
 
+  // nullable
+  int currentStepsGoal;
+
+  // 1 if sent & active, 0 otherwise
+  int sentActiveGoal;
+
+  int initialStepCount;
+
   Friend({
     this.id, // this should be left null so SQL will handle it
     this.name,
@@ -181,6 +257,9 @@ class Friend implements Comparable {
     this.publicKey,
     this.latestData,
     this.read,
+    this.currentStepsGoal,
+    this.sentActiveGoal,
+    this.initialStepCount,
   });
 
   Friend.fromMap(Map<String, dynamic> map) {
@@ -190,6 +269,9 @@ class Friend implements Comparable {
     publicKey = map[_columns[3]];
     latestData = map[_columns[4]];
     read = map[_columns[5]];
+    currentStepsGoal = map[_columns[6]];
+    sentActiveGoal = map[_columns[7]];
+    initialStepCount = map[_columns[8]];
   }
 
   Map<String, dynamic> toMap() {
@@ -200,9 +282,18 @@ class Friend implements Comparable {
       _columns[3]: publicKey,
       _columns[4]: latestData,
       _columns[5]: read,
+      // currentStepsGoal nullable
+      _columns[7]: sentActiveGoal,
+      // initialStepCount nullable
     };
     if (id != null) {
       map[_columns[0]] = id;
+    }
+    if (currentStepsGoal != null) {
+      map[_columns[6]] = currentStepsGoal;
+    }
+    if (initialStepCount != null) {
+      map[_columns[8]] = initialStepCount;
     }
     return map;
   }
