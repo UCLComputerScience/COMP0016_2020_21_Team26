@@ -35,9 +35,6 @@ class _NotificationSelectorState extends State<NotificationSelector> {
       _wbCheckNotifHour = _wbCheckNotifTime.hour;
       _wbCheckNotifMinute = _wbCheckNotifTime.minute;
     });
-    print("reset day hour min");
-    print(_wbCheckNotifDay);
-    print(_wbCheckNotifTime.day);
   }
 
   void _updateWbCheckNotifTime(int _wbCheckNotifDay, int _wbCheckNotifHour,
