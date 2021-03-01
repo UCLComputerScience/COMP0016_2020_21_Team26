@@ -205,12 +205,6 @@ class _HomePageState extends State<HomePage> {
             style: Theme.of(context).textTheme.subtitle1),
         trailing: pedometer,
       ),
-      ListTile(
-        leading: Icon(Icons.mark_chat_unread),
-        title: Text('Unread Wellbeing Data',
-            style: Theme.of(context).textTheme.subtitle1),
-        trailing: unreadMessages,
-      )
     ]);
 
     return Container(
