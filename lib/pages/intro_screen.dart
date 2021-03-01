@@ -67,8 +67,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('postcode', postcode);
     prefs.setString('support_code', suppcode);
-    String _wbCheckTimeString = _wbCheckNotifTime.toIso8601String();
-    prefs.setString('wb_notif_time', _wbCheckTimeString);
+    String _wbCheckNotifString = _wbCheckNotifTime.toIso8601String();
+    prefs.setString('wb_notif_time', _wbCheckNotifString);
 
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
