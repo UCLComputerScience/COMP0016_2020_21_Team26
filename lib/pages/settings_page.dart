@@ -18,6 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final settingsWidget = SettingsList(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       sections: [
         SettingsSection(
           title: 'User Details',
