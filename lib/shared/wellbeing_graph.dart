@@ -218,7 +218,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
 
-            final buttons = [];
+            final List<Widget> buttons = [];
             if (widget.shouldShowTutorial) {
               buttons.add(Container(
                   child: OutlinedButton(
