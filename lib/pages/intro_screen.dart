@@ -403,7 +403,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                                   color: Colors.black),
                               recognizer: new TapGestureRecognizer()
                                 ..onTap = () {
-                                  launch(BASE_URL + '/mapDemo');
+                                  launch(BASE_URL + '/map');
                                 })
                         ]),
                         textAlign: TextAlign.center),
