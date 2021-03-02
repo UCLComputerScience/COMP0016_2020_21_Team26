@@ -83,31 +83,34 @@ class _SettingsPageState extends State<SettingsPage> {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headline1),
           SizedBox(height: 10),
-          Container(height: 330, width: 500, child: settingsWidget),
-          Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: RichText(
-                  text: new TextSpan(children: [
-                    new TextSpan(
-                        text:
-                            "This will help users understand the general wellbeing of people in a region - ",
-                        style: TextStyle(
-                            fontFamily: 'Rosario',
-                            fontSize: 12,
-                            color: Colors.black)),
-                    new TextSpan(
-                        text: "see here.",
-                        style: TextStyle(
-                            fontFamily: 'Rosario',
-                            fontSize: 12,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black),
-                        recognizer: new TapGestureRecognizer()
-                          ..onTap = () {
-                            launch(BASE_URL + '/map');
-                          })
-                  ]),
-                  textAlign: TextAlign.start)),
+          Expanded(flex: 2, child: settingsWidget),
+          SizedBox(height: 10),
+          Expanded(
+              flex: 1,
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: RichText(
+                      text: new TextSpan(children: [
+                        new TextSpan(
+                            text:
+                                "This will help users understand the general wellbeing of people in a region - ",
+                            style: TextStyle(
+                                fontFamily: 'Rosario',
+                                fontSize: 12,
+                                color: Colors.black)),
+                        new TextSpan(
+                            text: "see here.",
+                            style: TextStyle(
+                                fontFamily: 'Rosario',
+                                fontSize: 12,
+                                decoration: TextDecoration.underline,
+                                color: Colors.black),
+                            recognizer: new TapGestureRecognizer()
+                              ..onTap = () {
+                                launch(BASE_URL + '/map');
+                              })
+                      ]),
+                      textAlign: TextAlign.start))),
           SizedBox(height: 50),
         ]),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor);
