@@ -266,8 +266,7 @@ class SharingPageState extends State<SharingPage> {
                 RichText(
                     text: new TextSpan(children: [
                       new TextSpan(
-                          text:
-                              "Then, share the link to using one of these buttons:",
+                          text: "Share the link to using one of these buttons:",
                           style: Theme.of(context).textTheme.bodyText2)
                     ]),
                     textAlign: TextAlign.center),
