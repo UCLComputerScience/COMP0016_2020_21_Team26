@@ -17,6 +17,7 @@
 
     <application
         android:label="NudgeMe"
+        android:name="androidx.multidex.MultiDexApplication"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false">
         <activity

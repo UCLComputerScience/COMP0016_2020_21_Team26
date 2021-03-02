@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
@@ -13,6 +12,10 @@ import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
 class HomePage extends StatefulWidget {
+  final Stream<int> stepValueStream;
+
+  const HomePage(this.stepValueStream);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -92,12 +95,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _heading(BuildContext ctx) {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Text(
-        "Welcome",
-        style: Theme.of(context).textTheme.headline1,
-      ),
+    return Text(
+      "Welcome",
+      style: Theme.of(context).textTheme.headline1,
     );
   }
 
@@ -105,16 +105,10 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: double.infinity, // stretches the width
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // SizedBox to add some spacing
-          const SizedBox(
-            height: 5.0,
-          ),
           Text("Last Week's Wellbeing Score",
               style: Theme.of(context).textTheme.headline3),
-          const SizedBox(
-            height: 10.0,
-          ),
           Stack(
             alignment: Alignment.center,
             children: [
@@ -135,16 +129,12 @@ class _HomePageState extends State<HomePage> {
                           : WellbeingCircle();
                     } else if (snapshot.hasError) {
                       print(snapshot.error);
-                      Text("Something went wrong.",
+                      return Text("Something went wrong.",
                           style: Theme.of(context).textTheme.bodyText1);
                     }
                     return CircularProgressIndicator();
                   }),
             ],
-          ),
-
-          const SizedBox(
-            height: 5.0,
           ),
         ],
       ),
@@ -159,11 +149,10 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.hasData) {
             final lastTotalSteps = snapshot.data;
             return StreamBuilder(
-              stream: Pedometer.stepCountStream,
+              stream: widget.stepValueStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final StepCount stepCount = snapshot.data;
-                  final int currTotalSteps = stepCount.steps;
+                  final int currTotalSteps = snapshot.data;
                   final actualSteps = lastTotalSteps > currTotalSteps
                       ? currTotalSteps
                       : currTotalSteps - lastTotalSteps;
@@ -177,6 +166,7 @@ class _HomePageState extends State<HomePage> {
             );
           } else if (snapshot.hasError) {
             print(snapshot.error);
+            return Text("Error");
           }
           return CircularProgressIndicator();
         });
@@ -219,11 +209,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         body: SafeArea(
             child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.min,
           children: [
             heading,
-            SizedBox(height: 20),
+            Divider(),
             previousScoreHolder,
-            SizedBox(height: 30),
+            Divider(),
             thisWeekHolder,
           ],
         )),

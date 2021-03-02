@@ -6,6 +6,15 @@ V2 of the CarerCare app.
 
 This is built on Flutter's stable branch.
 
+## Tests
+
+In the root project directory:
+- Run `flutter test` to run the unit/widget tests.
+- Run `flutter drive --driver=test_driver\integration_test.dart --target=integration_test\main_test.dart` with an
+  emulator or device connected to run the integration tests. 
+  
+Integration tests run through the device, whereas the widget tests use a different (simulated) execution model.
+
 ## Initial Requirements
 
 - The system should be designed for a user between 13 and 99

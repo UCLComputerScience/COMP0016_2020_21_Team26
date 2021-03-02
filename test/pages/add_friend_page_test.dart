@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nudge_me/crypto.dart';
 import 'package:nudge_me/model/friends_model.dart';
-import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +12,7 @@ import '../widget_test.dart';
 void main() {
   testWidgets('Displays titles', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(
-      AddFriendPage(MockedScaffoldState()),
+      AddFriendPage(_MockedScaffoldState()),
     ));
 
     expect(find.text("Scan their QR code"), findsOneWidget);
@@ -22,7 +21,7 @@ void main() {
 
   testWidgets('Displays QR view by default', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(
-      AddFriendPage(MockedScaffoldState()),
+      AddFriendPage(_MockedScaffoldState()),
     ));
 
     expect(find.byType(QRView), findsOneWidget);
@@ -30,7 +29,7 @@ void main() {
 
   testWidgets('Given ID/key, skips QR code', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(
-      AddFriendPage(MockedScaffoldState(), "exampleID", "exampleKey"),
+      AddFriendPage(_MockedScaffoldState(), "exampleID", "exampleKey"),
     ));
 
     expect(find.byType(QRView), findsNothing);
@@ -41,7 +40,7 @@ void main() {
     final identifier = "exampleID";
     final pubKey = "exampleKey";
     final name = "exampleName";
-    final mockedDB = MockedFriendDB();
+    final mockedDB = _MockedFriendDB();
     when(mockedDB.isIdentifierPresent(identifier))
         .thenAnswer((_) async => false);
     // need to set this initial prefs to empty, otherwise it somehow fails the
@@ -49,7 +48,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(MockedScaffoldState(), identifier, pubKey),
+        AddFriendPage(_MockedScaffoldState(), identifier, pubKey),
         friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
@@ -72,13 +71,13 @@ void main() {
     final identifier = "existingID";
     final pubKey = "exampleKey";
     final name = "exampleName";
-    final mockedDB = MockedFriendDB();
+    final mockedDB = _MockedFriendDB();
     when(mockedDB.isIdentifierPresent(identifier))
         .thenAnswer((_) async => true);
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(MockedScaffoldState(), identifier, pubKey),
+        AddFriendPage(_MockedScaffoldState(), identifier, pubKey),
         friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
@@ -98,13 +97,13 @@ void main() {
     final identifier = "myID";
     final pubKey = "exampleKey";
     final name = "exampleName";
-    final mockedDB = MockedFriendDB();
+    final mockedDB = _MockedFriendDB();
     when(mockedDB.isIdentifierPresent(identifier))
         .thenAnswer((_) async => false);
     SharedPreferences.setMockInitialValues({USER_IDENTIFIER_KEY: identifier});
 
     await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(MockedScaffoldState(), identifier, pubKey),
+        AddFriendPage(_MockedScaffoldState(), identifier, pubKey),
         friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
@@ -120,13 +119,11 @@ void main() {
   });
 }
 
-class MockedFriendDB extends Mock implements FriendDB {}
+class _MockedFriendDB extends Mock implements FriendDB {}
 
-class MockedScaffoldState extends Mock implements ScaffoldState {
+class _MockedScaffoldState extends Mock implements ScaffoldState {
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return super.toString();
   }
 }
-
-class MockedWBDB extends Mock implements UserWellbeingDB {}
