@@ -28,6 +28,10 @@ course of the project.
 | Passively collect movement data from pedometer.                                                     | Should have             |
 | Display a graph that cross references pedometer and wellbeing data.                                 | Should have             |
 | Design the system for a user aged between 13 & 99.                                                  | Should have             |
+| Allow users to *securely* send their wellbeing data to other users (e.g. through e2e encryption).   | Could have              |
+| Facilitate adding users to their network in a convenient way, considering lockdown/remote work.     | Could have              |
+| Allow users to nudge other users through the app.                                                   | Could have              |
+| Present an accessible color scheme to those who are colorblind.                                     | Could have              |
 
 [^1]: Since we were adapting the application for a wider audience (general UK population),
       and for a different purpose (to assist the public in maintaining their wellbeing),
