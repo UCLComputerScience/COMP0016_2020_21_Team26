@@ -30,15 +30,15 @@ Future<void> setupCrypto() async {
   // this takes a while so I use multithreading
   final keyPair = await compute<SecureRandom,
           AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>>(
-      _generateRSAKeyPair, _getSecureRandom());
+      generateRSAKeyPair, _getSecureRandom());
   // using fingerprint as identifier:
-  final identifier = _getFingerprint(keyPair.publicKey);
+  final identifier = getFingerprint(keyPair.publicKey);
   final password = randomAlphaNumeric(20);
 
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(
-      RSA_PRIVATE_PEM_KEY, _encodePrivateKeyInPem(keyPair.privateKey));
-  prefs.setString(RSA_PUBLIC_PEM_KEY, _encodePublicKeyInPem(keyPair.publicKey));
+      RSA_PRIVATE_PEM_KEY, encodePrivateKeyInPem(keyPair.privateKey));
+  prefs.setString(RSA_PUBLIC_PEM_KEY, encodePublicKeyInPem(keyPair.publicKey));
   prefs.setString(USER_IDENTIFIER_KEY, identifier);
   prefs.setString(USER_PASSWORD_KEY, password);
 
@@ -57,7 +57,8 @@ Future<void> _addUserBackend(String identifier, String password) async {
 }
 
 /// encodes RSA private key into PKCS#1 format
-String _encodePrivateKeyInPem(RSAPrivateKey key) {
+@visibleForTesting
+String encodePrivateKeyInPem(RSAPrivateKey key) {
   final asn = ASN1Sequence();
 
   asn.add(ASN1Integer(BigInt.zero)); // version
@@ -75,12 +76,14 @@ String _encodePrivateKeyInPem(RSAPrivateKey key) {
 }
 
 /// encodes RSA public key into PKCS#1 format
-String _encodePublicKeyInPem(RSAPublicKey key) {
-  final base64Data = base64.encode(_getPublicKeyBytes(key));
+@visibleForTesting
+String encodePublicKeyInPem(RSAPublicKey key) {
+  final base64Data = base64.encode(getPublicKeyBytes(key));
   return '-----BEGIN RSA PUBLIC KEY-----\n$base64Data\n-----END RSA PUBLIC KEY-----';
 }
 
-AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair(
+@visibleForTesting
+AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateRSAKeyPair(
     SecureRandom secureRandom,
     {int bitLength = 2048}) {
   final publicExponent = BigInt.parse('65537');
@@ -102,14 +105,16 @@ AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair(
 
 /// get fingerprint of a public key by hashing with sha-1 and concatenating
 /// the hex values
-String _getFingerprint(RSAPublicKey key) => SHA1Digest()
-    .process(_getPublicKeyBytes(key))
+@visibleForTesting
+String getFingerprint(RSAPublicKey key) => SHA1Digest()
+    .process(getPublicKeyBytes(key))
     .map((e) => e.toRadixString(16)) // convert to hex
     .join();
 
 /// Get the bytes used in the middle part of the PEM format.
 /// Useful for generating fingerprints.
-Uint8List _getPublicKeyBytes(RSAPublicKey key) {
+@visibleForTesting
+Uint8List getPublicKeyBytes(RSAPublicKey key) {
   final asn = ASN1Sequence();
 
   asn.add(ASN1Integer(key.modulus));
