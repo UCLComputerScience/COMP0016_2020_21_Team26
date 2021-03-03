@@ -50,7 +50,7 @@ class _NotificationSelectorState extends State<NotificationSelector> {
     });
   }
 
-  /// Replaces the [DateTime] in shared prefs db to _wbCheckNotifDay, _wbCheckNotifHour, wbCheckNotifMinute.
+  /// Replaces the [DateTime] in shared prefs db with _wbCheckNotifDay, _wbCheckNotifHour, wbCheckNotifMinute.
   void _updateWbCheckNotifTime(int _wbCheckNotifDay, int _wbCheckNotifHour,
       int _wbCheckNotifMinute) async {
     DateTime _wbCheckNotifTime = DateTime(
