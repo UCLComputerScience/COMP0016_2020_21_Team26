@@ -11,14 +11,14 @@ class _ChangePostcodeState extends State<ChangePostcode> {
   final _postcodeKey =
       GlobalKey<FormState>(); // Verifies postcode is between 2-4 chars.
 
-  /// Returns current postcode stored in shared prefs database.
+  /// Returns [String] currentPostcode stored in shared prefs database.
   Future<String> _getPostcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String currentPostcode = prefs.getString('postcode');
     return currentPostcode;
   }
 
-  /// Replaces postcode stored in shared prefs database with [newPostcode]
+  /// Replaces postcode stored in shared prefs database with [String] newPostcode
   void _updatePostcode(String newPostcode) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('postcode', newPostcode.toUpperCase());
