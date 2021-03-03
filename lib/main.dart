@@ -27,7 +27,7 @@ const PREV_PEDOMETER_PAIR_KEY = "prev_pedometer_pair";
 /// used to push without context
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey();
 
-/// sentry client used for logging errors in prod
+/// sentry client used for logging errors remotely
 final _sentry = SentryClient(SentryOptions(
     dsn:
         'https://b3c6b387b20d47be829e679b3290f99a@o513354.ingest.sentry.io/5615069'));
@@ -97,6 +97,7 @@ void _appInit() async {
 /// The deeplink that opened this app if any. Could be null.
 Uri initialUri;
 
+/// set the initialUri if present
 Future<Null> initUniLinks() async {
   try {
     // in case platform fails
@@ -132,23 +133,10 @@ void _setupStepCountTotal() async {
   }
 }
 
+/// [StatelessWidget] that is the top level widget for the app.
 class MyApp extends StatelessWidget {
+  // used to determine if we should open the intro screen
   final Future<bool> _openIntro = _isFirstTime();
-
-  Future<Widget> loadAfterSplash() async {
-    return FutureBuilder(
-      future: _openIntro,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return snapshot.data ? IntroScreen() : MainPages();
-        } else if (snapshot.hasError) {
-          print(snapshot.error);
-          return Text("Oops");
-        }
-        return CircularProgressIndicator();
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +144,7 @@ class MyApp extends StatelessWidget {
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     // provider needs to be above [MaterialApp] so it is persisted through
-    // new page routes
+    // new page routes (e.g. after Navigator.push)
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

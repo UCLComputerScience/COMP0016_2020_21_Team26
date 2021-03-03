@@ -5,6 +5,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+// strings that uniquely represent a notification type
+
 const CHECKUP_PAYLOAD = "checkup";
 const PUBLISH_PAYLOAD = "publish";
 const NUDGE_PAYLOAD = "nudge";
@@ -30,8 +32,8 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 final StreamController<String> notificationStreamController =
     StreamController();
 
+/// initialize the notification plugin with settings for Android & iOS
 initializePlatformSpecifics() async {
-  // TODO: change icon
   final initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
   final initializationSettingsIOS = IOSInitializationSettings(
@@ -52,10 +54,13 @@ initializePlatformSpecifics() async {
       onSelectNotification: _selectNotification);
 }
 
+/// adds the payload to the notification stream, so it can be handled elsewhere
+/// in the app
 Future _selectNotification(String payload) async {
   notificationStreamController.add(payload);
 }
 
+/// settings that provide specific options for each notification
 NotificationDetails _getSpecifics() {
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'NudgeMe_0', // channel id
@@ -95,6 +100,7 @@ Future rescheduleCheckup(int day, Time time) async {
   scheduleCheckup(day, time);
 }
 
+/// schedules a nudge from the app in 1 second
 Future<Null> scheduleNudge() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
@@ -126,6 +132,8 @@ Future scheduleCheckupOnce(tz.TZDateTime scheduledDate) async {
   );
 }
 
+/// schedules a notification that informs user that some friend,
+/// has sent them wellbeing data
 Future scheduleNewFriendData() async {
   // this is probably executed outside main app, so need to init this
   tz.initializeTimeZones();
@@ -144,6 +152,7 @@ Future scheduleNewFriendData() async {
   );
 }
 
+/// informs user that [String] has sent them a goal of [int] steps
 Future<Null> scheduleNudgeNewGoal(String name, int goal) async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
@@ -180,6 +189,7 @@ Future<Null> scheduleNudgeCompletedGoal(String name, int goal) async {
   );
 }
 
+/// informs user that [String] has completed the goal the user set for them
 Future<Null> scheduleNudgeFriendCompletedGoal(String name, int goal) async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/London"));
@@ -205,6 +215,7 @@ tz.TZDateTime _nextInstanceOfDayTime(int weekday, Time time) {
     targetDate = targetDate.add(const Duration(days: 1));
   }
   while (targetDate.weekday != weekday) {
+    // keep adding days until we have the desired day
     targetDate = targetDate.add(const Duration(days: 1));
   }
   return targetDate;
