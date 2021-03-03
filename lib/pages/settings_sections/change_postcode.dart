@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 'Postcode' section on Settings page opens this page
 class ChangePostcode extends StatefulWidget {
   @override
   _ChangePostcodeState createState() => _ChangePostcodeState();
 }
 
 class _ChangePostcodeState extends State<ChangePostcode> {
-  final _postcodeKey = GlobalKey<FormState>();
+  final _postcodeKey =
+      GlobalKey<FormState>(); // Verifies postcode is between 2-4 chars.
 
+  /// Returns current postcode stored in shared prefs database.
   Future<String> _getPostcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userPostcode = prefs.getString('postcode');
-    return userPostcode;
+    String currentPostcode = prefs.getString('postcode');
+    return currentPostcode;
   }
 
-  void _updatePostcode(String value) async {
+  /// Replaces postcode stored in shared prefs database with [newPostcode]
+  void _updatePostcode(String newPostcode) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('postcode', value.toUpperCase());
+    await prefs.setString('postcode', newPostcode.toUpperCase());
   }
 
   Widget build(BuildContext context) {
