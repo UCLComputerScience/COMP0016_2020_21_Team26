@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nudge_me/model/friends_model.dart';
-import 'package:nudge_me/pages/sharing_page.dart';
+import 'package:nudge_me/pages/support_page.dart';
 
 import '../widget_test.dart';
 

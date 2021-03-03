@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 'Scan code to add friend' button on the Support Network page
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
   final ScaffoldState _scaffoldState;
