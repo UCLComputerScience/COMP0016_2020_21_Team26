@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 /// Page to track a step goal set by someone in support network
 /// Otherwise known as a user nugde.
 class NudgeProgressPage extends StatefulWidget {
-  final Friend friend; //friend that set goal
+  final Friend friend; //the friend that set this goal
 
   const NudgeProgressPage(this.friend);
 
