@@ -28,7 +28,7 @@ class _ContactSharePageState extends State<ContactSharePage> {
     if (await canSendSMS()) {
       sendSMS(message: widget.toSend, recipients: contactList);
     } else {
-      Scaffold.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Could not send SMS on this device.")));
     }
   }

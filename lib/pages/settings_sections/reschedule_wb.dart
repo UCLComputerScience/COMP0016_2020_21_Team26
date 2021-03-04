@@ -176,7 +176,7 @@ class _NotificationSelectorState extends State<NotificationSelector> {
                 _updateWbCheckNotifTime(
                     _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
                 String wbCheckNotifDayName = days[_wbCheckNotifDay - 1];
-                Scaffold.of(context).showSnackBar(SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
                         "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:${_wbCheckNotifMinute.toString().padLeft(2, "0")}")));
               }

@@ -139,7 +139,7 @@ class SharingPageState extends State<SharingPage> {
                 MaterialPageRoute(
                     builder: (context) => ContactSharePage(message)));
           } else {
-            Scaffold.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text("Need permission to share with contacts.")));
           }
         },
@@ -194,7 +194,7 @@ class SharingPageState extends State<SharingPage> {
             context,
             MaterialPageRoute(
                 // NOTE: not using the new context 'ctx'
-                builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
+                builder: (ctx) => AddFriendPage())),
         child: Text(
           'Scan code to\n add to network',
           textAlign: TextAlign.center,
@@ -517,7 +517,7 @@ class SharingPageState extends State<SharingPage> {
                   MaterialPageRoute(
                       builder: (context) => NudgeProgressPage(friend)));
             } else {
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content:
                       Text("${friend.name} has not sent you any goal yet.")));
             }
@@ -595,7 +595,7 @@ class SharingPageState extends State<SharingPage> {
         .then((response) {
       final body = json.decode(response.body);
       print(body);
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: body['success'] == false
               ? Text("Failed to send.")
               : Text("Sent data to ${friend.name}.")));

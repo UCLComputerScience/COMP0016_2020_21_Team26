@@ -64,6 +64,9 @@ class StepSelector extends StatefulWidget {
 }
 
 class _StepSelectorState extends State<StepSelector> {
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   int _roundedStep(double val) {
     final int v = val.truncate();
     return v - (v % 500);
@@ -94,7 +97,7 @@ class _StepSelectorState extends State<StepSelector> {
                   Navigator.pop(context);
                   _nudgeFriend(rounded);
                 } else {
-                  Scaffold.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Cannot set a goal of 0.")));
                 }
               },
@@ -131,10 +134,10 @@ class _StepSelectorState extends State<StepSelector> {
         // their current goal)
         Provider.of<FriendDB>(context)
             .updateActiveNudge(widget.friend.identifier, true);
-        widget.scaffoldState.showSnackBar(
+        scaffoldMessengerKey.currentState.showSnackBar(
             SnackBar(content: Text("Nudged ${widget.friend.name}.")));
       } else {
-        widget.scaffoldState
+        scaffoldMessengerKey.currentState
             .showSnackBar(SnackBar(content: Text("Failed to send nudge.")));
       }
     });
