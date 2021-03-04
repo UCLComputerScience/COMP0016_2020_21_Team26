@@ -26,12 +26,22 @@ class SendNudgePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             // maybe use ParagraphBuilder?
-            Text("Set a step goal for ${friend.name}.\n"
-                "They'll be notified and able to track their progress.\n"
-                "You'll be notified when they meet their goal."),
-            SizedBox(
-              height: 10,
-            ),
+            Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Text(
+                  "Set a step goal for ${friend.name}.\n\n"
+                  "They will be notified and able to track their progress. \n\n"
+                  "You will be notified when they meet their goal.",
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Text(
+                    "Drag the white circle around to increase the number of steps. You cannot set a goal of 0 steps.",
+                    style: Theme.of(context).textTheme.bodyText2,
+                    textAlign: TextAlign.center)),
+
             StepSelector(friend, scaffoldState),
           ],
         ),

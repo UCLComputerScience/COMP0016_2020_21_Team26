@@ -221,16 +221,18 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           if (snapshot.hasData) {
             final items = snapshot.data;
             final graph = _getGraph(items, widget.animate);
-            final buttons = [
-              Container(
+
+            final List<Widget> buttons = [];
+            if (widget.shouldShowTutorial) {
+              buttons.add(Container(
                   child: OutlinedButton(
                       //help button replays tutorial
                       child: Icon(Icons.info_outline,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {
                         showCoachMarkGraph(20);
-                      }))
-            ];
+                      })));
+            }
             if (widget.displayShare) {
               buttons.add(Container(
                   key: _wbShareTutorialKey,

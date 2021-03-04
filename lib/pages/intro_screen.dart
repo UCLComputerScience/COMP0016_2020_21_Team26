@@ -307,7 +307,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                        "This is your first wellbeing check. NudgeMe will allow you to keep a weekly record of your wellbeing and allow you to understand the importance of movement in your life.",
+                        "This is your first wellbeing check. NudgeMe will enable you to keep a weekly record of your wellbeing and allow you to understand the importance of movement in your life.",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                     Text(
@@ -361,7 +361,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                         "Click the toggle to consent to the creation of a map that enables you and other app " +
                             "users to understand the effect of movement and social contact has on people's wellbeing. " +
                             "By consenting, you will not be sharing personally identifiable data. " +
-                            "All data used to create the map will be anonymised to protect your privacy.\n",
+                            "All data used to create the map will be anonymised to protect privacy.\n",
                         style: introTextStyle,
                         textAlign: TextAlign.center),
                   ]),
@@ -415,7 +415,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                                   color: Colors.black),
                               recognizer: new TapGestureRecognizer()
                                 ..onTap = () {
-                                  launch(BASE_URL + '/mapDemo');
+                                  launch(BASE_URL + '/map');
                                 })
                         ]),
                         textAlign: TextAlign.center),
