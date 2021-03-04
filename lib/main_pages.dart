@@ -71,7 +71,6 @@ class _MainPagesState extends State<MainPages> {
         context,
         MaterialPageRoute(
             builder: (_) => AddFriendPage(
-                _scaffoldKey.currentState,
                 params['identifier'],
                 params['pubKey']))).then((_) => setState(() {
           _selectedIndex = NavBarIndex.network.index;

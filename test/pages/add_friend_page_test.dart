@@ -12,7 +12,7 @@ import '../widget_test.dart';
 void main() {
   testWidgets('Displays titles', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(
-      AddFriendPage(_MockedScaffoldState()),
+      AddFriendPage(),
     ));
 
     expect(find.text("Scan their QR code"), findsOneWidget);
@@ -21,7 +21,7 @@ void main() {
 
   testWidgets('Displays QR view by default', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(
-      AddFriendPage(_MockedScaffoldState()),
+      AddFriendPage(),
     ));
 
     expect(find.byType(QRView), findsOneWidget);
@@ -29,7 +29,7 @@ void main() {
 
   testWidgets('Given ID/key, skips QR code', (WidgetTester tester) async {
     await tester.pumpWidget(wrapAppProvider(
-      AddFriendPage(_MockedScaffoldState(), "exampleID", "exampleKey"),
+      AddFriendPage("exampleID", "exampleKey"),
     ));
 
     expect(find.byType(QRView), findsNothing);
@@ -48,7 +48,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(_MockedScaffoldState(), identifier, pubKey),
+        AddFriendPage(identifier, pubKey),
         friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
@@ -77,7 +77,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(_MockedScaffoldState(), identifier, pubKey),
+        AddFriendPage(identifier, pubKey),
         friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
@@ -103,7 +103,7 @@ void main() {
     SharedPreferences.setMockInitialValues({USER_IDENTIFIER_KEY: identifier});
 
     await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(_MockedScaffoldState(), identifier, pubKey),
+        AddFriendPage(identifier, pubKey),
         friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
@@ -120,10 +120,3 @@ void main() {
 }
 
 class _MockedFriendDB extends Mock implements FriendDB {}
-
-class _MockedScaffoldState extends Mock implements ScaffoldState {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return super.toString();
-  }
-}
