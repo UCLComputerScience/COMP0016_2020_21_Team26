@@ -103,8 +103,8 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
       max: 10,
       divisions: 10,
       label: _currentSliderValue
-          .round()
-          .toString(), //slider increments are whole numbers
+          .round() //slider increments are whole numbers
+          .toString(),
       activeColor: Theme.of(context).primaryColor,
       inactiveColor: Color.fromARGB(189, 189, 189, 255), //lighter blue
       onChanged: (double value) {
