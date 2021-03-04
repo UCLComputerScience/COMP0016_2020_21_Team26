@@ -25,6 +25,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
+/// NOTE: Members of the user's support network are referred to as 'friends' in the code.
+/// This short form is fine for the code but it should not be called this on the user side.
+
 /// get the latest messages for this user
 /// returns true if there are new messages from a friend
 Future<bool> getLatest([BuildContext ctx]) async {

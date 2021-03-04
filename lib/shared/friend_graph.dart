@@ -3,6 +3,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'package:flutter/material.dart';
 
+/// Returns wellbeing [charts.BarChart[ graph sent by a friend
+/// NOTE: Members of the user's support network are referred to as 'friends' in the code.
 class FriendGraph extends StatelessWidget {
   final Future<String> friendData;
   final animate;
@@ -71,6 +73,7 @@ class FriendGraph extends StatelessWidget {
     );
   }
 
+  /// Returns Wellbeing Score series and Steps series
   List<charts.Series<Map, String>> _getSeriesList(
       List<Map<String, dynamic>> json) {
     final scoreSeries = new charts.Series<Map, String>(

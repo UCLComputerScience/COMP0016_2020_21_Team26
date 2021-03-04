@@ -8,8 +8,8 @@ class ChangeSupportCode extends StatefulWidget {
 }
 
 class _ChangeSupportCodeState extends State<ChangeSupportCode> {
-  final _supportCodeKey =
-      GlobalKey<FormState>(); //Verifies that support code is not empty string
+  final _supportCodeKey = GlobalKey<
+      FormState>(); //Used to verify that support code is not empty string
 
   /// Returns the [String] currentSupportCode stored in shared prefs database.
   Future<String> _getSupportCode() async {

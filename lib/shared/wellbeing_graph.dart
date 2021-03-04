@@ -13,8 +13,8 @@ const RECOMMENDED_STEPS_IN_WEEK = 70000;
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
 
-/// a [StatefulWidget] that displays the last wellbeing items in a graph,
-/// along with a share button
+/// A [StatefulWidget] that displays the last wellbeing items in a graph,
+/// along with a share button.
 ///
 /// REVIEW: maybe switch to this if have time: https://pub.dev/packages/fl_chart
 class WellbeingGraph extends StatefulWidget {
@@ -34,10 +34,12 @@ class WellbeingGraph extends StatefulWidget {
 }
 
 class _WellbeingGraphState extends State<WellbeingGraph> {
+  /// Keys that let the tutorial functions know which widgets to point to.
   GlobalKey _wbGraphTutorialKey = GlobalObjectKey("wb_graph");
   GlobalKey _wbShareTutorialKey = GlobalObjectKey("wb_share");
 
-  final GlobalKey _printKey = GlobalKey();
+  final GlobalKey _printKey =
+      GlobalKey(); // used by share button to turn graph into pdf
 
   @override
   void initState() {
@@ -45,27 +47,28 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     showTutorial(10);
   }
 
+  ///If tutorial hasn't been shown already, calls the first [CoachMark] of it.
   void showTutorial(int duration) async {
     if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
       Timer(Duration(milliseconds: 100), () => showCoachMarkGraph(duration));
     }
   }
 
-  /// function that returns whether tutorial should be played
+  /// Returns whether tutorial should be played.
   Future<bool> _isWBTutorialDone() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(WB_TUTORIAL_DONE_KEY) &&
         prefs.getBool(WB_TUTORIAL_DONE_KEY);
   }
 
+  /// Style for tutorial text for large widgets. Gives text a white background.
   TextStyle tutorialTextStyle = TextStyle(
-      //style for tutorial text for large widgets, requires white background
       fontSize: 20,
       color: Colors.black,
       fontStyle: FontStyle.italic,
       backgroundColor: Colors.white);
 
-  ///function to show the first slide of the tutorial, explaining the wellbeing graph
+  /// Shows the first [CoachMark] of the tutorial, explaining the wellbeing graph.
   void showCoachMarkGraph(int duration) {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
@@ -101,7 +104,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  ///function to show the second slide of the tutorial, explaining the share button
+  /// Shows the second [CoachMark] of the tutorial, explaining the share button.
   void showCoachMarkShare(int duration) {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
@@ -127,6 +130,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
+  /// Returns [charts.BarChart] graph widget
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
     final scoreSeries = new charts.Series<WellbeingItem, String>(
       id: 'Wellbeing',
@@ -220,6 +224,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             final buttons = [
               Container(
                   child: OutlinedButton(
+                      //help button replays tutorial
                       child: Icon(Icons.info_outline,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {

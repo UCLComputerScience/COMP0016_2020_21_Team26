@@ -9,7 +9,7 @@ class ChangePostcode extends StatefulWidget {
 
 class _ChangePostcodeState extends State<ChangePostcode> {
   final _postcodeKey =
-      GlobalKey<FormState>(); // Verifies postcode is between 2-4 chars.
+      GlobalKey<FormState>(); //Used to verify postcode is between 2-4 chars.
 
   /// Returns [String] currentPostcode stored in shared prefs database.
   Future<String> _getPostcode() async {
@@ -90,6 +90,7 @@ class _ChangePostcodeState extends State<ChangePostcode> {
               child: const Text('Change'),
               onPressed: () {
                 if (_postcodeKey.currentState.validate()) {
+                  //verifies between 2 and 4 chars
                   setState(() {
                     _postcodeKey.currentState.save();
                   });

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 
 /// Displays list of user contacts that can be selected to send.
+/// The 'Share link using SMS' button on the Support Network page opens this page.
 class ContactSharePage extends StatefulWidget {
   final String toSend;
 
@@ -17,7 +18,7 @@ class ContactSharePage extends StatefulWidget {
 class _ContactSharePageState extends State<ContactSharePage> {
   List<ContactSelection> _contactSelection;
 
-  /// send sms to currently selected contacts.
+  /// Sends sms to currently selected contacts.
   Future<Null> _sendToSelected() async {
     final List<String> contactList = _contactSelection
         .where((selection) => selection.selected)
@@ -56,6 +57,7 @@ class _ContactSharePageState extends State<ContactSharePage> {
 
   @override
   Widget build(BuildContext context) {
+    ///Send button as [FloatingActionButton]
     final fab = FloatingActionButton(
       child: Icon(Icons.send),
       tooltip: "Send to selected",
@@ -80,6 +82,7 @@ class _ContactSharePageState extends State<ContactSharePage> {
                 _updateAvatars();
               }
 
+              ///List of contacts
               return ListView.builder(
                   itemCount: _contactSelection.length,
                   itemBuilder: (context, i) => CheckboxListTile(
