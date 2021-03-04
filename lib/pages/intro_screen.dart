@@ -146,7 +146,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     );
   }
 
-  /// Page containing [DropdownButton]
+  /// Page containing [DropdownButton]s
   /// that choose the day and time for Wellbeing Check notification/
   PageViewModel _getWBCheckNotificationPage(
       context, TextStyle introTextStyle, PageDecoration pageDecoration) {
