@@ -68,6 +68,21 @@ class _ContactSharePageState extends State<ContactSharePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Select contacts"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            onPressed: () => showSearch(
+                    context: context,
+                    delegate: ContactSelectionSearch(_contactSelection))
+                .then((_) => setState(() {})),
+          ),
+        ],
+      ),
       body: FutureBuilder(
           future: ContactsService.getContacts(withThumbnails: Platform.isIOS),
           builder: (context, futureData) {
@@ -102,21 +117,6 @@ class _ContactSharePageState extends State<ContactSharePage> {
             }
             return LinearProgressIndicator();
           }),
-      appBar: AppBar(
-        title: Text("Select contacts"),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-            onPressed: () => showSearch(
-                    context: context,
-                    delegate: ContactSelectionSearch(_contactSelection))
-                .then((_) => setState(() {})),
-          ),
-        ],
-      ),
       floatingActionButton: fab,
     );
   }
