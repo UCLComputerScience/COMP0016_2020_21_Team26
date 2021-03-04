@@ -68,13 +68,13 @@ class _MainPagesState extends State<MainPages> {
   void _handleAddFriendDeeplink(Uri uri) {
     final params = uri.queryParameters;
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => AddFriendPage(
-                params['identifier'],
-                params['pubKey']))).then((_) => setState(() {
-          _selectedIndex = NavBarIndex.network.index;
-        }));
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    AddFriendPage(params['identifier'], params['pubKey'])))
+        .then((_) => setState(() {
+              _selectedIndex = NavBarIndex.network.index;
+            }));
   }
 
   @override

@@ -47,9 +47,8 @@ void main() {
     // test. (It appears like it cannot retrieve the prefs during execution.)
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(identifier, pubKey),
-        friendDB: mockedDB));
+    await tester.pumpWidget(
+        wrapAppProvider(AddFriendPage(identifier, pubKey), friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
     await tester.tap(find.byType(ElevatedButton));
@@ -76,9 +75,8 @@ void main() {
         .thenAnswer((_) async => true);
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(identifier, pubKey),
-        friendDB: mockedDB));
+    await tester.pumpWidget(
+        wrapAppProvider(AddFriendPage(identifier, pubKey), friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
     await tester.tap(find.byType(ElevatedButton));
@@ -102,9 +100,8 @@ void main() {
         .thenAnswer((_) async => false);
     SharedPreferences.setMockInitialValues({USER_IDENTIFIER_KEY: identifier});
 
-    await tester.pumpWidget(wrapAppProvider(
-        AddFriendPage(identifier, pubKey),
-        friendDB: mockedDB));
+    await tester.pumpWidget(
+        wrapAppProvider(AddFriendPage(identifier, pubKey), friendDB: mockedDB));
     // enter name and press done:
     await tester.enterText(find.byType(TextFormField), name);
     await tester.tap(find.byType(ElevatedButton));

@@ -78,8 +78,6 @@ class SharingPage extends StatefulWidget {
 }
 
 class SharingPageState extends State<SharingPage> {
-  GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -162,23 +160,30 @@ class SharingPageState extends State<SharingPage> {
   Widget build(BuildContext context) {
     final friendsList = _getFriendsList(context);
 
-    return Scaffold(
-      key: _scaffoldState,
-      body: FutureBuilder(
-        future: friendsList,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final List<Friend> friends = snapshot.data;
-            friends.sort();
-            return _getLoadedPage(context, friends);
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text("Error when retrieving network.");
-          }
-          return LinearProgressIndicator();
-        },
+    // NOTE: since we are using nested Scaffolds (there is one above this), we need
+    // to wrap a ScaffoldMessenger in between them to avoid showing duplicate
+    // snackbars, or rather, to avoid getting an exception since we were *about*
+    // to display duplicate snackbars.
+    // In particular, the exception would occur when you show a snackbar (using the context)
+    // and then you pop off the navigator.
+    return ScaffoldMessenger(
+      child: Scaffold(
+        body: FutureBuilder(
+          future: friendsList,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final List<Friend> friends = snapshot.data;
+              friends.sort();
+              return _getLoadedPage(context, friends);
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Error when retrieving network.");
+            }
+            return LinearProgressIndicator();
+          },
+        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     );
   }
 
@@ -433,11 +438,8 @@ class SharingPageState extends State<SharingPage> {
               ));
 
   Future<Null> _pushGoalPage(BuildContext context, Friend friend) {
-    return Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                SendNudgePage(friend)));
+    return Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SendNudgePage(friend)));
   }
 
   Widget getListTile(BuildContext context, Friend friend) {
