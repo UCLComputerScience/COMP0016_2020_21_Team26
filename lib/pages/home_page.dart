@@ -178,33 +178,30 @@ class _HomePageState extends State<HomePage> {
           return CircularProgressIndicator();
         });
 
+    final contentColumn = Column(children: [
+      Text(
+        'Activity',
+        style: Theme.of(context).textTheme.headline3,
+      ),
+      Divider(),
+      ListTile(
+        leading: Icon(Icons.directions_walk),
+        title: Text('This Week\'s Steps',
+            style: Theme.of(context).textTheme.subtitle1),
+        trailing: pedometer,
+      ),
+    ]);
+
     return Container(
         width: double.infinity,
-        child: Column(children: [
-          const SizedBox(
-            height: 5.0,
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.6),
+            spreadRadius: 1,
+            blurRadius: 3,
           ),
-          Text(
-            "This Week's Activity",
-            style: Theme.of(context).textTheme.headline3,
-          ),
-          const SizedBox(
-            height: 5.0,
-          ),
-          Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [
-                  Icon(Icons.directions_walk_outlined),
-                  Text("Steps", style: Theme.of(context).textTheme.subtitle1)
-                ]),
-                pedometer,
-              ],
-            ),
-          ),
-        ]));
+        ]),
+        child: contentColumn);
   }
 
   @override

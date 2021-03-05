@@ -110,7 +110,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
       postcodeController.text,
       supportCodeController.text,
     )) {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Invalid postcode or support code."),
       ));
       return;

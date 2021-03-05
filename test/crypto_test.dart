@@ -69,15 +69,14 @@ final q = BigInt.parse(
     '386bd2d96abd5035854b695de37fb7'
     '659da5ccea0a430ed9',
     radix: 16);
-const publicPEM =
-'-----BEGIN RSA PUBLIC KEY-----\n'
-'MIIBCgKCAQEAz6mfTm1Kwa9c4SKioJtRHtRSXKmnlFciMc1cGNKqVCaM00rW5Z5L'
-'Z3socDnx65ljsgiYhWXM1te6+x2HRX7qmS4SfgL/BHBYGzvnMbV7KTImuB03AeCA'
-'u4E5dYqFIhLPr7yROetuQujarPO7WKbFX3iYwj27Anr2FYm2xEtMDI1VkrpFPePm'
-'FS6w+s5EsSRAF3gDqrIDN66hGPPX08cLnaxVCn2IHAasjsrSvWXUaXvpTQD+8Zq0'
-'dac1u6UmqgGUqiwoZxjeliVHNWSEbHrd5UxgN8OgOeX7//KMHfbX21bbVyNrYDIB'
-'frPDdq+ifNYo9L2GgqtAE/GzkkzzILCvqQIDAQAB'
-'\n-----END RSA PUBLIC KEY-----';
+const publicPEM = '-----BEGIN RSA PUBLIC KEY-----\n'
+    'MIIBCgKCAQEAz6mfTm1Kwa9c4SKioJtRHtRSXKmnlFciMc1cGNKqVCaM00rW5Z5L'
+    'Z3socDnx65ljsgiYhWXM1te6+x2HRX7qmS4SfgL/BHBYGzvnMbV7KTImuB03AeCA'
+    'u4E5dYqFIhLPr7yROetuQujarPO7WKbFX3iYwj27Anr2FYm2xEtMDI1VkrpFPePm'
+    'FS6w+s5EsSRAF3gDqrIDN66hGPPX08cLnaxVCn2IHAasjsrSvWXUaXvpTQD+8Zq0'
+    'dac1u6UmqgGUqiwoZxjeliVHNWSEbHrd5UxgN8OgOeX7//KMHfbX21bbVyNrYDIB'
+    'frPDdq+ifNYo9L2GgqtAE/GzkkzzILCvqQIDAQAB'
+    '\n-----END RSA PUBLIC KEY-----';
 
 final publicKey = RSAPublicKey(modulus, publicExponent);
 final privateKey = RSAPrivateKey(modulus, privateExponent, p, q);
@@ -99,8 +98,8 @@ void main() {
   });
 
   test('decrypting an encrypted messages gets the original message', () {
-    final encrypter = Encrypter(RSA(publicKey: publicKey,
-            privateKey: privateKey));
+    final encrypter =
+        Encrypter(RSA(publicKey: publicKey, privateKey: privateKey));
 
     final message = "confidentialMessage";
     final ciphertext64 = encrypter.encrypt(message).base64;
