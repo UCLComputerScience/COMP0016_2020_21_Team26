@@ -165,7 +165,7 @@ Future<Null> _handleGoalCompleted(Friend friend) async {
   await initNotification();
   await scheduleNudgeCompletedGoal(friend.name, friend.currentStepsGoal);
 
-  // TODO: should probably put API code into a helper file
+  // could separate this API code into a helper file
   final prefs = await SharedPreferences.getInstance();
 
   final data =
@@ -226,8 +226,6 @@ void _publishData() async {
     "postCode": item.postcode,
     "wellbeingScore": anonScore,
     "weeklySteps": item.numSteps,
-    // TODO: Maybe change error rate to double
-    //       & confirm the units.
     "errorRate": errorRate.truncate(),
     "supportCode": item.supportCode,
     "date_sent": item.date,
