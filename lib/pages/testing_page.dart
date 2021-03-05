@@ -7,7 +7,6 @@ import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/checkup.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class TestingPage extends StatelessWidget {
