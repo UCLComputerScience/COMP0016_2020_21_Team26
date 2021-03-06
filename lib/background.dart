@@ -16,10 +16,18 @@ import 'package:workmanager/workmanager.dart';
 import 'package:nudge_me/pages/sharing_page.dart';
 import 'package:http/http.dart' as http;
 
+// names of the background tasks handled by [Workmanager]:
+
+/// refers to the task that checks if the pedometer has changed in the last
+/// 48 hours
 const PEDOMETER_CHECK_KEY = "pedometer_check";
+/// refers to the task that checks if there is any new wellbeing data sent from
+/// friends
 const REFRESH_FRIEND_KEY = "refresh_friend_data";
+/// refers to the task that checks if there are any nudges sent from friends
 const NUDGE_CHECK_KEY = "nudge_check";
 
+/// scheduled cron job for publishing data to the server
 ScheduledTask publishTask;
 
 /// inits the [Workmanager] and registers a background task to track steps
@@ -35,6 +43,7 @@ void initBackground() {
       frequency: Duration(minutes: 15), initialDelay: Duration(minutes: 1));
 }
 
+/// sets up the callback handler for background tasks
 void callbackDispatcher() {
   Workmanager.executeTask((taskName, inputData) async {
     switch (taskName) {
@@ -74,7 +83,7 @@ void callbackDispatcher() {
         await checkIfGoalsCompleted();
         break;
     }
-    return Future.value(true);
+    return Future.value(true); // task handled successfully
   });
 }
 
@@ -191,6 +200,7 @@ Future<Null> _handleGoalCompleted(Friend friend) async {
   await FriendDB().updateGoalFromFriend(friend.identifier, null, null);
 }
 
+/// schedules a cron job to publish data
 void schedulePublish() {
   final day = DateTime.monday;
   final hour = 12;
