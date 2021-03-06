@@ -4,6 +4,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
 
 const _dbName = "friends_db.db";
+
+// versions could be used to change the database schema once the app is
+// already released (since you cannot ask users to reinstall the app)
 const _dbVersion = 1;
 
 const _tableName = "Friends";
@@ -11,15 +14,23 @@ const _columns = [
   "id",
   "name",
   "identifier",
-  "publicKey",
-  "latestData",
+  "publicKey", // the public key owned by the friend
+  "latestData", // the most recent data sent by the user
   "read",
-  "currentStepsGoal", // columns related to p2p nudging:
+  // columns related to p2p nudging:
+  "currentStepsGoal",
   "sentActiveGoal",
   "initialStepCount"
 ];
 
+/// [FriendDB] is a [ChangeNotifier] that notifies listeners when any data has
+/// been modified or added.
+///
+/// The implementation for most of the methods involves awaiting for an instance
+/// of the private database connections, performing some query and then
+/// returning the results.
 class FriendDB extends ChangeNotifier {
+  /// singleton instance of [FriendDB]
   static final FriendDB _instance = FriendDB._();
   static Database _database;
 
@@ -68,6 +79,8 @@ class FriendDB extends ChangeNotifier {
     return itemList;
   }
 
+  /// get the number of friends who we have received (but not read) wellbeing
+  /// data from.
   Future<int> getUnreadCount() async {
     final db = await database;
     final queryString = 'SELECT COUNT(*) FROM $_tableName '
@@ -80,7 +93,7 @@ class FriendDB extends ChangeNotifier {
   /// that points to their respective string values.
   Future<void> updateWellbeingData(List<dynamic> messages) async {
     final db = await database;
-    final batch = db.batch();
+    final batch = db.batch(); // perform multiple queries at a time
     for (var message in messages) {
       final sender = message['identifier_from'];
       final data = message['data'];
@@ -106,6 +119,7 @@ class FriendDB extends ChangeNotifier {
     return out == null ? "" : out;
   }
 
+  /// true if there is some friend with matching identifier
   Future<bool> isIdentifierPresent(String identifier) async {
     final db = await database;
     final query = 'SELECT COUNT(*) FROM $_tableName WHERE ${_columns[2]} = ?';
@@ -114,6 +128,7 @@ class FriendDB extends ChangeNotifier {
     return count > 0;
   }
 
+  /// mark the data associated with friend (identifier) as read
   Future<void> setRead(String identifier) async {
     final db = await database;
     db.update(_tableName, {_columns[5]: 1},
@@ -156,6 +171,8 @@ class FriendDB extends ChangeNotifier {
     return maps[0][_columns[1]];
   }
 
+  /// get the starting step count valued stored from when the goal was first
+  /// sent by identifier
   Future<int> getInitialStepCount(String identifier) async {
     final db = await database;
 
@@ -168,6 +185,7 @@ class FriendDB extends ChangeNotifier {
     return maps[0][_columns[8]];
   }
 
+  /// set the starting step count valued stored for a goal
   Future<Null> updateInitialStepCount(String identifier, int newVal) async {
     final db = await database;
 
@@ -236,7 +254,8 @@ class FriendDB extends ChangeNotifier {
   }
 }
 
-/// Data class of a friend
+/// Data class of a friend.
+/// Allows conversion from and to a map to work better with the SQL database.
 class Friend implements Comparable {
   int id;
   String name;
@@ -249,12 +268,13 @@ class Friend implements Comparable {
   /// 0 if unread, otherwise 1
   int read;
 
-  // nullable
+  /// nullable
   int currentStepsGoal;
 
-  // 1 if sent & active, 0 otherwise
+  /// 1 if sent & active, 0 otherwise
   int sentActiveGoal;
 
+  /// the step count value when a step goal was first started
   int initialStepCount;
 
   Friend({

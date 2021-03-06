@@ -23,8 +23,11 @@ import 'main.dart';
 /// Also ensure 'https' is used since we want to securely send data.
 const BASE_URL = "https://comp0016.cyberchris.xyz";
 
+/// defines the index of a page
 enum NavBarIndex { wellbeing, home, network, settings, testing }
 
+/// Widget that switches between and displays the currently selected
+/// page from the navigation bar.
 class MainPages extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MainPagesState();
@@ -33,8 +36,14 @@ class MainPages extends StatefulWidget {
 class _MainPagesState extends State<MainPages> {
   List<TabItem> navBarItems;
 
+  /// [int] used to determine the current selected page.
+  /// Default selected page is the homepage.
   int _selectedIndex = NavBarIndex.home.index;
+
+  /// A subscription of events. They occur whenever a deeplink is pressed,
+  /// but the app is already open.
   StreamSubscription _linksSub;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   /// number of unread wellbeing data
@@ -82,6 +91,8 @@ class _MainPagesState extends State<MainPages> {
     navBarItems = _getNavBarItems();
   }
 
+  /// Opens the add friend page with friend details pre filled in,
+  /// based on the deeplink.
   void _handleAddFriendDeeplink(Uri uri) {
     final params = uri.queryParameters;
     Navigator.push(
@@ -128,7 +139,7 @@ class _MainPagesState extends State<MainPages> {
           items: navBarItems,
           initialActiveIndex: _selectedIndex,
           onTap: _onItemTapped,
-          top: -16, // affects size of curve,
+          top: -16, // affects size of curve of the app bar
           color: Colors.white,
           backgroundColor: Theme.of(context).primaryColor),
     );
@@ -141,7 +152,8 @@ class _MainPagesState extends State<MainPages> {
     super.dispose();
   }
 
-  //// pushes a new screen according to the notification payload
+  //// Pushes a new screen according to the notification payload,
+  //// or changes the selected page.
   void _handleNotification(String payload) async {
     switch (payload) {
       case CHECKUP_PAYLOAD:
@@ -158,8 +170,6 @@ class _MainPagesState extends State<MainPages> {
           _selectedIndex = NavBarIndex.network.index; // switch to friend tab
         });
         break;
-      // TODO: should probably open up the respective goal, could modify the payload
-      // format to achieve this
       case NEW_GOAL_PAYLOAD:
         setState(() {
           _selectedIndex = NavBarIndex.network.index;
@@ -175,6 +185,7 @@ class _MainPagesState extends State<MainPages> {
     }
   }
 
+  /// changes to the appropriate page
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;

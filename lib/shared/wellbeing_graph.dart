@@ -8,13 +8,14 @@ import 'package:nudge_me/shared/share_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// an upper bound for the recommended number of steps to walk in a week
 const RECOMMENDED_STEPS_IN_WEEK = 70000;
 
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
 
 /// a [StatefulWidget] that displays the last wellbeing items in a graph,
-/// along with a share button
+/// along with (optionally) a share button, and (optionally) a tutorial button
 ///
 /// REVIEW: maybe switch to this if have time: https://pub.dev/packages/fl_chart
 class WellbeingGraph extends StatefulWidget {
@@ -22,6 +23,8 @@ class WellbeingGraph extends StatefulWidget {
 
   /// true if it should display the share button:
   final bool displayShare;
+
+  /// true if it should display the tutorial button:
   final bool shouldShowTutorial;
 
   WellbeingGraph(
@@ -45,6 +48,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     showTutorial(10);
   }
 
+  /// displays the tutorial for [int] seconds (each), if it has not been shown
+  /// already
   void showTutorial(int duration) async {
     if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
       Timer(Duration(milliseconds: 100), () => showCoachMarkGraph(duration));
@@ -65,7 +70,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
       fontStyle: FontStyle.italic,
       backgroundColor: Colors.white);
 
-  ///function to show the first slide of the tutorial, explaining the wellbeing graph
+  /// function to show the first slide of the tutorial, explaining the wellbeing
+  /// graph. Will be displayed for [int] seconds.
   void showCoachMarkGraph(int duration) {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _wbGraphTutorialKey.currentContext.findRenderObject();
@@ -101,7 +107,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  ///function to show the second slide of the tutorial, explaining the share button
+  /// function to show the second slide of the tutorial, explaining the share
+  /// button. Will be displayed for [int] seconds.
   void showCoachMarkShare(int duration) {
     CoachMark coachMarkShare = CoachMark();
     RenderBox target = _wbShareTutorialKey.currentContext.findRenderObject();
@@ -127,11 +134,16 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
+  /// gets the graph using the [List] of [WellbeingItem]
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
+    // we create the series to convert the data into a format that the charting
+    // library can understand
     final scoreSeries = new charts.Series<WellbeingItem, String>(
       id: 'Wellbeing',
       colorFn: (_, __) =>
           charts.ColorUtil.fromDartColor(Theme.of(context).accentColor),
+      // we have to convert the id to a string since bar charts expect strings
+      // on the x axis
       domainFn: (WellbeingItem item, _) => item.id.toString(),
       measureFn: (WellbeingItem item, _) => item.wellbeingScore,
       data: items,
@@ -144,14 +156,16 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
       measureFn: (WellbeingItem a, _) => a.numSteps,
       data: items,
     )..setAttribute(charts.measureAxisIdKey, 'secondaryMeasureAxisId');
+    // we have only set an attribute on stepSeries to configure how it
+    // is displayed
     final seriesList = [scoreSeries, stepSeries];
 
     return Flexible(
       child: RepaintBoundary(
-        // uses [RepaintBoundary] so we have .toImage()
-        key: _printKey, // this container will be 'printed'/shared
+        // wraps it in a [RepaintBoundary] so we can use .toImage()
+        key: _printKey, // this [RepaintBoundary] will be 'printed'/shared
         child: charts.BarChart(
-          // feedback from UCL recommended to use bar chart
+          // feedback from UCL recommended us to use a bar chart
           seriesList,
           animate: animate,
           barGroupingType: charts.BarGroupingType.grouped,
@@ -165,15 +179,16 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
           ),
           behaviors: [
             new charts.SeriesLegend(), // adds labels to colors
-            // This should force the wellbeing score axis to go up to 10:
             charts.RangeAnnotation(
               [
+                // This should force the wellbeing score axis to go up to 10:
                 charts.RangeAnnotationSegment(
                   8,
                   10,
                   charts.RangeAnnotationAxisType.measure,
                   color: charts.MaterialPalette.transparent,
                 ),
+                // this displays the region of steps considered healthy
                 charts.RangeAnnotationSegment(
                   7000, // min recommended weekly steps
                   70000, // upper bound recommended weekly steps
@@ -185,7 +200,8 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
                 ),
               ],
             ),
-            // using title as axes label:
+
+            // using title as the x axis label:
             new charts.ChartTitle('Week',
                 behaviorPosition: charts.BehaviorPosition.bottom,
                 titleOutsideJustification:
@@ -202,6 +218,9 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
               titleOutsideJustification:
                   charts.OutsideJustification.middleDrawArea,
             ),
+
+            // zooms onto the data points, without this there may be empty
+            // spaces
             new charts.PanAndZoomBehavior(),
           ],
         ),
@@ -212,6 +231,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+        // display the last five weeks
         future: Provider.of<UserWellbeingDB>(context).getLastNWeeks(5),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
