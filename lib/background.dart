@@ -21,9 +21,11 @@ import 'package:http/http.dart' as http;
 /// refers to the task that checks if the pedometer has changed in the last
 /// 48 hours
 const PEDOMETER_CHECK_KEY = "pedometer_check";
+
 /// refers to the task that checks if there is any new wellbeing data sent from
 /// friends
 const REFRESH_FRIEND_KEY = "refresh_friend_data";
+
 /// refers to the task that checks if there are any nudges sent from friends
 const NUDGE_CHECK_KEY = "nudge_check";
 
