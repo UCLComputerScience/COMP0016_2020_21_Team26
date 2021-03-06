@@ -15,6 +15,9 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uni_links/uni_links.dart';
 import 'main_pages.dart';
 
+/// true if app is in production, meant for end users
+bool isProduction = false;
+
 /// key to retrieve [bool] that is true if setup is done
 const FIRST_TIME_DONE_KEY = "first_time_done";
 
@@ -34,7 +37,7 @@ final _sentry = SentryClient(SentryOptions(
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  _appInit();
+  appInit();
 
   // captures platform/native errors
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -85,8 +88,8 @@ Future<bool> _isFirstTime() async {
       !prefs.getBool(FIRST_TIME_DONE_KEY);
 }
 
-void _appInit() async {
-  await initUniLinks();
+void appInit() async {
+  await _initUniLinks();
   initNotification();
 
   if (await _isFirstTime()) {
@@ -97,7 +100,7 @@ void _appInit() async {
 /// The deeplink that opened this app if any. Could be null.
 Uri initialUri;
 
-Future<Null> initUniLinks() async {
+Future<Null> _initUniLinks() async {
   try {
     // in case platform fails
     initialUri = await getInitialUri();
