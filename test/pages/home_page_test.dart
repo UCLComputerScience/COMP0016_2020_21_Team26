@@ -44,7 +44,7 @@ void main() {
         .pumpWidget(wrapAppProvider(HomePage(fakeStepStream), wbDB: mockedDB));
     await tester.pumpAndSettle();
 
-    expect(find.text("Steps"), findsOneWidget);
+    expect(find.text('This Week\'s Steps'), findsOneWidget);
     expect(find.text("0"), findsOneWidget);
   });
 }
