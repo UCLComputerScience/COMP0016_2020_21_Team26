@@ -9,11 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
-  final ScaffoldState _scaffoldState;
   final String identifier;
   final String pubKey;
 
-  const AddFriendPage(this._scaffoldState, [this.identifier, this.pubKey]);
+  const AddFriendPage([this.identifier, this.pubKey]);
 
   @override
   State<StatefulWidget> createState() => AddFriendPageState();
@@ -21,7 +20,6 @@ class AddFriendPage extends StatefulWidget {
 
 class AddFriendPageState extends State<AddFriendPage> {
   final _qrKey = GlobalKey(debugLabel: 'QR');
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   Barcode _result;
   QRViewController _controller;
@@ -106,7 +104,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                     }
 
                     if (identifier.length == 0 || publicKey.length == 0) {
-                      widget._scaffoldState.showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text("Invalid QR code or URL."),
                       ));
                       return;
@@ -114,13 +112,13 @@ class AddFriendPageState extends State<AddFriendPage> {
 
                     if (await Provider.of<FriendDB>(context, listen: false)
                         .isIdentifierPresent(identifier)) {
-                      widget._scaffoldState.showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text("This person has already been added."),
                       ));
                     } else if (identifier ==
                         await SharedPreferences.getInstance().then(
                             (value) => value.getString(USER_IDENTIFIER_KEY))) {
-                      widget._scaffoldState.showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text("You cannot add yourself."),
                       ));
                     } else {
@@ -154,7 +152,6 @@ class AddFriendPageState extends State<AddFriendPage> {
     );
 
     return Scaffold(
-      key: _scaffoldKey,
       body: SafeArea(
         child: stepper,
       ),

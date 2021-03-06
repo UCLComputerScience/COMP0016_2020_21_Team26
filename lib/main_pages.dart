@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:nudge_me/model/friends_model.dart';
 import 'package:nudge_me/notification.dart';
 import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/checkup.dart';
@@ -11,6 +12,7 @@ import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
@@ -43,6 +45,9 @@ class _MainPagesState extends State<MainPages> {
   StreamSubscription _linksSub;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
+  /// number of unread wellbeing data
+  int _unreadNum;
+
   @override
   void initState() {
     super.initState();
@@ -68,18 +73,29 @@ class _MainPagesState extends State<MainPages> {
   void _handleAddFriendDeeplink(Uri uri) {
     final params = uri.queryParameters;
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => AddFriendPage(
-                _scaffoldKey.currentState,
-                params['identifier'],
-                params['pubKey']))).then((_) => setState(() {
-          _selectedIndex = NavBarIndex.network.index;
-        }));
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    AddFriendPage(params['identifier'], params['pubKey'])))
+        .then((_) => setState(() {
+              _selectedIndex = NavBarIndex.network.index;
+            }));
+  }
+
+  void _updateUnread() {
+    Provider.of<FriendDB>(context).getUnreadCount().then((value) {
+      if (value != _unreadNum) {
+        setState(() {
+          _unreadNum = value;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    _updateUnread();
+
     final pages = [
       WellbeingPage(),
       HomePage(Pedometer.stepCountStream.map((event) => event.steps)),
@@ -88,10 +104,14 @@ class _MainPagesState extends State<MainPages> {
       TestingPage(),
     ];
 
+    final Map<int, dynamic> badgeMap = _unreadNum == null || _unreadNum == 0
+        ? {}
+        : {NavBarIndex.network.index: _unreadNum.toString()};
+
     return Scaffold(
       key: _scaffoldKey,
       body: SafeArea(child: pages[_selectedIndex]),
-      bottomNavigationBar: ConvexAppBar(
+      bottomNavigationBar: ConvexAppBar.badge(badgeMap,
           style: TabStyle.react,
           items: widget.navBarItems,
           initialActiveIndex: _selectedIndex,
