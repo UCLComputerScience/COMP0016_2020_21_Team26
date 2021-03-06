@@ -4,6 +4,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/utils/utils.dart';
 
 const _dbName = "wellbeing_items_db.db";
+
+// versions could be used to change the database schema once the app is
+// already released (since you cannot ask users to reinstall the app)
 const _dbVersion = 1;
 
 const _tableName = "WellbeingItems";
@@ -108,7 +111,7 @@ class UserWellbeingDB extends ChangeNotifier {
   }
 }
 
-/// (Effectively) immutable data item of a week's wellbeing record
+/// Data item of a week's wellbeing record.
 class WellbeingItem {
   int id;
   String date;
