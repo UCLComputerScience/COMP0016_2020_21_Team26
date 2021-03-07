@@ -90,3 +90,16 @@ that goal y days later.
 
 (In contrary, with wellbeing sharing unencrypted, a malicious server could get precise data on numbers
 of steps and their current mental health, courtesy of the wellbeing score.)
+
+## Architecture Diagrams
+
+### Main Diagram
+
+See the corresponding Figma 
+[here](https://www.figma.com/file/2zvQlWcpFtOEhwH3YmFMsD/System-Architecture-Diagram?node-id=0%3A1)
+
+![image](https://user-images.githubusercontent.com/46009390/110238878-dd728500-7f3b-11eb-9c0d-6eb785270703.png)
+
+### Dataflow Diagram - Wellbeing Visualization
+
+![image](https://user-images.githubusercontent.com/46009390/110238902-0135cb00-7f3c-11eb-88c4-445397e5ea50.png)
