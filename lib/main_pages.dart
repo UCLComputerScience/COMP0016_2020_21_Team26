@@ -29,21 +29,13 @@ enum NavBarIndex { wellbeing, home, network, settings, testing }
 /// Widget that switches between and displays the currently selected
 /// page from the navigation bar.
 class MainPages extends StatefulWidget {
-  // NOTE: SHOULD change [NavBarIndex] if changing this order
-  final navBarItems = [
-    TabItem(
-        icon: Icon(Icons.bar_chart, color: Colors.white), title: "Wellbeing"),
-    TabItem(icon: Icon(Icons.home, color: Colors.white), title: "Home"),
-    TabItem(icon: Icon(Icons.people, color: Colors.white), title: "Network"),
-    TabItem(icon: Icon(Icons.settings, color: Colors.white), title: "Settings"),
-    TabItem(icon: Icon(Icons.receipt, color: Colors.white), title: "Testing"),
-  ];
-
   @override
   State<StatefulWidget> createState() => _MainPagesState();
 }
 
 class _MainPagesState extends State<MainPages> {
+  List<TabItem> navBarItems;
+
   /// [int] used to determine the current selected page.
   /// Default selected page is the homepage.
   int _selectedIndex = NavBarIndex.home.index;
@@ -56,6 +48,24 @@ class _MainPagesState extends State<MainPages> {
 
   /// number of unread wellbeing data
   int _unreadNum;
+
+  /// returns the navigation bar items, depending on whether in production.
+  /// NOTE: SHOULD change [NavBarIndex] if changing the order of navBarItems.
+  List<TabItem> _getNavBarItems() {
+    List<TabItem> items = [
+      TabItem(
+          icon: Icon(Icons.bar_chart, color: Colors.white), title: "Wellbeing"),
+      TabItem(icon: Icon(Icons.home, color: Colors.white), title: "Home"),
+      TabItem(icon: Icon(Icons.people, color: Colors.white), title: "Network"),
+      TabItem(
+          icon: Icon(Icons.settings, color: Colors.white), title: "Settings"),
+    ];
+    if (!isProduction) {
+      items.add(TabItem(
+          icon: Icon(Icons.receipt, color: Colors.white), title: "Testing"));
+    }
+    return items;
+  }
 
   @override
   void initState() {
@@ -77,6 +87,8 @@ class _MainPagesState extends State<MainPages> {
       // warn user, maybe create a snackbar?
       print(err);
     });
+
+    navBarItems = _getNavBarItems();
   }
 
   /// Opens the add friend page with friend details pre filled in,
@@ -124,7 +136,7 @@ class _MainPagesState extends State<MainPages> {
       body: SafeArea(child: pages[_selectedIndex]),
       bottomNavigationBar: ConvexAppBar.badge(badgeMap,
           style: TabStyle.react,
-          items: widget.navBarItems,
+          items: navBarItems,
           initialActiveIndex: _selectedIndex,
           onTap: _onItemTapped,
           top: -16, // affects size of curve of the app bar

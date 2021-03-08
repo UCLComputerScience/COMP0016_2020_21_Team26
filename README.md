@@ -2,9 +2,20 @@
 
 [![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml/badge.svg)](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml)
 
-V2 of the CarerCare app.
+NudgeMe is V2 of the CarerCare app.
 
 This is built on Flutter's stable branch.
+
+## Deployment
+
+### Android
+
+1. Install flutter, and use `flutter doctor` to check if it's set up correctly.
+2. Run `flutter build apk -t lib/main_production.dart` in the project directory.
+This builds the production version, meant for end users. It does not display the
+dev screen or send remote error reports. For the version used during development,
+simply run `flutter build apk`.
+3. Install the apk on an Android device.
 
 ## Tests
 
