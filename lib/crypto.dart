@@ -46,13 +46,13 @@ Future<void> setupCrypto() async {
 }
 
 Future<void> _addUserBackend(String identifier, String password) async {
+  // this would fail if the user has no internet
   final body = jsonEncode({"identifier": identifier, "password": password});
   http
       .post(BASE_URL + "/user/new",
           headers: {"Content-Type": "application/json"}, body: body)
       .then((response) {
     print("Response body: ${response.body}");
-    // TODO: notify user in case something went wrong
   });
 }
 

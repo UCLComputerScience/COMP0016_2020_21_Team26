@@ -81,7 +81,8 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
   void _checkWellbeing(final int n) async {
     assert(n >= 1);
     final List<WellbeingItem> items =
-        await Provider.of<UserWellbeingDB>(context, listen: false).getLastNWeeks(n + 1);
+        await Provider.of<UserWellbeingDB>(context, listen: false)
+            .getLastNWeeks(n + 1);
     if (items.length == n + 1 &&
         _isDecreasing(items.map((item) => item.wellbeingScore).toList())) {
       // if there were enough scores, and they were decreasing
