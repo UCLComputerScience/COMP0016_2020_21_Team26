@@ -37,10 +37,12 @@ class WellbeingGraph extends StatefulWidget {
 }
 
 class _WellbeingGraphState extends State<WellbeingGraph> {
+  /// Keys that let the tutorial functions know which widgets to point to.
   GlobalKey _wbGraphTutorialKey = GlobalObjectKey("wb_graph");
   GlobalKey _wbShareTutorialKey = GlobalObjectKey("wb_share");
 
-  final GlobalKey _printKey = GlobalKey();
+  final GlobalKey _printKey =
+      GlobalKey(); // used by share button to turn graph into pdf
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     showTutorial(10);
   }
 
-  /// displays the tutorial for [int] seconds (each), if it has not been shown
+  /// Displays the tutorial for [int] seconds (each), if it has not been shown
   /// already
   void showTutorial(int duration) async {
     if (widget.shouldShowTutorial && !(await _isWBTutorialDone())) {
@@ -56,21 +58,21 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
     }
   }
 
-  /// function that returns whether tutorial should be played
+  /// Returns whether tutorial should be played.
   Future<bool> _isWBTutorialDone() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(WB_TUTORIAL_DONE_KEY) &&
         prefs.getBool(WB_TUTORIAL_DONE_KEY);
   }
 
+  /// Style for tutorial text for large widgets. Gives text a white background.
   TextStyle tutorialTextStyle = TextStyle(
-      //style for tutorial text for large widgets, requires white background
       fontSize: 20,
       color: Colors.black,
       fontStyle: FontStyle.italic,
       backgroundColor: Colors.white);
 
-  /// function to show the first slide of the tutorial, explaining the wellbeing
+  /// Shows the first slide of the tutorial, explaining the wellbeing
   /// graph. Will be displayed for [int] seconds.
   void showCoachMarkGraph(int duration) {
     CoachMark coachMarkWB = CoachMark();
@@ -107,7 +109,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  /// function to show the second slide of the tutorial, explaining the share
+  /// Shows the second slide of the tutorial, explaining the share
   /// button. Will be displayed for [int] seconds.
   void showCoachMarkShare(int duration) {
     CoachMark coachMarkShare = CoachMark();
@@ -134,7 +136,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
         });
   }
 
-  /// gets the graph using the [List] of [WellbeingItem]
+  /// Returns [charts.BarChart] graph widget using the [List] of [WellbeingItem]
   Widget _getGraph(List<WellbeingItem> items, bool animate) {
     // we create the series to convert the data into a format that the charting
     // library can understand
@@ -242,6 +244,7 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
             if (widget.shouldShowTutorial) {
               buttons.add(Container(
                   child: OutlinedButton(
+                      //help button replays tutorial
                       child: Icon(Icons.info_outline,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {

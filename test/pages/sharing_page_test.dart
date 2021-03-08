@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nudge_me/model/friends_model.dart';
-import 'package:nudge_me/pages/sharing_page.dart';
+import 'package:nudge_me/pages/support_page.dart';
 
 import '../widget_test.dart';
 
@@ -32,7 +32,7 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(true));
 
       await tester
-          .pumpWidget(wrapAppProvider(SharingPage(), friendDB: mockedFriendDB));
+          .pumpWidget(wrapAppProvider(SupportPage(), friendDB: mockedFriendDB));
       await tester.pumpAndSettle();
 
       expect(
@@ -52,7 +52,7 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(false));
 
       await tester
-          .pumpWidget(wrapAppProvider(SharingPage(), friendDB: mockedFriendDB));
+          .pumpWidget(wrapAppProvider(SupportPage(), friendDB: mockedFriendDB));
       await tester.pumpAndSettle();
       await tester.drag(find.text('My Identity \nCode'), Offset(0.0, -500.0));
       await tester.pumpAndSettle();
@@ -74,7 +74,7 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(false));
 
     await tester
-        .pumpWidget(wrapAppProvider(SharingPage(), friendDB: mockedFriendDB));
+        .pumpWidget(wrapAppProvider(SupportPage(), friendDB: mockedFriendDB));
     await tester.pumpAndSettle();
     await tester.drag(find.text('My Identity \nCode'), Offset(0.0, -700.0));
     await tester.pumpAndSettle();

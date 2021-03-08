@@ -32,9 +32,13 @@ class IntroScreenWidgets extends StatefulWidget {
 }
 
 class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
+  /// Keeps track of the postcode [TextField]
   final postcodeController = TextEditingController();
+
+  /// Keeps track of the support code [TextField]
   final supportCodeController = TextEditingController();
 
+  /// Default values for silder, switch, and notification day, hour and min.
   double _currentSliderValue = 0;
   bool _currentSwitchValue = false;
   int _wbCheckNotifDay = DateTime.sunday;
@@ -45,6 +49,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
   /// true if done was tapped with valid input
   bool doneTapped = false;
 
+  /// Records first wellbeing check
   void setInitialWellbeing(
       double _currentSliderValue, String postcode, String suppCode) async {
     final dateString = clock.now().toIso8601String().substring(0, 10);
@@ -57,6 +62,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     );
   }
 
+  /// Saves user input: postcode, support code and notification time.
   void _saveInput(String postcode, String suppcode, double _currentSliderValue,
       DateTime _wbCheckNotifTime) async {
     final prefs = await SharedPreferences.getInstance();
@@ -68,10 +74,31 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     setInitialWellbeing(_currentSliderValue, postcode, suppcode);
   }
 
+  /// Returns whether postcode and support code are valid lengths
   bool _isInputValid(String postcode, String suppCode) {
     return 2 <= postcode.length && postcode.length <= 4 && suppCode.length > 0;
   }
 
+  /// Carries out setting up notification, crypto and background step counter.
+  /// Called at the the end of intro screen.
+  Future<void> _finishSetup(
+      bool _currentSwitchValue, DateTime _wbCheckNotifTime) async {
+    scheduleCheckup(_wbCheckNotifTime.day,
+        Time(_wbCheckNotifTime.hour, _wbCheckNotifTime.minute));
+    if (_currentSwitchValue) {
+      schedulePublish(); //if permission was given, set up weekly sharing data
+    }
+
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
+
+    await setupCrypto();
+
+    // only start tracking steps after user has done setup
+    initBackground();
+  }
+
+  /// Called when intro screen finishes.
   void _onIntroEnd(
       context,
       double _currentSliderValue,
@@ -109,7 +136,6 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     // NOTE: this is the 'proper' way of requesting permissions (instead of
     // just lowering the targetSdkVersion) but it doesn't seem to work and
     // I don't have access to an Android 10 device to further test it
-    // so... *shrug*
     await Permission.sensors.request();
     await Permission.activityRecognition.request();
 
@@ -120,22 +146,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     );
   }
 
-  Future<void> _finishSetup(
-      bool _currentSwitchValue, DateTime _wbCheckNotifTime) async {
-    scheduleCheckup(_wbCheckNotifTime.day,
-        Time(_wbCheckNotifTime.hour, _wbCheckNotifTime.minute));
-    if (_currentSwitchValue) {
-      schedulePublish();
-    }
-    SharedPreferences.getInstance()
-        .then((prefs) => prefs.setBool(FIRST_TIME_DONE_KEY, true));
-
-    await setupCrypto();
-
-    // only start tracking steps after user has done setup
-    initBackground();
-  }
-
+  /// Page containing [DropdownButton]s
+  /// that choose the day and time for Wellbeing Check notification/
   PageViewModel _getWBCheckNotificationPage(
       context, TextStyle introTextStyle, PageDecoration pageDecoration) {
     final notificationSelector = ListView(
@@ -438,6 +450,7 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
                 borderRadius: BorderRadius.all(Radius.circular(25.0)))));
   }
 
+  /// If keyboard is open, closes it when user changes pages.
   void _dismisKeyboard() {
     FocusScopeNode currentFocus = FocusScope.of(context);
     if (!currentFocus.hasPrimaryFocus) {
@@ -446,8 +459,8 @@ class _IntroScreenWidgetsState extends State<IntroScreenWidgets> {
     }
   }
 
+  //Disposes of [TextEditingController.]
   void dispose() {
-    // need to dispose of [TextEditingController]
     postcodeController.dispose();
     supportCodeController.dispose();
     super.dispose();

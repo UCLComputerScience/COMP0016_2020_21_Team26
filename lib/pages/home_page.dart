@@ -11,6 +11,8 @@ import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 /// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
+/// Displays Wellbeing Score from last week
+/// and steps so far since the last Wellbeing Check.
 class HomePage extends StatefulWidget {
   final Stream<int> stepValueStream;
 
@@ -33,19 +35,21 @@ class _HomePageState extends State<HomePage> {
     showTutorial();
   }
 
+  /// If tutorial has not been shown before, calls the first [CoachMark] of the tutorial (showCoachMarkWB()).
   void showTutorial() async {
     if (!(await _isHomeTutorialDone())) {
       Timer(Duration(milliseconds: 700), () => showCoachMarkWB());
     }
   }
 
+  /// Returns whether tutorial has been shown
   Future<bool> _isHomeTutorialDone() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
         prefs.getBool(HOME_TUTORIAL_DONE_KEY);
   }
 
-  ///function to show the first slide of the tutorial, explaining the wellbeing circle
+  /// Shows the first [CoachMark] of the tutorial, explaining the wellbeing circle.
   void showCoachMarkWB() {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _lastWeekWBTutorialKey.currentContext.findRenderObject();
@@ -69,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  ///function to show the second slide of the tutorial, explaining the steps counter
+  ///Shows the second [CoachMark] of the tutorial, explaining the steps counter.
   void showCoachMarkSteps() {
     CoachMark coachMarkSteps = CoachMark();
     RenderBox target = _stepsTutorialKey.currentContext.findRenderObject();
@@ -89,6 +93,7 @@ class _HomePageState extends State<HomePage> {
         ],
         duration: Duration(seconds: 10),
         onClose: () {
+          //sets HOME_TUTORIAL_DONE_KEY to true in shared prefs database
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(HOME_TUTORIAL_DONE_KEY, true));
         });
@@ -101,6 +106,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  //Displays Wellbeing circle containing last week's wellbeing score
   Widget _previouScoreHolder(BuildContext ctx) {
     return Container(
       width: double.infinity, // stretches the width
@@ -141,6 +147,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// Displays this week's steps so far
   Widget _thisWeekHolder(BuildContext ctx) {
     final pedometer = FutureBuilder(
         key: _stepsTutorialKey,

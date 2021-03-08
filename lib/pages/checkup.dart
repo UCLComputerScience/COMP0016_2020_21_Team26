@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clock/clock.dart';
 
+/// Weekly Checkup notification opens this page.
+/// Asks user how they are feeling and adds this score and their steps to their graph.
+/// NOTE: Wellbeing Check is sometimes referred to as 'Checkup' in this code, as it was called this previously.
 class WellbeingCheck extends StatelessWidget {
   final Stream<int> stepValueStream;
 
@@ -29,6 +32,7 @@ class WellbeingCheck extends StatelessWidget {
   }
 }
 
+/// Widgets inside Wellbeing Check page
 class WellbeingCheckWidgets extends StatefulWidget {
   final Stream<int> stepValueStream;
 
@@ -39,26 +43,29 @@ class WellbeingCheckWidgets extends StatefulWidget {
 }
 
 class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
+  /// Sets original slider value to 0.
   double _currentSliderValue = 0;
 
-  // widget records the last weeks & current step total. The difference is
-  // the actual step count for the week.
+  /// Widget records the last weeks & current step total. The difference is
+  /// the actual step count for the week.
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
+  /// Returns [String] userPostcode stored in shared prefs database
   Future<String> _getPostcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userPostcode = prefs.getString('postcode');
     return userPostcode;
   }
 
+  /// Returns [String] userSupportCode stored in shared prefs database
   Future<String> _getSupportCode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userSupportCode = prefs.getString('support_code');
     return userSupportCode;
   }
 
-  /// returns `true` if given [List] is monotonically decreasing
+  /// Returns `true` if given [List] is monotonically decreasing.
   bool _isDecreasing(List<dynamic> items) {
     for (int i = 0; i < items.length - 1; ++i) {
       if (items[i] <= items[i + 1]) {
@@ -68,8 +75,8 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
     return true;
   }
 
-  /// nudges user if score drops n times in the last n+1 weeks.
-  /// For example if n == 2 and we have these 3 weeks/scores 8 7 6, the user
+  /// Nudges user if score drops n times in the last n+1 weeks.
+  /// For example, if n == 2 and we have these 3 weeks/scores 8 7 6, the user
   /// will be nudged.
   void _checkWellbeing(final int n) async {
     assert(n >= 1);
@@ -83,9 +90,10 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
     }
   }
 
-  /// gets the actual steps taken, accounting for the fact that the user may
-  /// have reset their device
+  /// Gets the actual steps taken accounting for the fact that the user may
+  /// have reset their device.
   int _getActualSteps(int total, int prevTotal) =>
+      // using the difference between this week's and last week's steps
       prevTotal > total ? total : total - prevTotal;
 
   @override
@@ -95,9 +103,11 @@ class _WellbeingCheckWidgetsState extends State<WellbeingCheckWidgets> {
       min: 0,
       max: 10,
       divisions: 10,
-      label: _currentSliderValue.round().toString(),
+      label: _currentSliderValue
+          .round() //slider increments are whole numbers
+          .toString(),
       activeColor: Theme.of(context).primaryColor,
-      inactiveColor: Color.fromARGB(189, 189, 189, 255),
+      inactiveColor: Color.fromARGB(189, 189, 189, 255), //lighter blue
       onChanged: (double value) {
         setState(() {
           _currentSliderValue = value;

@@ -13,7 +13,7 @@ import 'package:nudge_me/shared/wellbeing_graph.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
-import 'package:nudge_me/pages/sharing_page.dart';
+import 'package:nudge_me/pages/support_page.dart';
 import 'package:http/http.dart' as http;
 
 // names of the background tasks handled by [Workmanager]:

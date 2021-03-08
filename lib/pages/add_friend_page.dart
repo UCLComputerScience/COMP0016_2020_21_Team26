@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 'Scan code to add friend' button on the Support Network page opens this page
+/// Allows users to scan friend's QR code to add them as a friend
 class AddFriendPage extends StatefulWidget {
   /// outer scaffold needed to display snackbar in case error
   final String identifier;
@@ -53,6 +55,7 @@ class AddFriendPageState extends State<AddFriendPage> {
 
   @override
   Widget build(BuildContext context) {
+    /// Contains steps users must complete, used in a [Stepper]
     final _steps = [
       Step(
           title: Text("Scan their QR code"),
@@ -145,6 +148,7 @@ class AddFriendPageState extends State<AddFriendPage> {
             ),
           )),
     ];
+
     final stepper = Stepper(
       steps: _steps,
       currentStep: _currentStep,
@@ -152,11 +156,11 @@ class AddFriendPageState extends State<AddFriendPage> {
     );
 
     return Scaffold(
-      body: SafeArea(
-        child: stepper,
-      ),
       appBar: AppBar(
         title: Text("Add to Network"),
+      ),
+      body: SafeArea(
+        child: stepper,
       ),
     );
   }

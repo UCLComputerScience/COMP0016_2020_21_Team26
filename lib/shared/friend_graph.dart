@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 /// [StatelessWidget] that behaves very similarly to [WellbeingGraph].
 /// It mainly parses and interprets the wellbeing data differently. Also there
 /// are slight visual differences.
+
+/// NOTE: Members of the user's support network are referred to as 'friends' in the code.
 class FriendGraph extends StatelessWidget {
   /// json encoded [String] that can be decoded to get the the data
   final Future<String> friendData;
@@ -77,7 +79,8 @@ class FriendGraph extends StatelessWidget {
     );
   }
 
-  /// gets the series that the charting library can use to graph the data
+
+  /// Returns the series that the charting library can use to graph the data
   List<charts.Series<Map, String>> _getSeriesList(
       List<Map<String, dynamic>> json) {
     final scoreSeries = new charts.Series<Map, String>(

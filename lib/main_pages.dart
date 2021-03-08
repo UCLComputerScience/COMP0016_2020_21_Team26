@@ -7,7 +7,7 @@ import 'package:nudge_me/pages/add_friend_page.dart';
 import 'package:nudge_me/pages/checkup.dart';
 import 'package:nudge_me/pages/home_page.dart';
 import 'package:nudge_me/pages/nudge_screen.dart';
-import 'package:nudge_me/pages/sharing_page.dart';
+import 'package:nudge_me/pages/support_page.dart';
 import 'package:nudge_me/pages/testing_page.dart';
 import 'package:nudge_me/pages/wellbeing_page.dart';
 import 'package:nudge_me/pages/settings_page.dart';
@@ -110,7 +110,7 @@ class _MainPagesState extends State<MainPages> {
     final pages = [
       WellbeingPage(),
       HomePage(Pedometer.stepCountStream.map((event) => event.steps)),
-      SharingPage(),
+      SupportPage(),
       SettingsPage(),
       TestingPage(),
     ];
