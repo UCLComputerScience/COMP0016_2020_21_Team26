@@ -29,7 +29,7 @@ void main() {
   testWidgets('Correctly adds to DB', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 0});
-    final mockedDB = MockedDB();
+    final mockedDB = _MockedDB();
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
     final fakeStepStream = Stream.fromIterable([0]);
 
@@ -59,7 +59,7 @@ void main() {
   testWidgets('Works when steps reset', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(
         {'postcode': 'N6', 'support_code': '12345', PREV_STEP_COUNT_KEY: 6666});
-    final mockedDB = MockedDB();
+    final mockedDB = _MockedDB();
     when(mockedDB.getLastNWeeks(3)).thenAnswer((_) async => <WellbeingItem>[]);
     final fakeStepStream = Stream.fromIterable([0]);
 
@@ -88,4 +88,4 @@ void main() {
   });
 }
 
-class MockedDB extends Mock implements UserWellbeingDB {}
+class _MockedDB extends Mock implements UserWellbeingDB {}

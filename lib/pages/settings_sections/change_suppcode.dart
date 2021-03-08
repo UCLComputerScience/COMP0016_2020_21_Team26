@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 'Support Code' section on Settings page opens this page
 class ChangeSupportCode extends StatefulWidget {
   @override
   _ChangeSupportCodeState createState() => _ChangeSupportCodeState();
 }
 
 class _ChangeSupportCodeState extends State<ChangeSupportCode> {
-  final _supportCodeKey = GlobalKey<FormState>();
+  final _supportCodeKey = GlobalKey<
+      FormState>(); //Used to verify that support code is not empty string
 
+  /// Returns the [String] currentSupportCode stored in shared prefs database.
   Future<String> _getSupportCode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userSupportCode = prefs.getString('support_code');
-    return userSupportCode;
+    String currentSuppCode = prefs.getString('support_code');
+    return currentSuppCode;
   }
 
-  void _updateSupportCode(String value) async {
+  /// Replaces the support code stored in shared prefs database with [String] newSuppCode
+  void _updateSupportCode(String newSuppCode) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('support_code', value.toUpperCase());
+    await prefs.setString('support_code', newSuppCode.toUpperCase());
   }
 
   Widget build(BuildContext context) {

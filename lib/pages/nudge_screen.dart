@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nudge_me/shared/wellbeing_graph.dart';
 
+/// Nudge notification opens this page
+/// Asks users if they want to share their Wellbeing graph
 class NudgeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -2,9 +2,29 @@
 
 [![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml/badge.svg)](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml)
 
-V2 of the CarerCare app.
+NudgeMe is V2 of the CarerCare app.
 
 This is built on Flutter's stable branch.
+
+## Deployment
+
+### Android
+
+1. Install flutter, and use `flutter doctor` to check if it's set up correctly.
+2. Run `flutter build apk -t lib/main_production.dart` in the project directory.
+This builds the production version, meant for end users. It does not display the
+dev screen or send remote error reports. For the version used during development,
+simply run `flutter build apk`.
+3. Install the apk on an Android device.
+
+## Tests
+
+In the root project directory:
+- Run `flutter test` to run the unit/widget tests.
+- Run `flutter drive --driver=test_driver\integration_test.dart --target=integration_test\main_test.dart` with an
+  emulator or device connected to run the integration tests. 
+  
+Integration tests run through the device, whereas the widget tests use a different (simulated) execution model.
 
 ## Initial Requirements
 
@@ -81,3 +101,16 @@ that goal y days later.
 
 (In contrary, with wellbeing sharing unencrypted, a malicious server could get precise data on numbers
 of steps and their current mental health, courtesy of the wellbeing score.)
+
+## Architecture Diagrams
+
+### Main Diagram
+
+See the corresponding Figma 
+[here](https://www.figma.com/file/2zvQlWcpFtOEhwH3YmFMsD/System-Architecture-Diagram?node-id=0%3A1)
+
+![image](https://user-images.githubusercontent.com/46009390/110238878-dd728500-7f3b-11eb-9c0d-6eb785270703.png)
+
+### Dataflow Diagram - Wellbeing Visualization
+
+![image](https://user-images.githubusercontent.com/46009390/110238902-0135cb00-7f3c-11eb-88c4-445397e5ea50.png)

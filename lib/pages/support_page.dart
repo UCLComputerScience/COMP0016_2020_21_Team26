@@ -25,6 +25,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
+/// NOTE: Members of the user's support network are referred to as 'friends' in the code.
+/// This short form is fine for the code but it should not be called this on the user side.
+
 /// get the latest messages for this user
 /// returns true if there are new messages from a friend
 Future<bool> getLatest([BuildContext ctx]) async {
@@ -72,14 +75,12 @@ Future<bool> getLatest([BuildContext ctx]) async {
   return hasNewData;
 }
 
-class SharingPage extends StatefulWidget {
+class SupportPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => SharingPageState();
+  State<StatefulWidget> createState() => SupportPageState();
 }
 
-class SharingPageState extends State<SharingPage> {
-  GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
-
+class SupportPageState extends State<SupportPage> {
   @override
   void initState() {
     super.initState();
@@ -136,7 +137,7 @@ class SharingPageState extends State<SharingPage> {
                 MaterialPageRoute(
                     builder: (context) => ContactSharePage(message)));
           } else {
-            Scaffold.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text("Need permission to share with contacts.")));
           }
         },
@@ -162,23 +163,30 @@ class SharingPageState extends State<SharingPage> {
   Widget build(BuildContext context) {
     final friendsList = _getFriendsList(context);
 
-    return Scaffold(
-      key: _scaffoldState,
-      body: FutureBuilder(
-        future: friendsList,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final List<Friend> friends = snapshot.data;
-            friends.sort();
-            return _getLoadedPage(context, friends);
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text("Error when retrieving network.");
-          }
-          return LinearProgressIndicator();
-        },
+    // NOTE: since we are using nested Scaffolds (there is one above this), we need
+    // to wrap a ScaffoldMessenger in between them to avoid showing duplicate
+    // snackbars, or rather, to avoid getting an exception since we were *about*
+    // to display duplicate snackbars.
+    // In particular, the exception would occur when you show a snackbar (using the context)
+    // and then you pop off the navigator.
+    return ScaffoldMessenger(
+      child: Scaffold(
+        body: FutureBuilder(
+          future: friendsList,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final List<Friend> friends = snapshot.data;
+              friends.sort();
+              return _getLoadedPage(context, friends);
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("Error when retrieving network.");
+            }
+            return LinearProgressIndicator();
+          },
+        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     );
   }
 
@@ -191,7 +199,7 @@ class SharingPageState extends State<SharingPage> {
             context,
             MaterialPageRoute(
                 // NOTE: not using the new context 'ctx'
-                builder: (ctx) => AddFriendPage(Scaffold.of(context)))),
+                builder: (ctx) => AddFriendPage())),
         child: Text(
           'Scan code to\n add to network',
           textAlign: TextAlign.center,
@@ -266,8 +274,7 @@ class SharingPageState extends State<SharingPage> {
                 RichText(
                     text: new TextSpan(children: [
                       new TextSpan(
-                          text:
-                              "Then, share the link to using one of these buttons:",
+                          text: "Share the link using one of these buttons:",
                           style: Theme.of(context).textTheme.bodyText2)
                     ]),
                     textAlign: TextAlign.center),
@@ -434,11 +441,8 @@ class SharingPageState extends State<SharingPage> {
               ));
 
   Future<Null> _pushGoalPage(BuildContext context, Friend friend) {
-    return Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                SendNudgePage(friend, _scaffoldState.currentState)));
+    return Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SendNudgePage(friend)));
   }
 
   Widget getListTile(BuildContext context, Friend friend) {
@@ -515,7 +519,7 @@ class SharingPageState extends State<SharingPage> {
                   MaterialPageRoute(
                       builder: (context) => NudgeProgressPage(friend)));
             } else {
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content:
                       Text("${friend.name} has not sent you any goal yet.")));
             }
@@ -593,7 +597,7 @@ class SharingPageState extends State<SharingPage> {
         .then((response) {
       final body = json.decode(response.body);
       print(body);
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: body['success'] == false
               ? Text("Failed to send.")
               : Text("Sent data to ${friend.name}.")));

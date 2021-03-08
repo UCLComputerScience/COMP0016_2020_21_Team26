@@ -3,6 +3,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nudge_me/notification.dart';
 
+// Store of day strings.
+// Should be called with index [int] _wbCheckNotifDay - 1.
 List<String> days = [
   "Monday",
   "Tuesday",
@@ -12,19 +14,30 @@ List<String> days = [
   "Saturday",
   "Sunday"
 ];
+
+/// Store of [int]s 1 to 23.
+/// Used in [DropdownButton] used to choose the hour.
 final hours = [for (var i = 1; i < 24; i += 1) i];
+
+/// Store of [int]s 1 to 59
+/// Used in [DropdownButton] used to choose the minute.
 final minutes = [for (var i = 00; i < 60; i += 1) i];
 
+/// Wellbeing Check section on the Settings page opens this page.
+/// Reschedules the Wellbeing Check notification
 class NotificationSelector extends StatefulWidget {
   @override
   _NotificationSelectorState createState() => _NotificationSelectorState();
 }
 
 class _NotificationSelectorState extends State<NotificationSelector> {
+  /// The day, hour and minute the user's wellbeing check is scheudled to.
   int _wbCheckNotifDay;
   int _wbCheckNotifHour;
   int _wbCheckNotifMinute;
 
+  /// Sets _wbChecknotifDay, _wbCheckNotifHour, _wbCheckNotifMinute
+  /// to the [DateTime] stored in the shared prefs db.
   void _getWbCheckNotifTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     DateTime _wbCheckNotifTime =
@@ -37,6 +50,7 @@ class _NotificationSelectorState extends State<NotificationSelector> {
     });
   }
 
+  /// Replaces the [DateTime] in shared prefs db with _wbCheckNotifDay, _wbCheckNotifHour, wbCheckNotifMinute.
   void _updateWbCheckNotifTime(int _wbCheckNotifDay, int _wbCheckNotifHour,
       int _wbCheckNotifMinute) async {
     DateTime _wbCheckNotifTime = DateTime(
@@ -113,7 +127,9 @@ class _NotificationSelectorState extends State<NotificationSelector> {
             items: hours.map<DropdownMenuItem>((value) {
               return DropdownMenuItem(
                 value: value,
-                child: Text(value.toString().padLeft(2, "0")),
+                child: Text(value
+                    .toString()
+                    .padLeft(2, "0")), //Prefixes [int]s below 10 with 0
               );
             }).toList()),
         SizedBox(width: 5),
@@ -139,14 +155,16 @@ class _NotificationSelectorState extends State<NotificationSelector> {
             items: minutes.map<DropdownMenuItem>((value) {
               return DropdownMenuItem(
                 value: value,
-                child: Text(value.toString().padLeft(2, "0")),
+                child: Text(value
+                    .toString()
+                    .padLeft(2, "0")), //Prefixes [int]s below 10 with 0
               );
             }).toList()),
       ]),
       ElevatedButton(
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 0, 74, 173))),
+                  Theme.of(context).primaryColor)),
           child: const Text('Reschedule'),
           onPressed: () {
             setState(() {
@@ -158,7 +176,7 @@ class _NotificationSelectorState extends State<NotificationSelector> {
                 _updateWbCheckNotifTime(
                     _wbCheckNotifDay, _wbCheckNotifHour, _wbCheckNotifMinute);
                 String wbCheckNotifDayName = days[_wbCheckNotifDay - 1];
-                Scaffold.of(context).showSnackBar(SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
                         "Your Wellbeing Check notification has been rescheduled to $wbCheckNotifDayName at $_wbCheckNotifHour:${_wbCheckNotifMinute.toString().padLeft(2, "0")}")));
               }

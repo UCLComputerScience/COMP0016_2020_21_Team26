@@ -11,9 +11,8 @@ import 'package:nudge_me/crypto.dart';
 
 class SendNudgePage extends StatelessWidget {
   final Friend friend;
-  final ScaffoldState scaffoldState;
 
-  const SendNudgePage(this.friend, this.scaffoldState);
+  const SendNudgePage(this.friend);
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +25,23 @@ class SendNudgePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             // maybe use ParagraphBuilder?
-            Text("Set a step goal for ${friend.name}.\n"
-                "They'll be notified and able to track their progress.\n"
-                "You'll be notified when they meet their goal."),
-            SizedBox(
-              height: 10,
-            ),
-            StepSelector(friend, scaffoldState),
+            Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Text(
+                  "Set a step goal for ${friend.name}.\n\n"
+                  "They will be notified and able to track their progress. \n\n"
+                  "You will be notified when they meet their goal.",
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Text(
+                    "Drag the white circle around to increase the number of steps. You cannot set a goal of 0 steps.",
+                    style: Theme.of(context).textTheme.bodyText2,
+                    textAlign: TextAlign.center)),
+
+            StepSelector(friend),
           ],
         ),
       ),
@@ -42,11 +51,9 @@ class SendNudgePage extends StatelessWidget {
 
 class StepSelector extends StatefulWidget {
   final Friend friend;
-  final ScaffoldState scaffoldState;
 
   const StepSelector(
     this.friend,
-    this.scaffoldState,
   );
 
   @override
@@ -84,7 +91,7 @@ class _StepSelectorState extends State<StepSelector> {
                   Navigator.pop(context);
                   _nudgeFriend(rounded);
                 } else {
-                  Scaffold.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Cannot set a goal of 0.")));
                 }
               },
@@ -121,10 +128,10 @@ class _StepSelectorState extends State<StepSelector> {
         // their current goal)
         Provider.of<FriendDB>(context)
             .updateActiveNudge(widget.friend.identifier, true);
-        widget.scaffoldState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Nudged ${widget.friend.name}.")));
       } else {
-        widget.scaffoldState
+        ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Failed to send nudge.")));
       }
     });

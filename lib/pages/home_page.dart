@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:nudge_me/main.dart';
 import 'package:nudge_me/model/user_model.dart';
 import 'package:nudge_me/shared/wellbeing_circle.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
@@ -12,7 +11,13 @@ import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 /// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
+/// Displays Wellbeing Score from last week
+/// and steps so far since the last Wellbeing Check.
 class HomePage extends StatefulWidget {
+  final Stream<int> stepValueStream;
+
+  const HomePage(this.stepValueStream);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -30,19 +35,21 @@ class _HomePageState extends State<HomePage> {
     showTutorial();
   }
 
+  /// If tutorial has not been shown before, calls the first [CoachMark] of the tutorial (showCoachMarkWB()).
   void showTutorial() async {
     if (!(await _isHomeTutorialDone())) {
       Timer(Duration(milliseconds: 700), () => showCoachMarkWB());
     }
   }
 
+  /// Returns whether tutorial has been shown
   Future<bool> _isHomeTutorialDone() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(HOME_TUTORIAL_DONE_KEY) &&
         prefs.getBool(HOME_TUTORIAL_DONE_KEY);
   }
 
-  ///function to show the first slide of the tutorial, explaining the wellbeing circle
+  /// Shows the first [CoachMark] of the tutorial, explaining the wellbeing circle.
   void showCoachMarkWB() {
     CoachMark coachMarkWB = CoachMark();
     RenderBox target = _lastWeekWBTutorialKey.currentContext.findRenderObject();
@@ -66,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  ///function to show the second slide of the tutorial, explaining the steps counter
+  ///Shows the second [CoachMark] of the tutorial, explaining the steps counter.
   void showCoachMarkSteps() {
     CoachMark coachMarkSteps = CoachMark();
     RenderBox target = _stepsTutorialKey.currentContext.findRenderObject();
@@ -86,35 +93,28 @@ class _HomePageState extends State<HomePage> {
         ],
         duration: Duration(seconds: 10),
         onClose: () {
+          //sets HOME_TUTORIAL_DONE_KEY to true in shared prefs database
           SharedPreferences.getInstance()
               .then((prefs) => prefs.setBool(HOME_TUTORIAL_DONE_KEY, true));
         });
   }
 
   Widget _heading(BuildContext ctx) {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Text(
-        "Welcome",
-        style: Theme.of(context).textTheme.headline1,
-      ),
+    return Text(
+      "Welcome",
+      style: Theme.of(context).textTheme.headline1,
     );
   }
 
+  //Displays Wellbeing circle containing last week's wellbeing score
   Widget _previouScoreHolder(BuildContext ctx) {
     return Container(
       width: double.infinity, // stretches the width
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // SizedBox to add some spacing
-          const SizedBox(
-            height: 5.0,
-          ),
           Text("Last Week's Wellbeing Score",
               style: Theme.of(context).textTheme.headline3),
-          const SizedBox(
-            height: 10.0,
-          ),
           Stack(
             alignment: Alignment.center,
             children: [
@@ -135,22 +135,19 @@ class _HomePageState extends State<HomePage> {
                           : WellbeingCircle();
                     } else if (snapshot.hasError) {
                       print(snapshot.error);
-                      Text("Something went wrong.",
+                      return Text("Something went wrong.",
                           style: Theme.of(context).textTheme.bodyText1);
                     }
                     return CircularProgressIndicator();
                   }),
             ],
           ),
-
-          const SizedBox(
-            height: 5.0,
-          ),
         ],
       ),
     );
   }
 
+  /// Displays this week's steps so far
   Widget _thisWeekHolder(BuildContext ctx) {
     final pedometer = FutureBuilder(
         key: _stepsTutorialKey,
@@ -159,11 +156,10 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.hasData) {
             final lastTotalSteps = snapshot.data;
             return StreamBuilder(
-              stream: Pedometer.stepCountStream,
+              stream: widget.stepValueStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final StepCount stepCount = snapshot.data;
-                  final int currTotalSteps = stepCount.steps;
+                  final int currTotalSteps = snapshot.data;
                   final actualSteps = lastTotalSteps > currTotalSteps
                       ? currTotalSteps
                       : currTotalSteps - lastTotalSteps;
@@ -177,37 +173,35 @@ class _HomePageState extends State<HomePage> {
             );
           } else if (snapshot.hasError) {
             print(snapshot.error);
+            return Text("Error");
           }
           return CircularProgressIndicator();
         });
 
+    final contentColumn = Column(children: [
+      Text(
+        'Activity',
+        style: Theme.of(context).textTheme.headline3,
+      ),
+      Divider(),
+      ListTile(
+        leading: Icon(Icons.directions_walk),
+        title: Text('This Week\'s Steps',
+            style: Theme.of(context).textTheme.subtitle1),
+        trailing: pedometer,
+      ),
+    ]);
+
     return Container(
         width: double.infinity,
-        child: Column(children: [
-          const SizedBox(
-            height: 5.0,
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.6),
+            spreadRadius: 1,
+            blurRadius: 3,
           ),
-          Text(
-            "This Week's Activity",
-            style: Theme.of(context).textTheme.headline3,
-          ),
-          const SizedBox(
-            height: 5.0,
-          ),
-          Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [
-                  Icon(Icons.directions_walk_outlined),
-                  Text("Steps", style: Theme.of(context).textTheme.subtitle1)
-                ]),
-                pedometer,
-              ],
-            ),
-          ),
-        ]));
+        ]),
+        child: contentColumn);
   }
 
   @override
@@ -219,11 +213,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         body: SafeArea(
             child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.min,
           children: [
             heading,
-            SizedBox(height: 20),
+            Divider(),
             previousScoreHolder,
-            SizedBox(height: 30),
+            Divider(),
             thisWeekHolder,
           ],
         )),
