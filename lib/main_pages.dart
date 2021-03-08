@@ -99,7 +99,7 @@ class _MainPagesState extends State<MainPages> {
     final pages = [
       WellbeingPage(),
       HomePage(Pedometer.stepCountStream.map((event) => event.steps)),
-      SharingPage(),
+      SupportPage(),
       SettingsPage(),
       TestingPage(),
     ];

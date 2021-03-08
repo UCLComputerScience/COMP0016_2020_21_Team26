@@ -75,12 +75,12 @@ Future<bool> getLatest([BuildContext ctx]) async {
   return hasNewData;
 }
 
-class SharingPage extends StatefulWidget {
+class SupportPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => SharingPageState();
+  State<StatefulWidget> createState() => SupportPageState();
 }
 
-class SharingPageState extends State<SharingPage> {
+class SupportPageState extends State<SupportPage> {
   @override
   void initState() {
     super.initState();
