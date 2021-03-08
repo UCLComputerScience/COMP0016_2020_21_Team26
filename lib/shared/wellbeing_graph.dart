@@ -14,10 +14,9 @@ const RECOMMENDED_STEPS_IN_WEEK = 70000;
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial has been completed
 const WB_TUTORIAL_DONE_KEY = "wb_tutorial_done";
 
-
 /// a [StatefulWidget] that displays the last wellbeing items in a graph,
 /// along with (optionally) a share button, and (optionally) a tutorial button
-
+///
 /// REVIEW: maybe switch to this if have time: https://pub.dev/packages/fl_chart
 class WellbeingGraph extends StatefulWidget {
   final bool animate;
@@ -72,7 +71,6 @@ class _WellbeingGraphState extends State<WellbeingGraph> {
       color: Colors.black,
       fontStyle: FontStyle.italic,
       backgroundColor: Colors.white);
-
 
   /// Shows the first slide of the tutorial, explaining the wellbeing
   /// graph. Will be displayed for [int] seconds.
