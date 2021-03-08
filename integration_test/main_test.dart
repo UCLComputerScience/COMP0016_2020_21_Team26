@@ -14,7 +14,11 @@ Future<Null> _swipeThroughIntro(WidgetTester tester) async {
 }
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized()
+    as IntegrationTestWidgetsFlutterBinding;
+
+  // simulate the way flutter actually responds to animations
+  binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('intro screen', () {
     testWidgets('Swiping switches page', (WidgetTester tester) async {
@@ -28,14 +32,19 @@ void main() {
 
     testWidgets('Swipes through without exception and enforces non-empty input',
         (WidgetTester tester) async {
-      await tester.pumpWidget(wrapAppProvider(IntroScreen()));
-      await _swipeThroughIntro(tester);
+      // this will generate json data in the build folder
+      await binding.watchPerformance(
+        () async {
+          await tester.pumpWidget(wrapAppProvider(IntroScreen()));
+          await _swipeThroughIntro(tester);
 
-      await tester.tap(find.text("Done"));
-      await tester.pumpAndSettle();
+          await tester.tap(find.text("Done"));
+          await tester.pumpAndSettle();
 
-      // did not change page:
-      expect(find.text("Done"), findsOneWidget);
+          // did not change page:
+          expect(find.text("Done"), findsOneWidget);
+        }
+      );
     });
   });
 }
