@@ -4,7 +4,36 @@ title: About
 permalink: /about/
 ---
 
-## Initial Project Summary
+# Initial Project Summary
 
-Version 2 of the NHS CarerCare app system with app dashboard, full front-end, 
-responsive design, robust test planning and other app features.
+> Version 2 of the NHS CarerCare app system with app dashboard, full front-end, 
+> responsive design, robust test planning and other app features.
+
+This was the inital goal of the project. We refined it and iterated over the
+course of the project.
+
+# MoSCoW
+
+| Requirement                                                                                         | Must/Should/Could have? |
+|-----------------------------------------------------------------------------------------------------|-------------------------|
+| The system must have the same functionality as version 1, omitting features no longer relevant.[^1] | Must have               |
+| The system must have the same interface on Android & iOS.                                           | Must have               |
+| Well documented codebase.                                                                           | Must have               |
+| Easily maintainable codebase.                                                                       | Must have               |
+| Nudge user to share their graph as a PDF if their score falls twice over any two weeks.             | Must have               |
+| Also nudge user if there is no step count in over two days.                                         | Must have               |
+| The weekly wellbeing score must be gathered from the user at Sunday 12pm (by default).              | Must have               |
+| Ask the user for consent to collect their wellbeing data.                                           | Must have               |
+| If consented, share the user's wellbeing data by POSTing to a server.                               | Must have               |
+| Passively collect movement data from pedometer.                                                     | Should have             |
+| Display a graph that cross references pedometer and wellbeing data.                                 | Should have             |
+| Design the system for a user aged between 13 & 99.                                                  | Should have             |
+| Allow users to *securely* send their wellbeing data to other users (e.g. through e2e encryption).   | Could have              |
+| Facilitate adding users to their network in a convenient way, considering lockdown/remote work.     | Could have              |
+| Allow users to nudge other users through the app.                                                   | Could have              |
+| Present an accessible color scheme to those who are colorblind.                                     | Could have              |
+
+[^1]: Since we were adapting the application for a wider audience (general UK population),
+      and for a different purpose (to assist the public in maintaining their wellbeing),
+      some of the features designed specifically for carers in the Welsh area were no
+      longer relevant.
