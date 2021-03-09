@@ -38,18 +38,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     showTutorial();
-    _checkIfShouldWarnPedometer();
-  }
-
-  /// Tries to get a pedometer value, and sets pedometerWarn to true if
-  /// we catch an error.
-  void _checkIfShouldWarnPedometer() {
-    widget.stepValueStream.first.catchError((_) {
-      setState(() {
-        pedometerWarn = true;
-      });
-      return 0;
-    });
   }
 
   /// If tutorial has not been shown before, calls the first [CoachMark] of the tutorial (showCoachMarkWB()).
@@ -167,7 +155,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// Displays this week's steps so far
+  /// Displays this week's steps so far.
+  /// If the pedometer throws an error, sets the pedometerWarn [bool] to true.
   Widget _thisWeekHolder(BuildContext ctx) {
     final pedometer = FutureBuilder(
         key: _stepsTutorialKey,
@@ -186,6 +175,12 @@ class _HomePageState extends State<HomePage> {
                   return Text(actualSteps.toString());
                 } else if (snapshot.hasError) {
                   print(snapshot.error);
+                  // NOTE: we do not have to worry about using setState here
+                  // since whenever it builds it will execute this first and
+                  // then the [Visibility] banner widget. Therefore, there is
+                  // no case where the pedometer throws an error but no
+                  // banner is shown.
+                  pedometerWarn = true;
                   return Text("N/A");
                 }
                 return CircularProgressIndicator();
@@ -244,16 +239,19 @@ class _HomePageState extends State<HomePage> {
       ],
     );
     final appBar = AppBar(
-        title: heading,
-        centerTitle: true,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        actions: [
-          IconButton(onPressed: () => launch(
+      title: heading,
+      centerTitle: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      actions: [
+        IconButton(
+          onPressed: () => launch(
               // help button points to our user manual hosted on project site by UCL
-              'http://students.cs.ucl.ac.uk/2020/group26/pdfs/usermanual.pdf'
-            ), icon: Icon(Icons.help_outline), color: Colors.blue,)
-        ],
-      );
+              'http://students.cs.ucl.ac.uk/2020/group26/pdfs/usermanual.pdf'),
+          icon: Icon(Icons.help_outline),
+          color: Colors.blue,
+        )
+      ],
+    );
 
     return Scaffold(
         appBar: appBar,
