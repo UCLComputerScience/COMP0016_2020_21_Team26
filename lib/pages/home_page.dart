@@ -12,6 +12,11 @@ import 'package:url_launcher/url_launcher.dart';
 /// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
+// user manual hosted on our project site by UCL
+const URL_USER_MANUAL
+  = 'https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/'
+      'pdfs/usermanual.pdf';
+
 /// Displays Wellbeing Score from last week
 /// and steps so far since the last Wellbeing Check.
 class HomePage extends StatefulWidget {
@@ -245,8 +250,7 @@ class _HomePageState extends State<HomePage> {
       actions: [
         IconButton(
           onPressed: () => launch(
-              // help button points to our user manual hosted on project site by UCL
-              'http://students.cs.ucl.ac.uk/2020/group26/pdfs/usermanual.pdf'),
+              URL_USER_MANUAL),
           icon: Icon(Icons.help_outline),
           color: Colors.blue,
         )
