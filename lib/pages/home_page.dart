@@ -6,6 +6,7 @@ import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial
 /// has been completed
@@ -245,7 +246,14 @@ class _HomePageState extends State<HomePage> {
     final appBar = AppBar(
         title: heading,
         centerTitle: true,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        actions: [
+          IconButton(onPressed: () => launch(
+              // help button points to our user manual hosted on project site by UCL
+              'http://students.cs.ucl.ac.uk/2020/group26/pdfs/usermanual.pdf'
+            ), icon: Icon(Icons.help_outline), color: Colors.blue,)
+        ],
+      );
 
     return Scaffold(
         appBar: appBar,
