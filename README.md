@@ -17,6 +17,24 @@ dev screen or send remote error reports. For the version used during development
 simply run `flutter build apk`.
 3. Install the apk on an Android device.
 
+### iOS
+To build a signed ipa, you will need a paid Apple Developer account and a Mac computer.
+
+If you have both if these and have installed flutter (type 'flutter doctor' in the terminal to check there are no issues here), do the following:
+1. Open Xcode and open this project by locating the project in Finder and opening the *.xcodeproj file.
+2. Select Generic iOS Device as your project's device target (Product > Destination and then choose Generic iOS Device option).
+3. In the Product menu, select Clean.
+4. In the Product menu, select Archive. When the archiving process completes, you will see your application listed under Archives.  
+5. Select your application and click Export button on the right. 
+6. When prompted for an export method, select iOS App Store to upload the app to the iOS App Store, Ad Hoc for internal distribution of the app, Enterprise for distribution outside the App Store, or Development for testing. 
+7. Set these Distribution options:
+    Set App Thinning toNone
+    If you are building for app store, select Rebuild from Bitcode. Deselect if not.
+    Select Strip Swift symbols to reduce app size. This is optional.
+    Deselect Include manifest for over-the-air installation
+9. Select your Distribution Certificate and Provisioning Profile (Automatic or Manual). This will generate the .ipa file. 
+10. When the file generation process completes, click Export and choose where to save the .ipa file.
+
 ## Tests
 
 In the root project directory:
