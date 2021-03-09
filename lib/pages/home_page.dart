@@ -23,6 +23,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  /// true if we should display a banner to warn that we cannot access the
+  /// pedometer
+  bool pedometerWarn = false;
+
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
@@ -33,6 +37,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     showTutorial();
+    _checkIfShouldWarnPedometer();
+  }
+
+  /// Tries to get a pedometer value, and sets pedometerWarn to true if
+  /// we catch an error.
+  void _checkIfShouldWarnPedometer() {
+    widget.stepValueStream.first.catchError((_) {
+      setState(() {
+        pedometerWarn = true;
+      });
+      return 0;
+    });
   }
 
   /// If tutorial has not been shown before, calls the first [CoachMark] of the tutorial (showCoachMarkWB()).
@@ -108,41 +124,44 @@ class _HomePageState extends State<HomePage> {
 
   //Displays Wellbeing circle containing last week's wellbeing score
   Widget _previouScoreHolder(BuildContext ctx) {
-    return Container(
-      width: double.infinity, // stretches the width
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text("Last Week's Wellbeing Score",
-              style: Theme.of(context).textTheme.headline3),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                height: 200,
-                width: 200,
-                key: _lastWeekWBTutorialKey,
-              ),
-              FutureBuilder(
-                  future:
-                      Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final List<WellbeingItem> lastItemList = snapshot.data;
-                      return lastItemList.isNotEmpty
-                          ? WellbeingCircle(
-                              lastItemList[0].wellbeingScore.truncate())
-                          : WellbeingCircle();
-                    } else if (snapshot.hasError) {
-                      print(snapshot.error);
-                      return Text("Something went wrong.",
-                          style: Theme.of(context).textTheme.bodyText1);
-                    }
-                    return CircularProgressIndicator();
-                  }),
-            ],
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Container(
+        width: double.infinity, // stretches the width
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text('Last Week\'s Wellbeing Score',
+                style: Theme.of(context).textTheme.headline3),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  height: 200,
+                  width: 200,
+                  key: _lastWeekWBTutorialKey,
+                ),
+                FutureBuilder(
+                    future:
+                        Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final List<WellbeingItem> lastItemList = snapshot.data;
+                        return lastItemList.isNotEmpty
+                            ? WellbeingCircle(
+                                lastItemList[0].wellbeingScore.truncate())
+                            : WellbeingCircle();
+                      } else if (snapshot.hasError) {
+                        print(snapshot.error);
+                        return Text("Something went wrong.",
+                            style: Theme.of(context).textTheme.bodyText1);
+                      }
+                      return CircularProgressIndicator();
+                    }),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -185,7 +204,7 @@ class _HomePageState extends State<HomePage> {
       ),
       Divider(),
       ListTile(
-        leading: Icon(Icons.directions_walk),
+        leading: Icon(Icons.directions_walk, color: Colors.blue),
         title: Text('This Week\'s Steps',
             style: Theme.of(context).textTheme.subtitle1),
         trailing: pedometer,
@@ -209,15 +228,36 @@ class _HomePageState extends State<HomePage> {
     final heading = _heading(context);
     final previousScoreHolder = _previouScoreHolder(context);
     final thisWeekHolder = _thisWeekHolder(context);
+    final warningBanner = MaterialBanner(
+      leading: Icon(
+        Icons.warning,
+        color: Colors.red,
+      ),
+      content:
+          const Text('No pedometer available. Functionality will be limited.'),
+      actions: [
+        TextButton(
+          child: Text('Ok'),
+          onPressed: () => setState(() => pedometerWarn = false),
+        )
+      ],
+    );
+    final appBar = AppBar(
+        title: heading,
+        centerTitle: true,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor);
 
     return Scaffold(
+        appBar: appBar,
         body: SafeArea(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.min,
           children: [
-            heading,
-            Divider(),
+            Visibility(
+              visible: pedometerWarn == true,
+              child: warningBanner,
+            ),
             previousScoreHolder,
             Divider(),
             thisWeekHolder,

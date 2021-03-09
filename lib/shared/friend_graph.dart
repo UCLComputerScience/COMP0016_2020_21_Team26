@@ -79,7 +79,6 @@ class FriendGraph extends StatelessWidget {
     );
   }
 
-
   /// Returns the series that the charting library can use to graph the data
   List<charts.Series<Map, String>> _getSeriesList(
       List<Map<String, dynamic>> json) {
