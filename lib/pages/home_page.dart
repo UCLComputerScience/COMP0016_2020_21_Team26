@@ -12,7 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 /// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
-// user manual hosted on our project site by UCL
+// user manual hosted on our development blog as a static asset, it is hosted
+// by Github
 const URL_USER_MANUAL
   = 'https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/'
       'pdfs/usermanual.pdf';
