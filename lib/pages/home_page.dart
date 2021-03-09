@@ -14,9 +14,9 @@ const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
 
 // user manual hosted on our development blog as a static asset, it is hosted
 // by Github
-const URL_USER_MANUAL
-  = 'https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/'
-      'pdfs/usermanual.pdf';
+const URL_USER_MANUAL =
+    'https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/'
+    'pdfs/usermanual.pdf';
 
 /// Displays Wellbeing Score from last week
 /// and steps so far since the last Wellbeing Check.
@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
   //Displays Wellbeing circle containing last week's wellbeing score
   Widget _previouScoreHolder(BuildContext ctx) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
       child: Container(
         width: double.infinity, // stretches the width
         child: Column(
@@ -250,8 +250,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       actions: [
         IconButton(
-          onPressed: () => launch(
-              URL_USER_MANUAL),
+          onPressed: () => launch(URL_USER_MANUAL),
           icon: Icon(Icons.help_outline),
           color: Colors.blue,
         )
@@ -270,7 +269,6 @@ class _HomePageState extends State<HomePage> {
               child: warningBanner,
             ),
             previousScoreHolder,
-            Divider(),
             thisWeekHolder,
           ],
         )),
