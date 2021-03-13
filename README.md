@@ -2,7 +2,10 @@
 
 [![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml/badge.svg)](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml)
 
-NudgeMe is V2 of the CarerCare app.
+> V2 of the CarerCare app.
+
+NudgeMe is a privacy focused, cross-platform mobile app that helps you track and share
+your wellbeing & steps.
 
 This is built on Flutter's stable branch.
 
@@ -34,6 +37,13 @@ If you have both if these and have installed flutter (type 'flutter doctor' in t
     Deselect Include manifest for over-the-air installation
 9. Select your Distribution Certificate and Provisioning Profile (Automatic or Manual). This will generate the .ipa file. 
 10. When the file generation process completes, click Export and choose where to save the .ipa file.
+
+### Configuration
+
+Here are some aspects you may wish to configure:
+- In `main.dart`, you can modify the `dsn` property of `SentryOptions` to your own DSN provided by 
+[Sentry](https://sentry.io/) if you wish to receive remote error logs.
+- In `main_pages.dart`, you should change the BASE_URL string if you change the domain name.
 
 ## Tests
 
