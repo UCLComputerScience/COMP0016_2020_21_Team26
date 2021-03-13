@@ -132,3 +132,8 @@ See the corresponding Figma
 ### Dataflow Diagram - Wellbeing Visualization
 
 ![image](https://user-images.githubusercontent.com/46009390/110238902-0135cb00-7f3c-11eb-88c4-445397e5ea50.png)
+
+### Sequence Diagram - User Wellbeing Sharing
+
+![image](https://user-images.githubusercontent.com/46009390/111034657-9b9b8000-840e-11eb-8c2e-7cf230c3b103.png)
+
