@@ -32,4 +32,6 @@ During the last two weeks, I have worked on the checkup screen. This involved be
 Before this, I also worked on implementing the weekly notification that requests people to report their wellbeing but decided to pause this and work on the checkup screen first as it was difficult to test without a page to put it in. For this, I used the flutter-local-notifications package. The package is not supposed to work for scheduled weekly notifications, so I will have to test this works. will resume working on this after finishing the checkup screen page. 
 
 # Next Week's Task
-Complete the checkout page, test both this and the notification. Then, work on another page.
+- Complete the checkup page
+- Test both the checkup page and the notification
+- Start another page.
