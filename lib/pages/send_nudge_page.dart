@@ -85,6 +85,9 @@ class _StepSelectorState extends State<StepSelector> {
               height: 3,
             ),
             ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).primaryColor)),
               onPressed: () {
                 final rounded = _roundedStep(value);
                 if (rounded > 0) {
