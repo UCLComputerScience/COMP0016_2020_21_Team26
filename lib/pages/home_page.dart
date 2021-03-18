@@ -6,10 +6,17 @@ import 'package:nudge_me/shared/wellbeing_circle.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:highlighter_coachmark/highlighter_coachmark.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// key to retreive [bool] from [SharedPreferences] that is true if the tutorial
 /// has been completed
 const HOME_TUTORIAL_DONE_KEY = "home_tutorial_done";
+
+// user manual hosted on our development blog as a static asset, it is hosted
+// by Github
+const URL_USER_MANUAL =
+    'https://uclcomputerscience.github.io/COMP0016_2020_21_Team26/'
+    'pdfs/usermanual.pdf';
 
 /// Displays Wellbeing Score from last week
 /// and steps so far since the last Wellbeing Check.
@@ -23,6 +30,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  /// true if we should display a banner to warn that we cannot access the
+  /// pedometer
+  bool pedometerWarn = false;
+
   final Future<int> _lastTotalStepsFuture = SharedPreferences.getInstance()
       .then((prefs) => prefs.getInt(PREV_STEP_COUNT_KEY));
 
@@ -108,46 +119,50 @@ class _HomePageState extends State<HomePage> {
 
   //Displays Wellbeing circle containing last week's wellbeing score
   Widget _previouScoreHolder(BuildContext ctx) {
-    return Container(
-      width: double.infinity, // stretches the width
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text("Last Week's Wellbeing Score",
-              style: Theme.of(context).textTheme.headline3),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                height: 200,
-                width: 200,
-                key: _lastWeekWBTutorialKey,
-              ),
-              FutureBuilder(
-                  future:
-                      Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final List<WellbeingItem> lastItemList = snapshot.data;
-                      return lastItemList.isNotEmpty
-                          ? WellbeingCircle(
-                              lastItemList[0].wellbeingScore.truncate())
-                          : WellbeingCircle();
-                    } else if (snapshot.hasError) {
-                      print(snapshot.error);
-                      return Text("Something went wrong.",
-                          style: Theme.of(context).textTheme.bodyText1);
-                    }
-                    return CircularProgressIndicator();
-                  }),
-            ],
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+      child: Container(
+        width: double.infinity, // stretches the width
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text('Last Week\'s Wellbeing Score',
+                style: Theme.of(context).textTheme.headline3),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  height: 200,
+                  width: 200,
+                  key: _lastWeekWBTutorialKey,
+                ),
+                FutureBuilder(
+                    future:
+                        Provider.of<UserWellbeingDB>(context).getLastNWeeks(1),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final List<WellbeingItem> lastItemList = snapshot.data;
+                        return lastItemList.isNotEmpty
+                            ? WellbeingCircle(
+                                lastItemList[0].wellbeingScore.truncate())
+                            : WellbeingCircle();
+                      } else if (snapshot.hasError) {
+                        print(snapshot.error);
+                        return Text("Something went wrong.",
+                            style: Theme.of(context).textTheme.bodyText1);
+                      }
+                      return CircularProgressIndicator();
+                    }),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  /// Displays this week's steps so far
+  /// Displays this week's steps so far.
+  /// If the pedometer throws an error, sets the pedometerWarn [bool] to true.
   Widget _thisWeekHolder(BuildContext ctx) {
     final pedometer = FutureBuilder(
         key: _stepsTutorialKey,
@@ -166,6 +181,12 @@ class _HomePageState extends State<HomePage> {
                   return Text(actualSteps.toString());
                 } else if (snapshot.hasError) {
                   print(snapshot.error);
+                  // NOTE: we do not have to worry about using setState here
+                  // since whenever it builds it will execute this first and
+                  // then the [Visibility] banner widget. Therefore, there is
+                  // no case where the pedometer throws an error but no
+                  // banner is shown.
+                  pedometerWarn = true;
                   return Text("N/A");
                 }
                 return CircularProgressIndicator();
@@ -185,7 +206,7 @@ class _HomePageState extends State<HomePage> {
       ),
       Divider(),
       ListTile(
-        leading: Icon(Icons.directions_walk),
+        leading: Icon(Icons.directions_walk, color: Colors.blue),
         title: Text('This Week\'s Steps',
             style: Theme.of(context).textTheme.subtitle1),
         trailing: pedometer,
@@ -209,17 +230,45 @@ class _HomePageState extends State<HomePage> {
     final heading = _heading(context);
     final previousScoreHolder = _previouScoreHolder(context);
     final thisWeekHolder = _thisWeekHolder(context);
+    final warningBanner = MaterialBanner(
+      leading: Icon(
+        Icons.warning,
+        color: Colors.red,
+      ),
+      content:
+          const Text('No pedometer available. Functionality will be limited.'),
+      actions: [
+        TextButton(
+          child: Text('Ok'),
+          onPressed: () => setState(() => pedometerWarn = false),
+        )
+      ],
+    );
+    final appBar = AppBar(
+      title: heading,
+      centerTitle: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      actions: [
+        IconButton(
+          onPressed: () => launch(URL_USER_MANUAL),
+          icon: Icon(Icons.help_outline),
+          color: Colors.blue,
+        )
+      ],
+    );
 
     return Scaffold(
+        appBar: appBar,
         body: SafeArea(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.min,
           children: [
-            heading,
-            Divider(),
+            Visibility(
+              visible: pedometerWarn == true,
+              child: warningBanner,
+            ),
             previousScoreHolder,
-            Divider(),
             thisWeekHolder,
           ],
         )),

@@ -83,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headline1),
           SizedBox(height: 10),
-          Expanded(flex: 2, child: settingsWidget),
+          Expanded(flex: 3, child: settingsWidget),
           SizedBox(height: 10),
           Expanded(
               flex: 1,

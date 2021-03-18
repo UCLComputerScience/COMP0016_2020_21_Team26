@@ -2,7 +2,10 @@
 
 [![Flutter Checks](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml/badge.svg)](https://github.com/UCLComputerScience/COMP0016_2020_21_Team26/actions/workflows/flutter.yml)
 
-NudgeMe is V2 of the CarerCare app.
+> V2 of the CarerCare app.
+
+NudgeMe is a privacy focused, cross-platform mobile app that helps you track and share
+your wellbeing & steps.
 
 This is built on Flutter's stable branch.
 
@@ -16,6 +19,31 @@ This builds the production version, meant for end users. It does not display the
 dev screen or send remote error reports. For the version used during development,
 simply run `flutter build apk`.
 3. Install the apk on an Android device.
+
+### iOS
+To build a signed ipa, you will need a paid Apple Developer account and a Mac computer.
+
+If you have both if these and have installed flutter (type 'flutter doctor' in the terminal to check there are no issues here), do the following:
+1. Open Xcode and open this project by locating the project in Finder and opening the *.xcodeproj file.
+2. Select Generic iOS Device as your project's device target (Product > Destination and then choose Generic iOS Device option).
+3. In the Product menu, select Clean.
+4. In the Product menu, select Archive. When the archiving process completes, you will see your application listed under Archives.  
+5. Select your application and click Export button on the right. 
+6. When prompted for an export method, select iOS App Store to upload the app to the iOS App Store, Ad Hoc for internal distribution of the app, Enterprise for distribution outside the App Store, or Development for testing. 
+7. Set these Distribution options:
+    Set App Thinning toNone
+    If you are building for app store, select Rebuild from Bitcode. Deselect if not.
+    Select Strip Swift symbols to reduce app size. This is optional.
+    Deselect Include manifest for over-the-air installation
+9. Select your Distribution Certificate and Provisioning Profile (Automatic or Manual). This will generate the .ipa file. 
+10. When the file generation process completes, click Export and choose where to save the .ipa file.
+
+### Configuration
+
+Here are some aspects you may wish to configure:
+- In `main.dart`, you can modify the `dsn` property of `SentryOptions` to your own DSN provided by 
+[Sentry](https://sentry.io/) if you wish to receive remote error logs.
+- In `main_pages.dart`, you should change the BASE_URL string if you change the domain name.
 
 ## Tests
 
@@ -114,3 +142,8 @@ See the corresponding Figma
 ### Dataflow Diagram - Wellbeing Visualization
 
 ![image](https://user-images.githubusercontent.com/46009390/110238902-0135cb00-7f3c-11eb-88c4-445397e5ea50.png)
+
+### Sequence Diagram - User Wellbeing Sharing
+
+![image](https://user-images.githubusercontent.com/46009390/111034657-9b9b8000-840e-11eb-8c2e-7cf230c3b103.png)
+
