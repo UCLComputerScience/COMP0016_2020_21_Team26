@@ -356,7 +356,7 @@ class SupportPageState extends State<SupportPage> {
               TextSpan(children: [
                 TextSpan(
                     text:
-                        "\nView your network’s wellbeing and diaries and nudges with the ",
+                        "\nView your network’s wellbeing diaries and nudges with the ",
                     style: Theme.of(context).textTheme.bodyText2),
                 TextSpan(
                     text: "View button.",
