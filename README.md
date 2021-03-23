@@ -24,6 +24,7 @@ simply run `flutter build apk`.
 To build a signed ipa, you will need a paid Apple Developer account and a Mac computer.
 
 If you have both if these and have installed flutter (type 'flutter doctor' in the terminal to check there are no issues here), do the following:
+
 1. Open Xcode and open this project by locating the project in Finder and opening the *.xcodeproj file.
 2. Select Generic iOS Device as your project's device target (Product > Destination and then choose Generic iOS Device option).
 3. In the Product menu, select Clean.
@@ -31,16 +32,17 @@ If you have both if these and have installed flutter (type 'flutter doctor' in t
 5. Select your application and click Export button on the right. 
 6. When prompted for an export method, select iOS App Store to upload the app to the iOS App Store, Ad Hoc for internal distribution of the app, Enterprise for distribution outside the App Store, or Development for testing. 
 7. Set these Distribution options:
-    Set App Thinning toNone
-    If you are building for app store, select Rebuild from Bitcode. Deselect if not.
-    Select Strip Swift symbols to reduce app size. This is optional.
-    Deselect Include manifest for over-the-air installation
+    - Set App Thinning to None.
+    - If you are building for app store, select Rebuild from Bitcode. Deselect if not.
+    - Select Strip Swift symbols to reduce app size. This is optional.
+    - Deselect Include manifest for over-the-air installation.
 9. Select your Distribution Certificate and Provisioning Profile (Automatic or Manual). This will generate the .ipa file. 
 10. When the file generation process completes, click Export and choose where to save the .ipa file.
 
 ### Configuration
 
 Here are some aspects you may wish to configure:
+
 - In `main.dart`, you can modify the `dsn` property of `SentryOptions` to your own DSN provided by 
 [Sentry](https://sentry.io/) if you wish to receive remote error logs.
 - In `main_pages.dart`, you should change the BASE_URL string if you change the domain name.
@@ -48,6 +50,7 @@ Here are some aspects you may wish to configure:
 ## Tests
 
 In the root project directory:
+
 - Run `flutter test` to run the unit/widget tests.
 - Run `flutter drive --driver=test_driver\integration_test.dart --target=integration_test\main_test.dart` with an
   emulator or device connected to run the integration tests. 
@@ -82,8 +85,16 @@ Endpoint to send wellbeing data: `https://comp0016.cyberchris.xyz/add-wellbeing-
 Using curl:
 
 ``` sh
-DATA='{"postCode":"TW5", "wellbeingScore":9, "weeklySteps":650, "errorRate":9, "supportCode":"GP", "date_sent":"2021-01-02"}'
-curl -d $DATA -H 'Content-Type: application/json;charset=UTF-8' https://comp0016.cyberchris.xyz/add-wellbeing-record
+DATA='{
+    "postCode":"TW5",
+    "wellbeingScore":9,
+    "weeklySteps":650,
+    "errorRate":9,
+    "supportCode":"GP",
+    "date_sent":"2021-01-02"
+    }'
+curl -d $DATA -H 'Content-Type: application/json;charset=UTF-8' \
+    https://comp0016.cyberchris.xyz/add-wellbeing-record
 ```
 
 ## Wellbeing Sharing
